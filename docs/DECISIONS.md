@@ -391,3 +391,22 @@ directory, `run` would ingest them as breach files (the same trap as ADR-031).
   never a page that names an individual (staff directories, etc.).
 - The README states: "All identifiers are randomly generated; any match to a real
   number is coincidental."
+
+### ADR-049 Address pool: Census ZIPs, reuse cap, shared-address ground truth
+**Context:** Checkpoint 1 review of `address_pool.csv` (42 verified buildings).
+**Decision:**
+- The pool keeps the ZIP that the Census geocoder assigns, even where it differs from
+  the USPS ZIP (630 W 5th St, Los Angeles: USPS 90071 → Census 90012; Corpus Christi
+  City Hall: 78401 → 78408). The difference is recorded for
+  `ASSUMPTIONS_LIMITATIONS.md`.
+- `line1` follows the Census standardization where it adds a directional
+  (Allentown → `435 W HAMILTON ST`). Oakland stays `125 14TH ST`.
+- Buildings named after institutions or donors are allowed. The source-page rule only
+  bans pages that list individuals.
+- **Reuse cap:** at most 2 *unrelated* households share one pool address
+  (`max_unrelated_households_per_address` in `config/synth.yaml`). Planted households
+  (dependents, students with guardians, twins) count as one household and are outside
+  the cap. The generator asserts the cap.
+- Ground truth records every pair of unrelated people who share an address
+  (`truth/gt_shared_addresses.csv`), so M5 can report that none of them were merged.
+**Consequences:** Unrelated same-address pairs become an explicit over-merge test.

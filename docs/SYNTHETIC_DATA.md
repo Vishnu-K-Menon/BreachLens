@@ -138,6 +138,9 @@ paths under `docs/`). CSV `source_row` is the 1-based physical line number (ADR-
   notify_required, jurisdiction, ferpa_flag.
 - `gt_columns.csv`: doc_id, sheet, header_raw, true_label (for the 8 corpus
   spreadsheets).
+- `gt_shared_addresses.csv` (addition, ADR-049): address, true_person_id_a,
+  true_person_id_b, household_a, household_b — unrelated people sharing a pool address
+  (at most 2 unrelated households per address); none of them may be merged.
 - `gt_excluded.csv` (addition, ADR-047): doc_id, page, kind (ORG / EIN / NPI /
   PROVIDER_TIN / ITIN), value, planted_case — the exclusions the PDF track must find.
 - `manifest.json`: seed, version, counts, scanned docs, planted-case coverage.

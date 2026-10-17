@@ -1,0 +1,43 @@
+pool_id,name,line1,city,state,zip5,census_match,verified_on,matched_address,source_url
+A001,Berkeley Central Library,2090 KITTREDGE ST,BERKELEY,CA,94704,Match,2026-10-17,"2090 KITTREDGE ST, BERKELEY, CA, 94704",https://www.berkeleypubliclibrary.org/locations/central-library
+A002,Fresno City Hall,2600 FRESNO ST,FRESNO,CA,93721,Match,2026-10-17,"2600 FRESNO ST, FRESNO, CA, 93721",https://www.fresno.gov/
+A003,Los Angeles Central Library,630 W 5TH ST,LOS ANGELES,CA,90012,Match,2026-10-17,"630 W 5TH ST, LOS ANGELES, CA, 90012",https://www.lapl.org/branches/central-library
+A004,Oakland Main Library,125 14TH ST,OAKLAND,CA,94612,Match,2026-10-17,"125 14TH, OAKLAND, CA, 94612",https://oaklandlibrary.org/locations/xxa/
+A005,Sacramento Central Library,828 I ST,SACRAMENTO,CA,95814,Match,2026-10-17,"828 I ST, SACRAMENTO, CA, 95814",https://www.saclibrary.org/visit-us/central
+A006,San Diego Central Library,330 PARK BLVD,SAN DIEGO,CA,92101,Match,2026-10-17,"330 PARK BLVD, SAN DIEGO, CA, 92101",https://www.sandiego.gov/public-library/central-library
+A007,San Francisco Main Library,100 LARKIN ST,SAN FRANCISCO,CA,94102,Match,2026-10-17,"100 LARKIN ST, SAN FRANCISCO, CA, 94102",https://sfpl.org/locations/main-library
+A008,Jacksonville Main Library,303 N LAURA ST,JACKSONVILLE,FL,32202,Match,2026-10-17,"303 N LAURA ST, JACKSONVILLE, FL, 32202",https://jaxpubliclibrary.org/locations/main-library
+A009,Miami-Dade Main Library,101 W FLAGLER ST,MIAMI,FL,33130,Match,2026-10-17,"101 W FLAGLER ST, MIAMI, FL, 33130",https://mdpls.org/miami-dade-public-library-system/branch-main
+A010,Orlando Public Library,101 E CENTRAL BLVD,ORLANDO,FL,32801,Match,2026-10-17,"101 E CENTRAL BLVD, ORLANDO, FL, 32801",https://ocls.org/locations-hours/orlando-public-library/
+A011,Tallahassee City Hall,300 S ADAMS ST,TALLAHASSEE,FL,32301,Match,2026-10-17,"300 S ADAMS ST, TALLAHASSEE, FL, 32301",https://www.talgov.com/Main/Home
+A012,Tampa City Hall,315 E KENNEDY BLVD,TAMPA,FL,33602,Match,2026-10-17,"315 E KENNEDY BLVD, TAMPA, FL, 33602",https://www.tampa.gov/
+A013,Boston Public Library Central,700 BOYLSTON ST,BOSTON,MA,02116,Match,2026-10-17,"700 BOYLSTON ST, BOSTON, MA, 02116",https://www.bpl.org/locations/central/
+A014,Cambridge City Hall,795 MASSACHUSETTS AVE,CAMBRIDGE,MA,02139,Match,2026-10-17,"795 MASSACHUSETTS AVE, CAMBRIDGE, MA, 02139",https://www.cambridgema.gov/
+A015,Springfield City Library Central,220 STATE ST,SPRINGFIELD,MA,01103,Match,2026-10-17,"220 STATE ST, SPRINGFIELD, MA, 01103",https://www.springfieldlibrary.org/library/locations-and-hours/central-library/
+A016,Jersey City City Hall,280 GROVE ST,JERSEY CITY,NJ,07302,Match,2026-10-17,"280 GROVE ST, JERSEY CITY, NJ, 07302",https://www.jerseycitynj.gov/
+A017,Newark Public Library Main,5 WASHINGTON ST,NEWARK,NJ,07102,Match,2026-10-17,"5 WASHINGTON ST, NEWARK, NJ, 07102",https://www.npl.org/
+A018,Princeton Public Library,65 WITHERSPOON ST,PRINCETON,NJ,08542,Match,2026-10-17,"65 WITHERSPOON ST, PRINCETON, NJ, 08542",https://princetonlibrary.org/
+A019,Trenton City Hall,319 E STATE ST,TRENTON,NJ,08608,Match,2026-10-17,"319 E STATE ST, TRENTON, NJ, 08608",https://www.trentonnj.org/
+A020,Albany Public Library Washington Avenue Branch,161 WASHINGTON AVE,ALBANY,NY,12210,Match,2026-10-17,"161 WASHINGTON AVE, ALBANY, NY, 12210",https://www.albanypubliclibrary.org/locations/washington-avenue-branch/
+A021,Buffalo City Hall,65 NIAGARA SQ,BUFFALO,NY,14202,Match,2026-10-17,"65 NIAGARA SQ, BUFFALO, NY, 14202",https://www.buffalony.gov/
+A022,Rochester Central Library,115 SOUTH AVE,ROCHESTER,NY,14604,Match,2026-10-17,"115 SOUTH AVE, ROCHESTER, NY, 14604",https://roccitylibrary.org/location/central/
+A023,Syracuse Central Library,447 S SALINA ST,SYRACUSE,NY,13202,Match,2026-10-17,"447 S SALINA ST, SYRACUSE, NY, 13202",https://www.onlib.org/locations/city-libraries/central-library
+A024,Utica Public Library,303 GENESEE ST,UTICA,NY,13501,Match,2026-10-17,"303 GENESEE ST, UTICA, NY, 13501",https://www.uticapubliclibrary.org/
+A025,Yonkers City Hall,40 S BROADWAY,YONKERS,NY,10701,Match,2026-10-17,"40 S BROADWAY, YONKERS, NY, 10701",https://www.yonkersny.gov/
+A026,Allentown City Hall,435 W HAMILTON ST,ALLENTOWN,PA,18101,Match,2026-10-17,"435 W HAMILTON ST, ALLENTOWN, PA, 18101",https://www.allentownpa.gov/en-us/
+A027,Bethlehem City Hall,10 E CHURCH ST,BETHLEHEM,PA,18018,Match,2026-10-17,"10 E CHURCH ST, BETHLEHEM, PA, 18018",https://www.bethlehem-pa.gov/
+A028,Erie City Hall,626 STATE ST,ERIE,PA,16501,Match,2026-10-17,"626 STATE ST, ERIE, PA, 16501",https://www.erie.pa.us/
+A029,Lancaster City Hall,120 N DUKE ST,LANCASTER,PA,17602,Match,2026-10-17,"120 N DUKE ST, LANCASTER, PA, 17602",https://www.cityoflancasterpa.gov/
+A030,Carnegie Library of Pittsburgh Main,4400 FORBES AVE,PITTSBURGH,PA,15213,Match,2026-10-17,"4400 FORBES AVE, PITTSBURGH, PA, 15213",https://carnegielibrary.org/location/main-oakland/
+A031,Scranton City Hall,340 N WASHINGTON AVE,SCRANTON,PA,18503,Match,2026-10-17,"340 N WASHINGTON AVE, SCRANTON, PA, 18503",https://scrantonpa.gov/
+A032,Austin Central Library,710 W CESAR CHAVEZ ST,AUSTIN,TX,78701,Match,2026-10-17,"710 W CESAR CHAVEZ ST, AUSTIN, TX, 78701",https://library.austintexas.gov/central-library
+A033,Corpus Christi City Hall,1201 LEOPARD ST,CORPUS CHRISTI,TX,78408,Match,2026-10-17,"1201 LEOPARD ST, CORPUS CHRISTI, TX, 78408",https://www.corpuschristitx.gov/
+A034,El Paso Main Library,501 N OREGON ST,EL PASO,TX,79901,Match,2026-10-17,"501 N OREGON ST, EL PASO, TX, 79901",https://www.elpasolibrary.org/locations/main-library
+A035,Plano Municipal Center,1520 K AVE,PLANO,TX,75074,Match,2026-10-17,"1520 K AVE, PLANO, TX, 75074",https://ecop.plano.gov/Registration/Contact.aspx
+A036,San Antonio Central Library,600 SOLEDAD ST,SAN ANTONIO,TX,78205,Match,2026-10-17,"600 SOLEDAD ST, SAN ANTONIO, TX, 78205",https://www.mysapl.org/Visit/Locations/Central-Library
+A037,Alexandria City Hall,301 KING ST,ALEXANDRIA,VA,22314,Match,2026-10-17,"301 KING ST, ALEXANDRIA, VA, 22314",https://www.alexandriava.gov/about-alexandria/location/alexandria-city-hall
+A038,Arlington Central Library,1015 N QUINCY ST,ARLINGTON,VA,22201,Match,2026-10-17,"1015 N QUINCY ST, ARLINGTON, VA, 22201",https://library.arlingtonva.us/locations/central-library/
+A039,Charlottesville City Hall,605 E MAIN ST,CHARLOTTESVILLE,VA,22902,Match,2026-10-17,"605 E MAIN ST, CHARLOTTESVILLE, VA, 22902",https://www.charlottesville.gov/736/Directions-to-City-Offices
+A040,Norfolk Public Library Downtown Branch,235 E PLUME ST,NORFOLK,VA,23510,Match,2026-10-17,"235 E PLUME ST, NORFOLK, VA, 23510",https://www.norfolk.gov/Facilities/Facility/Details/Slover-Memorial-Library-119
+A041,Richmond Main Library,101 E FRANKLIN ST,RICHMOND,VA,23219,Match,2026-10-17,"101 E FRANKLIN ST, RICHMOND, VA, 23219",https://rvalibrary.org/about/locations/main-library/
+A042,Roanoke Main Library,706 S JEFFERSON ST,ROANOKE,VA,24016,Match,2026-10-17,"706 S JEFFERSON ST, ROANOKE, VA, 24016",https://www.roanokeva.gov/1049/Library-Locations
