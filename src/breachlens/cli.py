@@ -72,8 +72,21 @@ def main(
 def generate(
     seed: Annotated[int, typer.Option(help="Random seed for the synthetic corpus.")] = 42,
     out: Annotated[Path, typer.Option(help="Output directory.")] = Path("data/raw/corpus_v1"),
+    preview: Annotated[
+        Path | None, typer.Option(help="Only write review previews to this directory.")
+    ] = None,
+    root: Annotated[Path, typer.Option(help="Project root (holds config/ and data/).")] = Path("."),
 ) -> None:
     """Generate the synthetic corpus and ground truth."""
+    from dotenv import load_dotenv
+
+    load_dotenv(root / ".env", override=False)  # tool locations such as SOFFICE_PATH
+    if preview is not None:
+        from breachlens.synth.preview import build_previews
+
+        files = build_previews(root.resolve(), preview.resolve(), seed)
+        typer.echo(f"wrote {len(files)} preview files to {preview}")
+        return
     _not_implemented("generate", "M1")
 
 
