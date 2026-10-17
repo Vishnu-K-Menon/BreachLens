@@ -1,0 +1,25 @@
+# BreachLens pipeline configuration, validated by breachlens.config.PipelineConfig.
+# Unknown keys are rejected. Relative paths resolve against the project root
+# (the parent of this config/ directory). Secrets live in .env, never here.
+
+# true = no network calls except the local Ollama endpoint (on-prem mode).
+offline: true
+seed: 42
+
+paths:
+  input_dir: data/raw/corpus_v1
+  output_dir: data/output
+  cache_dir: data/cache
+  reference_dir: data/reference
+
+stages:
+  pdf_track: true
+  sheet_track: true
+  normalize: true
+  validation: true
+  address: true
+  privacy: true
+  resolve: true
+  notify: true
+  database: true
+  workbook: true
