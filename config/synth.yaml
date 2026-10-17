@@ -1,0 +1,100 @@
+# Synthetic corpus generator settings (breachlens.synth, SYNTHETIC_DATA.md).
+# Everything generated from this file is fake. Same seed -> same corpus.
+version: corpus_v1
+seed: 42
+# Ages and minor status are computed against this date, never the wall clock.
+reference_date: 2026-10-01
+
+base_people_per_state: {CA: 6, NY: 6, TX: 6, FL: 6, PA: 6, VA: 6, NJ: 2, MA: 2}
+n_dependents: 10
+n_students: 8
+
+# Share of households that get a verified public-building address from the pool.
+pool_share: 0.80
+# ADR-049: at most this many unrelated households per pool address.
+max_unrelated_households_per_address: 2
+# Background people ("extras") who appear in exactly one spreadsheet.
+extras_pool_share: 0.50
+
+rates:
+  title: 0.10
+  middle: 0.70
+  suffix: 0.15
+  passport: 0.20
+  bank: 0.30
+  card: 0.20
+
+# Phones use the fictional 555-01xx range (ADR-048).
+area_codes:
+  CA: ["415", "916", "619", "510"]
+  NY: ["518", "585", "716", "914"]
+  TX: ["512", "713", "210", "915"]
+  FL: ["305", "407", "813", "904"]
+  PA: ["215", "412", "610", "717"]
+  VA: ["804", "757", "703", "540"]
+  NJ: ["973", "201", "609"]
+  MA: ["617", "413", "508"]
+email_domains: [example.com, example.org, example.net]
+# Test IIN prefixes only (ADR-048).
+card_iins: ["411111", "555555"]
+
+planted:
+  surnames: [Garcia-Lopez, De La Vega, Van Dyke]
+  apostrophe_surname: O'Brien
+  variant_surname: {canonical: Anderson, printed: Andersen}
+  nickname: {canonical: Robert, printed: Bob}
+  accented: [[José, Muñoz], [Renée, Lefèvre], [Zoë, Brückner]]
+  titles: [DR, REV]
+  city_typo: {city: SACRAMENTO, printed: SACRAMNETO}
+
+organizations:
+  employer: Harborline Logistics Inc
+  payer: Summit Payroll Services LLC
+  clinic: Riverbend Family Clinic
+  insurer: Bayview Mutual Health Plan
+  school_district: Maple Valley Unified School District
+  university: Eastlake State University
+  bank: First Meridian Savings Bank
+  vendor: Brightline Office Supply LLC
+n_vendor_rows: 25
+
+pdf:
+  counts: {WAGE_STATEMENT: 8, HEALTH_CLAIM: 8, NEW_HIRE_ID: 6, EOB_LETTER: 8}
+  scan:
+    fraction: 0.30
+    dpi: 300
+    noise_sigma: 8
+    max_rotation_deg: 2.0
+    blur_radius: 0.8
+    jpeg_quality: 70
+
+sheets:
+  # doc_date (ADR-029): export date stored in the xlsx/xls document properties.
+  export_dates:
+    hr_roster.xlsx: 2026-09-30
+    patient_list.xlsx: 2026-09-15
+    benefits_enrollment.xlsx: 2026-08-31
+    student_roster.xlsx: 2026-09-05
+    customer_cards.xlsx: 2026-07-31
+    vendor_list.xlsx: 2026-06-30
+    legacy_export.xls: 2019-03-31
+  extras:
+    hr_roster.xlsx: 16
+    patient_list.xlsx: 27
+    benefits_enrollment.xlsx: 6
+    student_roster.xlsx: 22
+    customer_cards.xlsx: 41
+    legacy_export.xls: 15
+  payroll_pay_dates: [2026-09-15, 2026-09-30]
+
+column_corpus:
+  tables: 400
+  min_cols: 5
+  max_cols: 25
+  min_rows: 20
+  max_rows: 500
+  uninformative_header_rate: 0.15
+
+scale:
+  n: 10000
+  large_claims_rows: 50000

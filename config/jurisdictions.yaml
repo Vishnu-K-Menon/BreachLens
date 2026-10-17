@@ -1,0 +1,31 @@
+# ILLUSTRATIVE - NOT LEGAL ADVICE. A simplified demo subset (VALIDATION_RULES.md).
+# Every entry stays verified: false until a human checks the current statute.
+# FERPA is handled as ferpa_flag + note, not as a covered element (ADR-024).
+# Demo assumption: bank_account counts as covered only with a routing number present.
+default:
+  covered_elements: [ssn, dl, state_id, bank_account, card]
+  verified: false
+CA:
+  covered_elements: [ssn, dl, state_id, passport, bank_account, card, mrn, diagnosis, health_member_id]
+  citation: "Cal. Civ. Code § 1798.82"
+  verified: false
+NY:
+  covered_elements: [ssn, dl, state_id, bank_account, card, mrn, diagnosis, health_member_id]
+  citation: "N.Y. Gen. Bus. Law § 899-aa"
+  verified: false
+TX:
+  covered_elements: [ssn, dl, state_id, bank_account, card, mrn, diagnosis, health_member_id]
+  citation: "Tex. Bus. & Com. Code § 521.002 / 521.053"
+  verified: false
+FL:
+  covered_elements: [ssn, dl, state_id, passport, bank_account, card, mrn, diagnosis, health_member_id]
+  citation: "Fla. Stat. § 501.171"
+  verified: false
+PA:
+  covered_elements: [ssn, dl, state_id, bank_account, card, mrn, diagnosis, health_member_id]
+  citation: "73 P.S. § 2302"
+  verified: false
+VA:
+  covered_elements: [ssn, dl, state_id, passport, bank_account, card]
+  citation: "Va. Code § 18.2-186.6 (medical info: § 32.1-127.1:05)"
+  verified: false

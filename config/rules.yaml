@@ -1,0 +1,11 @@
+# Validation rules (VALIDATION_RULES.md). The scalar settings are used from M1 on
+# (the generator avoids known-invalid SSNs); the rule list is filled in M4.
+ocr_conf_threshold: 0.80
+column_mapping: {agree_low_proba: 0.60, ml_only_min: 0.70, override_min: 0.80}
+qualifying_elements: [ssn, dl, state_id, passport, dob, bank_account, card, mrn, health_member_id, student_id]
+valid_suffixes: [JR, SR, II, III, IV, V]
+titles: [DR, MR, MRS, MS, MX, REV, HON, PROF, SGT, CAPT]
+date_display_format: "%m/%d/%Y"
+# Publicized / sample SSNs that were never validly issued (SSN_KNOWN_INVALID).
+known_invalid_ssns: ["078051120", "123456789", "219099999"]
+rules: []

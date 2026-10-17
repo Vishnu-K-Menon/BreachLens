@@ -86,6 +86,8 @@ TX: ['^\d{7,8}$']
 FL: ['^[A-Z]\d{12}$']
 PA: ['^\d{8}$']
 VA: ['^[A-Z]\d{8}$', '^\d{9}$']
+NJ: ['^[A-Z]\d{14}$']             # added in M1 so NJ/MA licenses can be validated
+MA: ['^[A-Z]\d{8}$', '^\d{9}$']
 ```
 
 ## Spreadsheet rules (see SPREADSHEET_TRACK.md)
@@ -129,6 +131,7 @@ qualifying_elements: [ssn, dl, state_id, passport, dob, bank_account, card, mrn,
 valid_suffixes: [JR, SR, II, III, IV, V]
 titles: [DR, MR, MRS, MS, MX, REV, HON, PROF, SGT, CAPT]
 date_display_format: "%m/%d/%Y"
+known_invalid_ssns: ["078051120", "123456789", "219099999"]   # SSN_KNOWN_INVALID; the generator avoids them
 rules:
   - id: SSN_AREA_INVALID
     fields: [_raw_ssn]

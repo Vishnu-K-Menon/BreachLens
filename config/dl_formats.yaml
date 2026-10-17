@@ -1,0 +1,11 @@
+# Driver license formats per issuing state (VALIDATION_RULES.md).
+# Simplified and illustrative: real states have more variants.
+# NJ and MA are not in the docs' table; added so their licenses can be validated.
+CA: ['^[A-Z]\d{7}$']
+NY: ['^\d{9}$', '^[A-Z]\d{7}$']
+TX: ['^\d{7,8}$']
+FL: ['^[A-Z]\d{12}$']
+PA: ['^\d{8}$']
+VA: ['^[A-Z]\d{8}$', '^\d{9}$']
+NJ: ['^[A-Z]\d{14}$']
+MA: ['^[A-Z]\d{8}$', '^\d{9}$']
