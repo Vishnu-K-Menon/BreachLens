@@ -17,6 +17,7 @@ data/output/*
 data/cache/*
 !data/cache/.gitkeep
 data/raw/corpus_v1/
+data/raw/column_corpus/
 data/raw/scale/*
 !data/raw/scale/.gitkeep
 

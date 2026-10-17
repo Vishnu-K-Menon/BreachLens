@@ -19,7 +19,7 @@ def test_repo_pipeline_config_is_valid():
     assert isinstance(config, PipelineConfig)
     assert config.offline is True
     assert config.seed == 42
-    assert config.paths.input_dir == Path("data/raw/corpus_v1")
+    assert config.paths.input_dir == Path("data/raw/corpus_v1/docs")
 
 
 def test_empty_config_uses_defaults(tmp_path):

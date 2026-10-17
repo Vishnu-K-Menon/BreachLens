@@ -11,7 +11,7 @@ a `model_card.md` (data, features, metrics, limitations). Metrics go into
 **Task:** given one spreadsheet column (header + values), predict its semantic label
 (the label list is in `SPREADSHEET_TRACK.md §4`).
 
-### Training data (`synth/column_corpus.py`)
+### Training data (`src/breachlens/synth/column_corpus.py` → `data/raw/column_corpus/`, ADR-047)
 - Generate ~400 random synthetic tables (5–25 columns, 20–500 rows) from Faker people.
   That's about 6,000 labelled columns.
 - **Header noise:** pick from an alias pool per label, then randomly apply

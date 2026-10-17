@@ -37,7 +37,8 @@
    disables all network calls (the on-prem mode).
 8. **Ground truth exception.** `gt_*.csv` contains synthetic raw values by
    design. It carries a header comment and is excluded from the leak-guard scan by
-   explicit path only.
+   explicit path only (`data/raw/corpus_v1/truth/`, ADR-047). The generated input
+   corpus is synthetic input, not pipeline output, and is never committed.
 9. **LLM boundary.** The Ask assistant sends the LLM only the schema card, few-shot
    examples and the question. Result rows may go to the LLM only with the local `ollama`
    provider in `--explain` mode. Ask sees only views without `_key` columns, and the

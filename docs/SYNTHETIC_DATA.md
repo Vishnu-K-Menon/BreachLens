@@ -1,9 +1,16 @@
 # SYNTHETIC_DATA.md — Test corpus specification
 
 Purpose: a realistic but 100% fake "breach" corpus with ground truth, so every metric is
-measured rather than claimed. Seed 42. Output: `data/raw/corpus_v1/`.
+measured rather than claimed. Seed 42. Output (ADR-047): `data/raw/corpus_v1/docs/` (the
+breach input), `data/raw/corpus_v1/truth/` (ground truth + manifest),
+`data/raw/column_corpus/` and `data/raw/scale/`. All of it is regenerable and git-ignored.
 
-## People and organizations (`synth/people.py`)
+Safe by construction (ADR-048): card numbers come only from test IIN prefixes (`411111`,
+`555555`) with a Luhn check digit (P14 changes only the check digit). Phones use
+`555-01xx`; emails use `example.com/.org/.net`. All identifiers are randomly generated;
+any match to a real number is coincidental.
+
+## People and organizations (`src/breachlens/synth/people.py`)
 - **People:**
   - 40 base people: CA, NY, TX, FL, PA, VA (6 each), plus NJ and MA (2 each, for
     leading-zero ZIPs; these use `default` jurisdiction rules)
@@ -28,10 +35,10 @@ measured rather than claimed. Seed 42. Output: `data/raw/corpus_v1/`.
   bank, vendor. Each has an EIN (`##-#######`); providers also get an NPI-like 10-digit
   number.
 
-## PDF documents (`synth/render_pdf.py`, reportlab): 4 types × 2 layout variants, ~30 docs
+## PDF documents (`src/breachlens/synth/render_pdf.py`, reportlab): 4 types × 2 layout variants, ~30 docs
 Generic, original layouts "in the style of" common forms. Do not reproduce official
 artwork. Watermark `SYNTHETIC - NOT REAL` on every page. ~30% become image-only scans
-(`synth/scanify.py`: 300 dpi, Gaussian noise σ≈8, rotation ±2°, blur, JPEG q70). One
+(`src/breachlens/synth/scanify.py`: 300 dpi, Gaussian noise σ≈8, rotation ±2°, blur, JPEG q70). One
 exact duplicate file.
 
 | type id | content | persons | count |
@@ -41,11 +48,11 @@ exact duplicate file.
 | NEW_HIRE_ID | identity worksheet: name, DOB, SSN, license + state or passport | NEW_HIRE | 6 |
 | EOB_LETTER | free-text letter: patient, member ID, date of service, procedure | PATIENT | 8 |
 
-## Spreadsheets (`synth/render_sheets.py`): 8 corpus files + 1 scale file
+## Spreadsheets (`src/breachlens/synth/render_sheets.py`): 8 corpus files + 1 scale file
 Write with openpyxl so the damage is real (numbers stored as numbers, real merged
 ranges, hidden rows, number formats). Make `.xls` via LibreOffice headless conversion
 (fallback: `xlwt`). The first sheet or a header comment carries
-`SYNTHETIC - NOT REAL`. The 8 corpus files go to `data/raw/corpus_v1/`. The scale
+`SYNTHETIC - NOT REAL`. The 8 corpus files go to `data/raw/corpus_v1/docs/`. The scale
 file `large_claims.csv` goes to `data/raw/scale/` and never into the corpus
 (ADR-031, ADR-032).
 
@@ -64,12 +71,12 @@ sources, with the newer address on the later `doc_date`.
 | `customer_cards.xlsx` | ~50 | customers | card numbers as floats (sci-notation, precision lost), some pre-masked `XXXX-XXXX-XXXX-1234`, `City, ST ZIP` combined |
 | `vendor_list.xlsx` | ~25 | none | organizations only, with EINs (all excluded) |
 | `legacy_export.xls` | ~40 | members | old format, header `ID` that actually holds SSNs, `Column7` with DOBs |
-| `large_claims.csv` | 50,000 | generated | **scale file, not a corpus file**: written to `data/raw/scale/` by `synth/scale.py`; scale test only, not part of accuracy metrics |
+| `large_claims.csv` | 50,000 | generated | **scale file, not a corpus file**: written to `data/raw/scale/` by `src/breachlens/synth/scale.py`; scale test only, not part of accuracy metrics |
 
 Overlap: ≥ 12 people appear in both a spreadsheet and a PDF, and ≥ 5 appear in two
 spreadsheets.
 
-## Column-classifier corpus (`synth/column_corpus.py`)
+## Column-classifier corpus (`src/breachlens/synth/column_corpus.py`)
 See `ML_MODELS.md §C`: ~400 random tables, ~6,000 labelled columns, with alias groups
 recorded for GroupKFold.
 
@@ -121,7 +128,9 @@ recorded for GroupKFold.
 | P43 | `#N/A` cells | XL_ERROR_VALUE |
 | P44 | SSN stored as an 8-digit number | XL_SSN_ZERO_PADDED |
 
-## Ground truth
+## Ground truth (`data/raw/corpus_v1/truth/`)
+`doc_id` follows the shared rule in `breachlens.ingest.doc_ids` (sorted POSIX relative
+paths under `docs/`). CSV `source_row` is the 1-based physical line number (ADR-047).
 - `gt_mentions.csv`: source (doc_id + sheet + row, or doc_id + page), person_role,
   true_person_id, expected normalized values (raw synthetic identifiers allowed here
   only; first line `# SYNTHETIC GROUND TRUTH - NOT REAL PEOPLE`), planted_case.
@@ -129,12 +138,18 @@ recorded for GroupKFold.
   notify_required, jurisdiction, ferpa_flag.
 - `gt_columns.csv`: doc_id, sheet, header_raw, true_label (for the 8 corpus
   spreadsheets).
+- `gt_excluded.csv` (addition, ADR-047): doc_id, page, kind (ORG / EIN / NPI /
+  PROVIDER_TIN / ITIN), value, planted_case — the exclusions the PDF track must find.
 - `manifest.json`: seed, version, counts, scanned docs, planted-case coverage.
 
 ## Address pool (`data/reference/address_pool.csv`)
 pool_id, name (e.g. "<City> Public Library - Central"), line1, city, state, zip5,
-census_match, verified_on. Public, non-residential buildings only: public libraries, city halls and post offices found by
-web search, including NJ/MA buildings for the leading-zero ZIPs (ADR-043). Each candidate
-is verified live via
+census_match, verified_on, plus matched_address and source_url. Public, non-residential
+buildings only: public libraries, city halls and post offices found by web search,
+including NJ/MA buildings for the leading-zero ZIPs (ADR-043). `source_url` must be the
+building's official page or the USPS locator, never a page that names an individual
+(ADR-048). Candidates live in `data/reference/address_candidates.csv`. The builder is
+`python -m breachlens.synth.address_pool`; it is the only network user in M1, and its
+responses are cached in `data/cache/census/`. Each candidate is verified live via
 `https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=...&benchmark=Public_AR_Current&format=json`.
 Drop non-matches. Never hand-type unverified addresses.

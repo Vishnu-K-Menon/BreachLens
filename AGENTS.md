@@ -32,7 +32,7 @@ Excel is the review surface. DuckDB is the system of record.
 14. `docs/DESIGN_RATIONALE.md`: public justification for each feature.
 
 ## Hard rules
-- **No real personal data, ever.** Everything comes from `synth/`. PDFs are watermarked
+- **No real personal data, ever.** Everything comes from `breachlens.synth` (`src/breachlens/synth/`). PDFs are watermarked
   `SYNTHETIC - NOT REAL`. Spreadsheets carry a first-sheet note or header comment saying
   the same.
 - **Never persist a raw sensitive value.** Persist only `*_present`, `*_masked`,

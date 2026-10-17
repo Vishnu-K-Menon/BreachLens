@@ -83,15 +83,16 @@ breachlens/
 │   ├── review/     apply.py
 │   ├── ask/        schema_card.py prompt.py providers.py guard.py executor.py
 │   ├── evaluate/   metrics.py ask_eval.py scale.py
-│   └── audit/      log.py
-├── synth/          people.py render_pdf.py scanify.py render_sheets.py
-│                   column_corpus.py scale.py ground_truth.py
+│   ├── audit/      log.py
+│   └── synth/      people.py render_pdf.py scanify.py render_sheets.py   (ADR-045)
+│                   column_corpus.py scale.py ground_truth.py address_pool.py
 ├── excel/          ReviewHelpers.bas  vbaProject.bin (built once by a human)
 ├── sql/            views/*.sql (6 analytical)  views/ask/ask_*.sql (key-free projections)
 │                   queries/Q01..Q20.sql (scored)  fewshot/F01..F04.sql  snapshots/*.csv
 ├── knime/          nodes/*.py  environment.yml
 ├── models/         column_classifier.joblib (+ model_card.md)
-├── data/  reference/  raw/sample/  raw/corpus_v1/ (git-ignored)  raw/scale/  cache/  output/
+├── data/  reference/  raw/sample/ (committed)  cache/  output/
+│          raw/corpus_v1/{docs,truth}/  raw/column_corpus/  raw/scale/   (git-ignored, ADR-047)
 ├── sample_output/
 ├── tests/          unit/ integration/ test_leak_guard.py test_ask_guard.py
 └── docs/

@@ -338,3 +338,56 @@ persists mentions or identifiers to disk; M2/M3 results stay in memory. If an ea
 stage needs to persist, the leak guard is pulled forward first. The generated corpus
 `data/raw/corpus_v1/` is git-ignored (deterministic, regenerable). The small committed
 `data/raw/sample/` covers tests.
+
+---
+## Revision 4: M1 setup (2026-10-17)
+
+### ADR-045 `synth` is a subpackage of `breachlens`
+**Context:** `synth/` sat at the repo root, outside the installed package, so
+`breachlens generate` could not import it after `pip install -e .`.
+**Decision:** The generators live in `src/breachlens/synth/` (`breachlens.synth`). There
+is one installable package.
+**Consequences:** `python -m breachlens generate` and `python -m breachlens.synth.*`
+work from any directory. The paths in the docs have been updated.
+
+### ADR-046 Pin pandas below 3
+**Context:** pip resolved pandas 3.0, which makes string dtype and copy-on-write the
+defaults. KNIME's Python integration and several readers are tested against pandas 2.x,
+and the spreadsheet track depends on stable `dtype=str` behaviour.
+**Decision:** `pandas>=2.2,<3`.
+**Consequences:** Upgrading to pandas 3 is a roadmap item, to be done with a dtype audit
+of the spreadsheet track.
+
+### ADR-047 Generated-data layout
+**Context:** If ground truth or the column-classifier corpus sat in the pipeline's input
+directory, `run` would ingest them as breach files (the same trap as ADR-031).
+**Decision:**
+- `data/raw/corpus_v1/docs/`: the breach input (PDFs + 8 spreadsheets). This is
+  `pipeline.yaml paths.input_dir`.
+- `data/raw/corpus_v1/truth/`: `gt_mentions.csv`, `gt_people.csv`, `gt_columns.csv`,
+  `gt_excluded.csv` (addition: expected EIN/NPI/TIN/ORG exclusions) and `manifest.json`.
+  The leak guard excludes this path explicitly.
+- `data/raw/column_corpus/`: column-classifier training tables + `labels.csv`.
+- `data/raw/scale/`: `large_claims.csv`.
+- Only `data/raw/sample/` is committed from `data/raw/`; everything else there is
+  regenerable and git-ignored.
+- `doc_id` = position (`D0001`…) in the sorted POSIX relative paths under the input
+  directory, computed by `breachlens.ingest.doc_ids`. The generator and the inventory
+  use the same helper.
+- For CSV files, `source_row` is the 1-based physical line number (header and comment
+  lines count).
+**Consequences:** The commands use `--input data/raw/corpus_v1/docs` and
+`--truth data/raw/corpus_v1/truth`.
+
+### ADR-048 Synthetic identifiers are safe by construction
+**Decision:**
+- Card numbers come only from well-known test IIN prefixes (`411111` Visa test range,
+  `555555` Mastercard test range), with random middle digits and a Luhn check digit.
+  The planted Luhn failure (P14) changes the check digit only.
+- Phones use the fictional `555-01xx` range; emails use the reserved `example.com`,
+  `example.org` and `example.net` domains.
+- SSNs that land on the known-invalid list are regenerated, except for planted cases.
+- Address-pool `source_url`s are the building's official page or the USPS locator,
+  never a page that names an individual (staff directories, etc.).
+- The README states: "All identifiers are randomly generated; any match to a real
+  number is coincidental."

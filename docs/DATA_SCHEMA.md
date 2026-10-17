@@ -44,7 +44,7 @@ get `<e>_key` (HMAC, 16 hex characters).
 | ids | mention_id | str | `M00001`… |
 | | source_type | str | PDF / SPREADSHEET |
 | | doc_id, page | str, int | provenance (page for PDFs) |
-| | source_file, source_sheet, source_row | str, str, int | spreadsheet provenance (1-based Excel row) |
+| | source_file, source_sheet, source_row | str, str, int | spreadsheet provenance (1-based Excel row; for CSV, the 1-based physical line number, ADR-047) |
 | | related_mention_id | str | dependent → subscriber, student → guardian |
 | | doc_type | str | |
 | | doc_date | date | nullable, inherited from `inventory.doc_date` |

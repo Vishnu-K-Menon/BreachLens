@@ -38,23 +38,23 @@ commands, and `pytest` runs.
 
 ## M1 — Synthetic corpus + ground truth (Day 1)
 Spec: `SYNTHETIC_DATA.md`.
-- [ ] `synth/people.py`: 40 base people across CA, NY, TX, FL, PA and VA, plus planted
+- [ ] `src/breachlens/synth/people.py`: 40 base people across CA, NY, TX, FL, PA and VA, plus planted
       variants, dependents, students + guardians, and 8 organizations.
 - [ ] `data/reference/address_pool.csv`: ≥ 40 public, non-residential addresses
       (libraries, city halls, post offices found by web search), each verified live
       with the Census single-line geocoder (ADR-043).
-- [ ] `synth/render_pdf.py`: 4 PDF types × 2 layout variants each, ~30 documents.
-      `synth/scanify.py` turns ~30% into image-only scans.
-- [ ] `synth/render_sheets.py`: the 8 messy corpus spreadsheet files, with every mess
+- [ ] `src/breachlens/synth/render_pdf.py`: 4 PDF types × 2 layout variants each, ~30 documents.
+      `src/breachlens/synth/scanify.py` turns ~30% into image-only scans.
+- [ ] `src/breachlens/synth/render_sheets.py`: the 8 messy corpus spreadsheet files, with every mess
       listed in `SYNTHETIC_DATA.md §Spreadsheets` (ADR-032).
 - [ ] `doc_date` set on every generated document (ADR-029).
-- [ ] `synth/column_corpus.py`: training tables for the column classifier
+- [ ] `src/breachlens/synth/column_corpus.py`: training tables for the column classifier
       (`ML_MODELS.md §C`).
-- [ ] `synth/scale.py`: generator for N flat records (default 10,000) for the scale
+- [ ] `src/breachlens/synth/scale.py`: generator for N flat records (default 10,000) for the scale
       test, plus `large_claims.csv` (50k rows) in `data/raw/scale/`, never in the
       corpus (ADR-031).
-- [ ] Ground truth: `gt_mentions.csv`, `gt_people.csv`, `gt_columns.csv`,
-      `manifest.json`.
+- [ ] Ground truth in `data/raw/corpus_v1/truth/`: `gt_mentions.csv`, `gt_people.csv`,
+      `gt_columns.csv`, `gt_excluded.csv`, `manifest.json` (ADR-047).
 - [ ] Preview PNGs of one PDF per type → `data/output/previews/` for human review.
 
 **AC:** The generator is deterministic (identical ground truth on re-run). Every
@@ -192,4 +192,5 @@ Geocodio second opinion, Presidio, Streamlit review UI, Splink, 7 PDF types.
 
 ## Roadmap (README only, do not build)
 LayoutLMv3/Donut extraction, CASS-certified addresses, NCOA, 50-state rules matrix,
-email/PST ingestion, containerized on-prem deployment, active-learning review loop.
+email/PST ingestion, containerized on-prem deployment, active-learning review loop,
+pandas 3 upgrade with a dtype audit of the spreadsheet track (ADR-046).

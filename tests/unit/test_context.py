@@ -25,7 +25,7 @@ def test_new_run_id_rejects_bad_suffix(suffix):
 
 def test_paths_resolve_relative_to_root(tmp_path):
     paths = Paths.from_config(PipelineConfig(), tmp_path, "R20261017-153000-ab12")
-    assert paths.input_dir == (tmp_path / "data/raw/corpus_v1").resolve()
+    assert paths.input_dir == (tmp_path / "data/raw/corpus_v1/docs").resolve()
     assert paths.output_dir == (tmp_path / "data/output").resolve()
     assert paths.run_dir == paths.output_dir / "R20261017-153000-ab12"
     assert paths.config_dir == tmp_path / "config"

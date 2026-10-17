@@ -32,10 +32,11 @@ charset-normalizer, duckdb, python-dotenv. Extras (ADR-038): `[dev]` pytest, ruf
 
 ## Commands
 ```bash
-python -m breachlens generate --seed 42 --out data/raw/corpus_v1
+python -m breachlens.synth.address_pool                 # one-time, needs network (ADR-043)
+python -m breachlens generate --seed 42 --out data/raw/corpus_v1   # writes docs/ + truth/ (ADR-047)
 python -m breachlens train column-classifier            # (optional: match-model, doctype)
-python -m breachlens run --config config/pipeline.yaml --input data/raw/corpus_v1
-python -m breachlens evaluate --run latest --truth data/raw/corpus_v1   # TARGET defaults to pipeline (ADR-039)
+python -m breachlens run --config config/pipeline.yaml --input data/raw/corpus_v1/docs
+python -m breachlens evaluate --run latest --truth data/raw/corpus_v1/truth   # TARGET defaults to pipeline (ADR-039)
 python -m breachlens scale-test --n 10000                # also reads data/raw/scale/large_claims.csv
 python -m breachlens apply-review --decisions data/output/<run_id>/review_decisions_<run_id>.csv
 python -m breachlens ask "How many people in Texas had both SSN and medical info exposed?"
@@ -57,7 +58,7 @@ pytest -q && ruff check . && ruff format --check .
 ## Commits
 One task per commit, Conventional Commits (`feat(sheets): detect header offset`,
 `test(ask): guard rejects DDL`). Never commit `data/output/`, `data/cache/`,
-`data/raw/corpus_v1/` (regenerable, ADR-044) or `.env`.
+anything in `data/raw/` except `data/raw/sample/` (regenerable, ADR-044/047) or `.env`.
 
 ## PROGRESS.md format
 ```markdown

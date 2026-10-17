@@ -33,7 +33,7 @@ class _Strict(BaseModel):
 class PathsConfig(_Strict):
     """Directories used by the pipeline, relative to the project root unless absolute."""
 
-    input_dir: Path = Path("data/raw/corpus_v1")
+    input_dir: Path = Path("data/raw/corpus_v1/docs")
     output_dir: Path = Path("data/output")
     cache_dir: Path = Path("data/cache")
     reference_dir: Path = Path("data/reference")
