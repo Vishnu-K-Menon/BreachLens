@@ -1,0 +1,11 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.bin binary
+*.xlsx binary
+*.xlsm binary
+*.xls binary
+*.pdf binary
+*.png binary
+*.joblib binary
+*.duckdb binary

@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Secrets (commit .env.example only)
+.env
+
+# Generated data (never committed; ADR-044)
+data/output/*
+!data/output/.gitkeep
+data/cache/*
+!data/cache/.gitkeep
+data/raw/corpus_v1/
+data/raw/scale/*
+!data/raw/scale/.gitkeep
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
