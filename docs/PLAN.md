@@ -23,15 +23,15 @@ Milestones run in order. Do not start the next until the current acceptance crit
 ---
 
 ## M0 — Scaffold (Day 1, ~1 hr)
-- [ ] Repo layout per `ARCHITECTURE.md §Repo layout`.
-- [ ] `pyproject.toml` (Python 3.11, `src/breachlens`). Core deps per `WORKFLOW.md`
+- [x] Repo layout per `ARCHITECTURE.md §Repo layout`.
+- [x] `pyproject.toml` (Python 3.11, `src/breachlens`). Core deps per `WORKFLOW.md`
       (incl. `requests`). Extras (ADR-038): `[dev]` (pytest, ruff), `[ocr]`
       (pytesseract), `[ml]` (scikit-learn, joblib, matplotlib), `[ask]` (sqlglot),
       `[anthropic]` (anthropic).
-- [ ] `.gitignore`, `.env.example`, `PROGRESS.md`.
-- [ ] Typer CLI stubs: `generate`, `run`, `evaluate [TARGET]`, `train MODEL`,
+- [x] `.gitignore`, `.env.example`, `PROGRESS.md`.
+- [x] Typer CLI stubs: `generate`, `run`, `evaluate [TARGET]`, `train MODEL`,
       `apply-review`, `ask`, `scale-test`, `report` (ADR-039).
-- [ ] Pydantic config loader.
+- [x] Pydantic config loader.
 
 **AC:** `pip install -e .[dev]` works, `python -m breachlens --help` lists all
 commands, and `pytest` runs.
