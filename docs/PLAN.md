@@ -38,24 +38,24 @@ commands, and `pytest` runs.
 
 ## M1 — Synthetic corpus + ground truth (Day 1)
 Spec: `SYNTHETIC_DATA.md`.
-- [ ] `src/breachlens/synth/people.py`: 40 base people across CA, NY, TX, FL, PA and VA, plus planted
+- [x] `src/breachlens/synth/people.py`: 40 base people across CA, NY, TX, FL, PA and VA, plus planted
       variants, dependents, students + guardians, and 8 organizations.
-- [ ] `data/reference/address_pool.csv`: ≥ 40 public, non-residential addresses
+- [x] `data/reference/address_pool.csv`: ≥ 40 public, non-residential addresses
       (libraries, city halls, post offices found by web search), each verified live
       with the Census single-line geocoder (ADR-043).
-- [ ] `src/breachlens/synth/render_pdf.py`: 4 PDF types × 2 layout variants each, ~30 documents.
+- [x] `src/breachlens/synth/render_pdf.py`: 4 PDF types × 2 layout variants each, ~30 documents.
       `src/breachlens/synth/scanify.py` turns ~30% into image-only scans.
-- [ ] `src/breachlens/synth/render_sheets.py`: the 8 messy corpus spreadsheet files, with every mess
+- [x] `src/breachlens/synth/render_sheets.py`: the 8 messy corpus spreadsheet files, with every mess
       listed in `SYNTHETIC_DATA.md §Spreadsheets` (ADR-032).
-- [ ] `doc_date` set on every generated document (ADR-029).
-- [ ] `src/breachlens/synth/column_corpus.py`: training tables for the column classifier
+- [x] `doc_date` set on every generated document (ADR-029).
+- [x] `src/breachlens/synth/column_corpus.py`: training tables for the column classifier
       (`ML_MODELS.md §C`).
-- [ ] `src/breachlens/synth/scale.py`: generator for N flat records (default 10,000) for the scale
+- [x] `src/breachlens/synth/scale.py`: generator for N flat records (default 10,000) for the scale
       test, plus `large_claims.csv` (50k rows) in `data/raw/scale/`, never in the
       corpus (ADR-031).
-- [ ] Ground truth in `data/raw/corpus_v1/truth/`: `gt_mentions.csv`, `gt_people.csv`,
+- [x] Ground truth in `data/raw/corpus_v1/truth/`: `gt_mentions.csv`, `gt_people.csv`,
       `gt_columns.csv`, `gt_excluded.csv`, `manifest.json` (ADR-047).
-- [ ] Preview PNGs of one PDF per type → `data/output/previews/` for human review.
+- [x] Preview PNGs of one PDF per type → `data/output/previews/` for human review.
 
 **AC:** The generator is deterministic (identical ground truth on re-run). Every
 planted case P01–P44 exists. **Human checks the previews before M2.**
@@ -120,6 +120,10 @@ are caught. The leak-guard test passes on both tracks.
 
 **AC:**
 - Matching: pairwise precision ≥ 0.95 and recall ≥ 0.90.
+- Address status is reported as agreement with `expected_address_status` from ground
+  truth, shown next to the expected distribution in `manifest.json` (ADR-050). A high
+  UNVERIFIED share from fake streets is expected, not a failure. No merges among the
+  unrelated pairs in `gt_shared_addresses.csv` (ADR-049).
 - The twins case is not merged. The moved-address case is merged.
 - **Cross-source merge works:** a person in `payroll_export.csv` and a W-2 PDF ends up
   as one `person_id`.
@@ -151,7 +155,7 @@ Spec: `EXCEL_WORKBOOK.md`.
       ADR-041) for tests and screenshots. Assert there are no `#REF!`/`#NAME?` errors and that
       `Formula_Checks` matches Python.
 - [ ] `evaluate/metrics.py`: per-field P/R/F1 by track, column-classifier metrics,
-      matching metrics, address status accuracy, collapse ratio, throughput →
+      matching metrics, address status accuracy vs expected (ADR-050), collapse ratio, throughput →
       `metrics.json`, `METRICS.md`; one row appended to `runs`.
 - [ ] `knime/nodes/*.py` + `docs/KNIME_GUIDE.md`: spreadsheet track mostly in native
       nodes, Python Script nodes for mapping, validation, matching and export.
