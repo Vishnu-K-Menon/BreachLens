@@ -65,7 +65,6 @@ def test_run_with_missing_config_fails_cleanly(tmp_path, salt_env):
 @pytest.mark.parametrize(
     ("args", "milestone"),
     [
-        (["generate"], "M1"),
         (["evaluate"], "M7"),
         (["evaluate", "ask"], "M8"),
         (["train", "column-classifier"], "M3"),

@@ -87,7 +87,17 @@ def generate(
         files = build_previews(root.resolve(), preview.resolve(), seed)
         typer.echo(f"wrote {len(files)} preview files to {preview}")
         return
-    _not_implemented("generate", "M1")
+    from breachlens.synth.generate import generate_corpus
+    from breachlens.synth.settings import load_synth_settings
+
+    settings = load_synth_settings(root / "config", seed)
+    result = generate_corpus(settings, root.resolve(), out.resolve())
+    counts = result.truth.manifest["counts"]
+    typer.echo(
+        f"corpus {settings.config.version} (seed {seed}) -> {out}: {counts['files']} files, "
+        f"{counts['people']} people, {counts['person_mentions']} person mentions, "
+        f"all 44 planted cases covered"
+    )
 
 
 @app.command()

@@ -143,7 +143,11 @@ paths under `docs/`). CSV `source_row` is the 1-based physical line number (ADR-
   (at most 2 unrelated households per address); none of them may be merged.
 - `gt_excluded.csv` (addition, ADR-047): doc_id, page, kind (ORG / EIN / NPI /
   PROVIDER_TIN / ITIN), value, planted_case — the exclusions the PDF track must find.
-- `manifest.json`: seed, version, counts, scanned docs, planted-case coverage.
+- `manifest.json`: seed, version, counts, scanned docs, planted-case coverage, file hashes
+  (`file_sha256`; `cell_content_sha256` for the LibreOffice-written `.xls`, whose bytes vary),
+  overlap, address mix (pool vs fake street) per group and the expected `address_status`
+  distribution (ADR-050), column-corpus and scale-file summaries.
+- `gt_mentions.csv` / `gt_people.csv` carry `address_source` and `expected_address_status`.
 
 ## Address pool (`data/reference/address_pool.csv`)
 pool_id, name (e.g. "<City> Public Library - Central"), line1, city, state, zip5,

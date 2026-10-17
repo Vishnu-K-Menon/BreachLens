@@ -410,3 +410,23 @@ directory, `run` would ingest them as breach files (the same trap as ADR-031).
 - Ground truth records every pair of unrelated people who share an address
   (`truth/gt_shared_addresses.csv`), so M5 can report that none of them were merged.
 **Consequences:** Unrelated same-address pairs become an explicit over-merge test.
+
+### ADR-050 Expected address status is ground truth; address metrics compare against it
+**Context:** By design (ADR-006), about 20% of base households and about 60% of
+background extras live on fake streets with a real city and ZIP. With the Census stage
+online these are expected to come back UNVERIFIED, so a high UNVERIFIED share is
+correct behaviour, not a failure.
+**Decision:**
+- The generator records `expected_address_status` per mention (`gt_mentions.csv`) and
+  per person (`gt_people.csv`), plus `address_source` (POOL / FAKE_STREET). The rule:
+  pool building → VERIFIED; fake street → UNVERIFIED; P10 city typo with the right ZIP →
+  CORRECTED; P11 ZIP missing a digit → INVALID.
+- `manifest.json` records the address mix (pool vs fake street) for base people,
+  household members and extras separately, and the expected status distribution for
+  mentions and people, overall and by group.
+- M5/M7 address metrics report accuracy as agreement with `expected_address_status`
+  (per-status confusion matrix), next to the expected distribution. They never use the
+  raw VERIFIED share. In offline mode every status is NOT_CHECKED, and the metric is
+  reported as "not run".
+**Consequences:** UNVERIFIED results on fake streets count as correct. A VERIFIED result
+on a fake street counts as an error.
