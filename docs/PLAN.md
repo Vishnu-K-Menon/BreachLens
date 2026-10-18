@@ -61,15 +61,15 @@ Spec: `SYNTHETIC_DATA.md`.
 planted case P01–P44 exists. **Human checks the previews before M2.**
 
 ## M2 — PDF track (Day 2, morning)
-- [ ] `ingest/inventory.py`: all files (PDF + spreadsheet). sha256, type, size, exact
+- [x] `ingest/inventory.py`: all files (PDF + spreadsheet). sha256, type, size, exact
       duplicates.
-- [ ] `ingest/text_extract.py` (pdfplumber) and `ingest/ocr.py` (PyMuPDF raster +
+- [x] `ingest/text_extract.py` (pdfplumber) and `ingest/ocr.py` (PyMuPDF raster +
       Tesseract with word confidences).
-- [ ] `classify/doctype.py`: keyword-rule classifier from `config/doc_templates/*.yaml`.
-- [ ] `extract/templates.py`: label-anchored extraction from YAML.
-- [ ] `extract/identifiers.py`: SSN vs EIN/ITIN/NPI disambiguation → `excluded_identifiers`.
-- [ ] `extract/entity_type.py`: PERSON vs ORG → `excluded_entities`.
-- [ ] Emit `mentions` rows with `source_type=PDF` (in memory only until M4; ADR-044).
+- [x] `classify/doctype.py`: keyword-rule classifier from `config/doc_templates/*.yaml`.
+- [x] `extract/templates.py`: label-anchored extraction from YAML.
+- [x] `extract/identifiers.py`: SSN vs EIN/ITIN/NPI disambiguation → `excluded_identifiers`.
+- [x] `extract/entity_type.py`: PERSON vs ORG → `excluded_entities`.
+- [x] Emit `mentions` rows with `source_type=PDF` (in memory only until M4; ADR-044).
 
 **AC:** Recall ≥ 0.95 for name, DOB and SSN-present on text-layer PDFs. Scans are
 processed and their accuracy is reported separately.

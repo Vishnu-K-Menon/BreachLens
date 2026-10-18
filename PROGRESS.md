@@ -66,3 +66,44 @@ Append-only build log. Format: see docs/WORKFLOW.md.
     (SPREADSHEET_TRACK §5 semantics). Whether a masked card should trigger notice is
     an open point for ASSUMPTIONS_LIMITATIONS.md.
 - Next: M2 PDF track. Needs Tesseract (not installed yet) for the 9 scans.
+
+## 2026-10-17/18 (Day 1–2)
+- [scope] BreachLens Lite (ADR-051): PLAN.md M5–M8 reduced, Ask moved to Optional. A
+  hand-made-work rule now protects `notebooks/`, `excel/manual/`, `knime/manual/`,
+  `docs/memos/` and the `sql/queries/*.sql` content (AGENTS.md; ruff excludes them).
+  `jupyter` and `ipykernel` added to `[dev]`.
+- [rules] ADR-052: pre-masked cards count as present but don't trigger notice;
+  precision-lost and Luhn-fail cards trigger and go to review. ADR-053: required
+  `as_of_date` (2026-10-01) in pipeline.yaml is the single source. corpus_v1 truth
+  regenerated: notify_required 163 → 155, card_review 10. All 39 `docs/` files
+  verified unchanged (the .xls by cell content) and left untouched; only `truth/` was
+  replaced.
+- [M2] PDF track complete. Tesseract 5.5.3 verified (`TESSERACT_CMD`). AC evidence on
+  corpus_v1 (`python -m breachlens.evaluate.extraction`):
+  - Text layer (21 docs, 23 person mentions): recall 1.000 for every field,
+    including the AC fields name 23/23, DOB 10/10 and SSN-present 9/9.
+  - OCR (9 scans, 10 person mentions): name 10/10, DOB 4/4, SSN-present 5/5, address
+    10/10, diagnosis/procedure/date of service 1.000, member ID 3/4.
+  - Mentions 33/33 matched (0 missing, 0 extra). Doc type 30/30 and doc_date 30/30.
+    The exact duplicate (P25) was flagged and skipped (0 mentions).
+  - Exclusions: EIN 12/12, NPI 8/8, provider TIN 8/8, ORG 1/1 (P21), all at precision
+    1.0.
+  - Remaining failure: one scan's insured member ID, which Tesseract read as
+    `$LO829114678` (one letter lost). A genuine OCR misread, left unfixed.
+  - Fixed during tuning (worst first): W-2 B addresses absorbing the next box
+    (`boundaries` + per-line column stop); scanned W-2 A mentions missing (OCR merged
+    "Employee'sname" → space-tolerant labels); a clean street line OCR'd as garbage
+    next to box borders (border erasing); titles dropped by psm 6 (psm 11); border
+    remnants and stray `~` read as text (height/confidence filters, stray-mark repair);
+    rotated scans splitting rows (deskew).
+  - `pytest -q`: 191 passed (incl. the integration test that generates a corpus and runs
+    OCR). ruff check/format clean. `run --config config/pipeline.yaml` exits 0 and
+    reports 31 PDFs (21 text, 9 OCR, 1 duplicate skipped), 33 mentions.
+  - Leak guard: still N/A (ADR-044). Mentions stay in memory; nothing is written.
+- Notes:
+  - ADR-054 records the design: `Context.tables`, extra transient `_raw_*` columns, and
+    OCR preprocessing. Templates and OCR settings were tuned on corpus_v1's layouts; this
+    is a known limitation.
+  - The Windows console shows accented names as `�`. That's display only (cp1252 bytes
+    in a UTF-8 terminal); the extracted text is correct (U+00D1 etc.).
+- Next: M3 spreadsheet track.
