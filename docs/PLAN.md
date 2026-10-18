@@ -4,7 +4,7 @@ Goal: a public GitHub repo that demonstrates a privacy-safe, two-source breach-d
 pipeline (PDF/scan + Excel/CSV), producing:
 - a notification-ready dataset in DuckDB
 - a formula- and macro-driven Excel review workbook
-- an evaluated text-to-SQL assistant
+- (optional, ADR-051) an evaluated text-to-SQL assistant
 
 Everything is reproducible with one command and measured against ground truth.
 
@@ -16,9 +16,9 @@ Milestones run in order. Do not start the next until the current acceptance crit
 | 1 | M0 Scaffold, M1 Synthetic corpus |
 | 2 | M2 PDF track, M3 Spreadsheet track (start) |
 | 3 | M3 finish (incl. ML column classifier), M4 Normalize + validate + privacy |
-| 4 | M5 Address + matching + notification + scale test, M6 Database + SQL |
-| 5 | M7 Excel workbook (formulas + macros), KNIME workflow, evaluation |
-| 6 | M8 Ask BreachLens + evaluation, README/docs, release |
+| 4 | M5 Address + matching + notification + scale test (50k timing), M6 Database + SQL (Lite) |
+| 5 | M7 Excel workbook (Lite: 7 sheets, 2 macros), KNIME guide (spreadsheet track), evaluation |
+| 6 | M8 README/docs, release (Ask BreachLens is optional, ADR-051) |
 
 ---
 
@@ -115,8 +115,9 @@ are caught. The leak-guard test passes on both tracks.
 - [ ] `resolve/`: 3-pass matching, union-find clusters, survivorship. Persist
       `pair_features` (the engineered features) for every scored pair.
 - [ ] `notify/triggers.py`: per-state triggers, minor/guardian note, FERPA flag.
-- [ ] `breachlens scale-test --n 10000` plus `data/raw/scale/large_claims.csv` (50k rows): time each
-      stage and write `scale_report.json` (rows/sec per stage, peak memory).
+- [ ] `breachlens scale-test`: time each stage on `data/raw/scale/large_claims.csv`
+      (50k rows) only, and write `scale_report.json` (rows/sec per stage, peak memory).
+      BreachLens Lite (ADR-051): no separate generated-records run.
 
 **AC:**
 - Matching: pairwise precision ≥ 0.95 and recall ≥ 0.90.
@@ -129,67 +130,69 @@ are caught. The leak-guard test passes on both tracks.
   as one `person_id`.
 - The scale report is generated.
 
-## M6 — Database + SQL (Day 4, afternoon)
-Spec: `DATABASE_AND_ASK.md`.
+## M6 — Database + SQL (Day 4, afternoon) — Lite scope (ADR-051)
+Spec: `DATABASE_AND_ASK.md` (as reduced by ADR-051).
 - [ ] `db/load.py`: write all tables into `data/output/breachlens.duckdb`, with keys
       composite with `run_id` (ADR-030). Append a row to `runs`.
-- [ ] `sql/views/*.sql`: the 6 analytical views, plus the key-free `ask_*` views in
-      `sql/views/ask/` (ADR-040).
-- [ ] `sql/queries/Q01..Q20.sql`: reference queries with expected-result snapshots.
-      These are the scored Ask gold set. Plus `sql/fewshot/F01..F04.sql`, the separate
-      few-shot examples (ADR-033).
-- [ ] `breachlens apply-review`: import review decisions (CSV from the macro, or the
-      edited workbook) into `review_decisions`, then re-run downstream stages.
+- [ ] `sql/views/*.sql`: 3 views: `v_notify_by_state`, `v_field_error_rates`,
+      `v_cross_source_people`.
+- [ ] `sql/queries/`: 5 reference queries. **The human writes the `.sql` content.**
+      The agent creates only the folder, the question header of each file, and the
+      snapshot/test harness (`sql/snapshots/`, a test that runs each query and compares it
+      with its committed snapshot). The agent never edits the SQL bodies.
 
-**AC:** All 24 queries (Q01–Q20, F01–F04) run. They cover joins, GROUP BY/HAVING, CTEs, window functions
-and a CASE pivot. Snapshots are committed.
+**AC:** The 3 views and the 5 queries run against the loaded database. Snapshots are
+committed and the harness test passes.
 
-## M7 — Excel workbook + KNIME + evaluation (Day 5)
-Spec: `EXCEL_WORKBOOK.md`.
-- [ ] `report/excel_writer.py` (XlsxWriter): every sheet, Excel Tables, named ranges,
-      live formulas, formula-based conditional formatting, data validation.
-- [ ] `excel/ReviewHelpers.bas` (4 macros). **Human step:** import it into a blank
-      workbook, save as `.xlsm`, and run `vba_extract.py` →
-      `excel/vbaProject.bin`. The writer then embeds it and adds buttons.
+## M7 — Excel workbook + KNIME + evaluation (Day 5) — Lite scope (ADR-051)
+Spec: `EXCEL_WORKBOOK.md` (as reduced by ADR-051).
+- [ ] `report/excel_writer.py` (XlsxWriter): sheets `Summary`, `Mentions`, `Review_Queue`,
+      `People`, `Notification_List`, `Excluded`, `About`; Excel Tables, named ranges
+      (`RunDate` = `as_of_date`), live formulas (`COUNTIFS`, `SUMPRODUCT`, `XLOOKUP`,
+      `IF(AND(...))`), formula-based conditional formatting, data validation.
+- [ ] `excel/ReviewHelpers.bas` with 2 macros (`ShowPendingOnly`, `ExportDecisions`).
+      **Human step:** import it into a blank workbook, save as `.xlsm`, and run
+      `vba_extract.py` → `excel/vbaProject.bin`. The writer embeds it and adds buttons.
 - [ ] `report/recalc.py`: LibreOffice headless recalculation (dedicated profile,
-      ADR-041) for tests and screenshots. Assert there are no `#REF!`/`#NAME?` errors and that
-      `Formula_Checks` matches Python.
+      ADR-041). Assert there are no `#REF!`/`#NAME?`/`#VALUE!`/`#DIV/0!` errors and that the
+      Summary counts equal the Python counts.
 - [ ] `evaluate/metrics.py`: per-field P/R/F1 by track, column-classifier metrics,
-      matching metrics, address status accuracy vs expected (ADR-050), collapse ratio, throughput →
-      `metrics.json`, `METRICS.md`; one row appended to `runs`.
-- [ ] `knime/nodes/*.py` + `docs/KNIME_GUIDE.md`: spreadsheet track mostly in native
-      nodes, Python Script nodes for mapping, validation, matching and export.
+      matching metrics, address status accuracy vs expected (ADR-050), collapse ratio,
+      throughput → `metrics.json`, `METRICS.md`; one row appended to `runs`.
+- [ ] `knime/nodes/*.py` + `docs/KNIME_GUIDE.md`: **spreadsheet track only**, mostly in
+      native nodes, with Python Script nodes for mapping, validation, matching and export.
 
-**AC:** The `.xlsm` opens with working buttons. The formula checks agree with Python
-on 100% of checked cells. The KNIME guide can be assembled by a human in 45 minutes or
-less.
+**AC:** The `.xlsm` opens with working buttons. Recalculated Summary counts equal Python.
+The KNIME guide can be assembled by a human in 45 minutes or less.
 
-## M8 — Ask BreachLens + docs + release (Day 6)
-Spec: `DATABASE_AND_ASK.md §Ask`.
-- [ ] `ask/`: schema card (key-free views only), prompt, Ollama client (Claude API
-      optional), sqlglot guard, read-only executor (external access off, interrupt
-      timer), answer formatter (ADR-040).
-- [ ] `breachlens ask "<question>"` prints the answer table and the SQL.
-- [ ] `breachlens evaluate ask`: run the 20 gold questions and report execution
-      accuracy, with failures categorized.
-- [ ] `README.md` per `WORKFLOW.md §README requirements`; `docs/METHODS.md`;
-      `docs/ASSUMPTIONS_LIMITATIONS.md`.
-- [ ] `sample_output/`: workbook, metrics, scale report, ask evaluation.
+## M8 — Docs + release (Day 6) — Lite scope (ADR-051)
+- [ ] `README.md` per `WORKFLOW.md §README requirements` (without the Ask items);
+      `docs/METHODS.md`; `docs/ASSUMPTIONS_LIMITATIONS.md`.
+- [ ] `sample_output/`: workbook, metrics, scale report.
 - [ ] Fresh-clone test. Tag `v1.0`.
 
-**AC:** Ask execution accuracy is reported (target ≥ 15/20 with the local model). The
-guard rejects all 5 adversarial prompts (DROP, UPDATE, raw-column requests, multiple
-statements, non-allowed tables), tested with canned SQL (ADR-040). A fresh clone reproduces `sample_output/`.
+**AC:** A fresh clone reproduces `sample_output/`.
 
 ---
 
 ## Optional (only after M8, in this order)
-1. **B. Learned duplicate matcher.** Logistic regression on `pair_features`, compared
+1. **Ask BreachLens** (moved here by ADR-051): local-LLM text-to-SQL per
+   `DATABASE_AND_ASK.md §Ask` (schema card, guard, read-only executor, evaluation on gold
+   questions, adversarial guard tests).
+2. **B. Learned duplicate matcher.** Logistic regression on `pair_features`, compared
    with the hand weights (`ML_MODELS.md §B`).
-2. **A. Document-type ML classifier.** TF-IDF + logistic regression, compared with the
+3. **A. Document-type ML classifier.** TF-IDF + logistic regression, compared with the
    keyword rules (`ML_MODELS.md §A`).
-3. Streamlit page for Ask (question box, answer table, "show SQL").
-4. Multiprocessing for the scale test.
+4. Streamlit page for Ask (question box, answer table, "show SQL").
+5. Multiprocessing for the scale test.
+
+## Dropped by BreachLens Lite (ADR-051)
+`apply-review` and `review_decisions` import, the views `v_doc_type_quality`,
+`v_people_multi_element`, `v_quality_trend` and the `ask_*` views (unless Ask is built),
+reference queries beyond 5 and the F01–F04 few-shot files, workbook sheets `State_View`,
+`Formula_Checks`, `Column_Mappings`, `File_Profiles`, macros `MarkSelectedAccepted` and
+`RefreshHighlights`, the generated 10k-record scale run, the KNIME guide for the PDF
+track.
 
 ## Cut from scope (ADR-021)
 Geocodio second opinion, Presidio, Streamlit review UI, Splink, 7 PDF types.

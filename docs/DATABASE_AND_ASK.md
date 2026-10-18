@@ -1,5 +1,11 @@
 # DATABASE_AND_ASK.md
 
+> **Scope (ADR-051, BreachLens Lite):** M6 builds the DuckDB load, 3 views
+> (`v_notify_by_state`, `v_field_error_rates`, `v_cross_source_people`) and 5 reference
+> queries whose SQL the human writes; the agent builds only the headers and the
+> snapshot harness. `apply-review`/`review_decisions` import is dropped. Ask BreachLens
+> is Optional; its spec below applies only if it is built.
+
 ## DuckDB: system of record
 File: `data/output/breachlens.duckdb` (accumulates runs). The workbook is a review
 view; the database is the source of truth and the downstream **handoff contract**.

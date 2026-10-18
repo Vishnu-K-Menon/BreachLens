@@ -9,8 +9,8 @@ It maps both into one schema, then cleans, validates, verifies addresses, masks
 sensitive values, and merges each person into one record. The results are:
 - a notification-ready dataset in **DuckDB**
 - an **Excel review workbook** with live formulas and VBA macros
-- **"Ask BreachLens"**, a local-LLM text-to-SQL assistant that is evaluated, not just
-  demoed
+- optional: **"Ask BreachLens"**, a local-LLM text-to-SQL assistant (moved to Optional by
+  ADR-051, BreachLens Lite)
 
 Python does the logic. KNIME orchestrates (native nodes for the spreadsheet track).
 Excel is the review surface. DuckDB is the system of record.
@@ -46,7 +46,12 @@ Excel is the review surface. DuckDB is the system of record.
 - **Cache external API responses.** `offline: true` disables all network calls except
   the local Ollama endpoint.
 - **Stay in scope.** Optional items are started only after M8 passes. Cut items
-  (ADR-021) are not built.
+  (ADR-021) and items dropped by BreachLens Lite (ADR-051) are not built.
+- **Hand-made work is off limits.** `notebooks/`, `excel/manual/`, `knime/manual/`,
+  `docs/memos/` and the content of `sql/queries/*.sql` are the human's own hand-written
+  work. Never create, edit, format, run or stage anything in them. In `sql/queries/` the
+  agent creates only the folder, the question headers and the snapshot/test harness
+  (ADR-051). Stage commits by explicit path, never `git add -A` at the repo root.
 
 ## Definition of done (every task)
 - Typed code. `ruff format` and `ruff check` are clean. Unit tests exist for new logic.

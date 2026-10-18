@@ -26,3 +26,7 @@ data/raw/scale/*
 Thumbs.db
 .vscode/
 .idea/
+
+# Jupyter artifacts (notebooks/ itself is the human's work and is never staged by the agent)
+.ipynb_checkpoints/
+.virtual_documents/

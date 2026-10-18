@@ -430,3 +430,28 @@ correct behaviour, not a failure.
   reported as "not run".
 **Consequences:** UNVERIFIED results on fake streets count as correct. A VERIFIED result
 on a fake street counts as an error.
+
+---
+## Revision 5: BreachLens Lite (2026-10-17)
+
+### ADR-051 BreachLens Lite scope
+**Context:** The human reduced the remaining scope after M1.
+**Decision:**
+- M2–M5 are unchanged, except that the M5 scale test times the 50k-row
+  `large_claims.csv` only.
+- M6: DuckDB load plus 3 views (`v_notify_by_state`, `v_field_error_rates`,
+  `v_cross_source_people`) and 5 reference queries. The human writes the `.sql` content
+  of `sql/queries/`. The agent creates only the folder, the question headers and the
+  snapshot/test harness. `apply-review` is dropped.
+- M7: workbook sheets `Summary`, `Mentions`, `Review_Queue`, `People`,
+  `Notification_List`, `Excluded`, `About`, with live formulas (`COUNTIFS`,
+  `SUMPRODUCT`, `XLOOKUP`, `IF(AND(...))`), conditional formatting and 2 macros
+  (`ShowPendingOnly`, `ExportDecisions`). `State_View`, `Formula_Checks`,
+  `Column_Mappings` and `File_Profiles` are dropped. The KNIME guide covers the
+  spreadsheet track only.
+- M8: README, docs and the v1.0 release only. Ask BreachLens moves to Optional.
+- Hand-made work that the agent never touches: `notebooks/`, `excel/manual/`,
+  `knime/manual/`, `docs/memos/`, and the content of `sql/queries/*.sql`.
+**Consequences:** `PLAN.md` lists the dropped items. ADR-033 (F01–F04 few-shot) and
+ADR-040 (Ask surface) only apply if Ask is built. `DATABASE_AND_ASK.md` and
+`EXCEL_WORKBOOK.md` are read through this ADR.

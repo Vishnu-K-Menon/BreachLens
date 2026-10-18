@@ -1,5 +1,11 @@
 # EXCEL_WORKBOOK.md — Review workbook specification
 
+> **Scope (ADR-051, BreachLens Lite):** build only `Summary`, `Mentions`, `Review_Queue`,
+> `People`, `Notification_List`, `Excluded` and `About`, and only the macros
+> `ShowPendingOnly` and `ExportDecisions`. `State_View`, `Formula_Checks`,
+> `Column_Mappings`, `File_Profiles`, `MarkSelectedAccepted` and `RefreshHighlights` are
+> dropped; their specs below are kept for reference only. `RunDate` = `as_of_date`.
+
 Output: `breachlens_<run_id>.xlsm`, written with **XlsxWriter**
 (`Workbook(path, {"use_future_functions": True})` so `XLOOKUP`, `FILTER`, `UNIQUE`,
 `SORT` and `IFS` get the required `_xlfn.` prefixes). openpyxl is used only to **read**
