@@ -43,6 +43,7 @@ class Paths:
     output_dir: Path
     cache_dir: Path
     reference_dir: Path
+    models_dir: Path
     run_dir: Path
 
     @classmethod
@@ -55,6 +56,7 @@ class Paths:
             output_dir=output_dir,
             cache_dir=_resolve(root, config.paths.cache_dir),
             reference_dir=_resolve(root, config.paths.reference_dir),
+            models_dir=_resolve(root, config.paths.models_dir),
             run_dir=output_dir / run_id,
         )
 

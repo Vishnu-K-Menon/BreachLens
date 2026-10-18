@@ -127,9 +127,12 @@ def run(
     typer.echo(
         f"run {ctx.run_id} finished: {len(stages)} stage(s) executed, {len(mentions)} mentions."
     )
-    summary = ctx.tables.get("pdf_summary")
-    if summary:
-        typer.echo("pdf_track: " + ", ".join(f"{k}={v}" for k, v in summary.items()))
+    for name in ("pdf_summary", "sheet_summary"):
+        if summary := ctx.tables.get(name):
+            typer.echo(
+                f"{name.removesuffix('_summary')}_track: "
+                + ", ".join(f"{k}={v}" for k, v in summary.items())
+            )
 
 
 @app.command()
@@ -149,11 +152,42 @@ def evaluate(
 @app.command()
 def train(
     model: Annotated[ModelName, typer.Argument(help="Model to train.")],
+    config: Annotated[Path, typer.Option(help="Pipeline config file.")] = Path(
+        "config/pipeline.yaml"
+    ),
+    column_corpus: Annotated[Path, typer.Option(help="Column-classifier training corpus.")] = Path(
+        "data/raw/column_corpus"
+    ),
+    corpus: Annotated[
+        Path, typer.Option(help="Dev corpus: its spreadsheets are scored as the dev set.")
+    ] = Path("data/raw/corpus_v1"),
+    holdout: Annotated[
+        Path, typer.Option(help="Held-out corpus: its spreadsheets are the test set.")
+    ] = Path("data/raw/corpus_holdout"),
+    out: Annotated[Path, typer.Option(help="Model output directory.")] = Path("models"),
 ) -> None:
     """Train a model (column-classifier; match-model and doctype are optional)."""
-    if model is ModelName.column_classifier:
-        _not_implemented("train column-classifier", "M3")
-    _not_implemented(f"train {model.value}", "the optional items after M8")
+    if model is not ModelName.column_classifier:
+        _not_implemented(f"train {model.value}", "the optional items after M8")
+    from breachlens.config import load_config, project_root_for
+    from breachlens.ml.column_classifier import train as train_columns
+    from breachlens.sheets.settings import load_sheet_settings
+
+    for needed in (column_corpus / "labels.csv", corpus / "truth"):
+        if not needed.exists():
+            typer.echo(f"error: {needed} not found; run `breachlens generate` first", err=True)
+            raise typer.Exit(code=2)
+    cfg = load_config(config)
+    settings = load_sheet_settings(project_root_for(config) / "config")
+    sets = {"dev_corpus_v1": corpus}
+    if (holdout / "truth").is_dir():
+        sets["test_holdout"] = holdout
+    m = train_columns(column_corpus, sets, out, settings, cfg.as_of_date)
+    last = list(sets)[-1]
+    typer.echo(
+        f"chosen {m['chosen_model']}; macro-F1 on {last} spreadsheets: "
+        + ", ".join(f"{k} {v[f'sheets_{last}']}" for k, v in m["hard_test_macro_f1"].items())
+    )
 
 
 @app.command("apply-review")

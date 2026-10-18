@@ -33,7 +33,7 @@ def test_corpus_shape_and_labels(small, tmp_path):
         assert (r["header_kind"] == "UNINFORMATIVE") == r["alias_group"].startswith(
             "UNINFORMATIVE:"
         )
-        assert 0.0 <= float(r["null_pct"]) <= 0.6
+        assert 0.0 <= float(r["null_pct"]) <= 0.96  # complete, partly empty and sparse columns
     with (tmp_path / "tables" / "T0001.csv").open(encoding="utf-8") as fh:
         table = list(csv.reader(fh))
     n_cols = sum(1 for r in rows if r["table_id"] == "T0001")

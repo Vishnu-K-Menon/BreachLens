@@ -31,6 +31,61 @@ from faker import Faker
 from breachlens.synth import identifiers as ids
 from breachlens.synth.settings import SynthSettings
 
+ACCENTED_FIRST = ["José", "Renée", "Zoë", "Chloé", "André", "Inés", "Noël", "Jürgen"]
+ACCENTED_LAST = ["Muñoz", "Lefèvre", "Brückner", "Peña", "García", "Núñez", "Müller"]
+PARTICLES = ["De La", "Van", "Van der", "De", "Del", "Da", "St."]
+ORG_WORDS = [
+    "Mutual",
+    "Health",
+    "Logistics",
+    "Supply",
+    "Services",
+    "Bank",
+    "Savings",
+    "Clinic",
+    "Holdings",
+    "Systems",
+    "Medical",
+    "Family",
+    "Insurance",
+    "Partners",
+]
+SCHOOL_SYSTEMS = ["Unified School District", "State University", "Community College"]
+SHORT_NOTES = [
+    "Follow-up in {n} weeks.",
+    "Prefers morning appointments.",
+    "Allergy list reviewed.",
+    "Requested paper statements.",
+    "Left voicemail {d}.",
+    "Address updated {d}.",
+    "Seen {n} times.",
+]
+PII_NOTES = ["Verified SSN {v} on file.", "Old MRN {v} merged.", "Called back on {v}."]
+DEPARTMENTS = [
+    "Sales",
+    "Ops",
+    "Finance",
+    "HR",
+    "IT",
+    "Legal",
+    "Fleet",
+    "Customer Service",
+    "Field Operations",
+    "Accounts Payable",
+    "Warehouse",
+]
+PLANS = ["PPO", "HMO", "HDHP", "EPO", "PPO Standard", "HMO Plus", "HDHP + HSA", "Dental Basic"]
+OTHER_KINDS = [
+    "hire_date",
+    "amount",
+    "department",
+    "status",
+    "plan",
+    "order_no",
+    "flag",
+    "pay_date",
+    "count",
+]
 UNINFORMATIVE = [
     "Column{n}",
     "ID",
@@ -94,10 +149,10 @@ class _Values:
         r, f, cfg = self.r, self.f, self.s.config
         z = lambda: r.choice(self.zips)  # noqa: E731
         gens: dict[str, Callable[[], Any]] = {
-            "FULL_NAME": f.name,
-            "FIRST_NAME": f.first_name,
-            "MIDDLE_NAME": f.first_name,
-            "LAST_NAME": f.last_name,
+            "FULL_NAME": self.person_name,
+            "FIRST_NAME": self.first,
+            "MIDDLE_NAME": self.first,
+            "LAST_NAME": self.last,
             "SUFFIX": lambda: r.choice(["JR", "SR", "II", "III", "Jr.", "IV"]),
             "ADDRESS_FULL": lambda: f.address().replace("\n", ", "),
             "ADDRESS_LINE1": lambda: f"{r.randint(1, 9999)} {f.street_name()}",
@@ -127,34 +182,97 @@ class _Values:
             "GROUP_NUMBER": lambda: ids.group_number(r),
             "DIAGNOSIS": lambda: ids.diagnosis_code(r),
             "STUDENT_ID": lambda: ids.student_id(r),
-            "SCHOOL": lambda: f"{f.last_name()} {r.choice(SCHOOL_KINDS)}",
-            "GUARDIAN_NAME": f.name,
+            "SCHOOL": self.school,
+            "GUARDIAN_NAME": self.person_name,
             "EMPLOYEE_ID": lambda: ids.employee_id(r),
-            "ORG_NAME": lambda: (
-                f"{f.last_name()} {r.choice(['LLC', 'Inc', 'Corp', 'Group', 'Partners'])}"
-            ),
+            "ORG_NAME": self.org_name,
             "EIN": lambda: ids.ein(r),
-            "FREE_TEXT": lambda: f.sentence(nb_words=r.randint(4, 14)),
+            "FREE_TEXT": self.note,
             "OTHER": lambda: None,  # chosen per column (see other_column)
         }
         return gens[label]
 
+    # ---- realistic text values (names, organizations, schools, notes) ----------------
+    def first(self) -> str:
+        r = self.r
+        if r.random() < 0.04:
+            return r.choice(ACCENTED_FIRST)
+        name = self.f.first_name()
+        return f"  {name} " if r.random() < 0.02 else name
+
+    def last(self) -> str:
+        r, f = self.r, self.f
+        roll = r.random()
+        if roll < 0.05:
+            return f"{f.last_name()}-{f.last_name()}"
+        if roll < 0.09:
+            return f"{r.choice(PARTICLES)} {f.last_name()}"
+        if roll < 0.11:
+            return r.choice(ACCENTED_LAST)
+        if roll < 0.12:
+            return "O" + chr(39) + f.last_name()
+        return f.last_name()
+
+    def person_name(self) -> tuple[str, str, str, str]:
+        """(first, middle, last, suffix); the column style decides how it is printed."""
+        r = self.r
+        middle = self.f.first_name() if r.random() < 0.6 else ""
+        suffix = r.choice(["Jr.", "JR", "Sr.", "II", "III"]) if r.random() < 0.08 else ""
+        return self.first().strip(), middle, self.last(), suffix
+
+    def org_name(self) -> str:
+        r, f = self.r, self.f
+        shape = r.random()
+        if shape < 0.35:
+            words = [f.last_name()]
+        elif shape < 0.70:
+            words = [f.last_name(), r.choice(ORG_WORDS)]
+        else:
+            words = [f.city(), r.choice(ORG_WORDS), r.choice(ORG_WORDS)]
+        tail = r.choice(["LLC", "Inc", "Corp", "Group", "Partners", "Co", "Plan", ""])
+        return " ".join([*words, tail]).strip()
+
+    def school(self) -> str:
+        r, f = self.r, self.f
+        if r.random() < 0.6:
+            return f"{f.last_name()} {r.choice(SCHOOL_KINDS)}"
+        return f"{f.city()} {r.choice(SCHOOL_SYSTEMS)}"
+
+    def note(self) -> str:
+        r, f = self.r, self.f
+        roll = r.random()
+        if roll < 0.35:
+            day = f"{r.randint(1, 12):02d}/{r.randint(1, 28):02d}"
+            return r.choice(SHORT_NOTES).format(n=r.randint(1, 12), d=day)
+        if roll < 0.45:  # PII in prose, as in real comment fields
+            value = r.choice(
+                [
+                    f"{r.randint(100, 899)}-{r.randint(10, 99)}-{r.randint(1000, 9999)}",
+                    str(r.randint(10_000_000, 99_999_999)),
+                    f"(212) 555-01{r.randint(10, 99)}",
+                ]
+            )
+            return r.choice(PII_NOTES).format(v=value)
+        return f.sentence(nb_words=r.randint(4, 14))
+
     def other_column(self, n: int) -> list[str]:
         """OTHER columns: hire dates (DOB confusable), amounts, departments, statuses…"""
         r = self.r
-        kind = r.choice(["hire_date", "amount", "department", "status", "plan", "order_no", "flag"])
+        kind = r.choice(OTHER_KINDS)
         make: dict[str, Callable[[], str]] = {
             "hire_date": lambda: self.date_between(0, 30).strftime(
                 r.choice(["%m/%d/%Y", "%Y-%m-%d"])
             ),
             "amount": lambda: f"{r.uniform(5, 9000):.2f}",
-            "department": lambda: r.choice(
-                ["Sales", "Ops", "Finance", "HR", "IT", "Legal", "Fleet"]
-            ),
+            "department": lambda: r.choice(DEPARTMENTS),
             "status": lambda: r.choice(["Active", "Inactive", "Pending", "Closed"]),
-            "plan": lambda: r.choice(["PPO", "HMO", "HDHP", "EPO"]),
+            "plan": lambda: r.choice(PLANS),
             "order_no": lambda: f"ORD-{r.randint(100000, 999999)}",
             "flag": lambda: r.choice(["Y", "N"]),
+            "pay_date": lambda: self.date_between(0, 2).strftime(
+                r.choice(["%m/%d/%Y", "%Y-%m-%d"])
+            ),
+            "count": lambda: str(r.randint(0, 40)),
         }
         return [make[kind]() for _ in range(n)]
 
@@ -163,17 +281,27 @@ class _Values:
         r = self.r
         if label == "OTHER":
             return self.other_column(n)
+        # Real exports repeat entities (several rows per person) and hold constant columns.
+        roll = r.random()
+        if roll < 0.04:
+            pool = [r.choice(pool)]
+        elif roll < 0.30 and n < len(pool):
+            pool = r.sample(pool, max(3, int(n * r.uniform(0.3, 0.9))))
         vals = [r.choice(pool) for _ in range(n)]
         style = r.random()
+        mix = 0.0 if r.random() < 0.5 else r.uniform(0.03, 0.20)  # half the columns are pure
         out: list[str] = []
         for v in vals:
-            mixed = r.random() < 0.12  # a few cells in another format
-            s = style if not mixed else r.random()
+            s = style if r.random() >= mix else r.random()
             out.append(self.fmt(label, v, s))
         return out
 
     def fmt(self, label: str, v: Any, s: float) -> str:
         r = self.r
+        if label in {"FULL_NAME", "GUARDIAN_NAME"}:
+            return _format_name(v, s)
+        if label in {"FIRST_NAME", "LAST_NAME", "MIDDLE_NAME", "CITY", "ORG_NAME", "SCHOOL"}:
+            return str(v).upper() if s < 0.3 else str(v)
         if label == "DOB":
             d: date = v
             if s < 0.35:
@@ -237,6 +365,25 @@ class _Values:
         return str(v)
 
 
+def _format_name(v: tuple[str, str, str, str], s: float) -> str:
+    """Print (first, middle, last, suffix) in one of the formats real exports use."""
+    first, middle, last, suffix = v
+    mi = f"{middle[0]}." if middle else ""
+    if s < 0.30:
+        text = f"{first} {last}"
+    elif s < 0.50:
+        text = " ".join(x for x in [first, mi, last, suffix] if x)
+    elif s < 0.70:
+        head = f"{last} {suffix}".strip()
+        tail = f"{first} {middle[:1]}".strip()
+        text = f"{head}, {tail}"
+    elif s < 0.85:
+        text = " ".join(x for x in [first, middle, last] if x)
+    else:
+        text = f"{last}, {first}"
+    return text.upper() if (s * 7) % 1 < 0.3 else text
+
+
 def _noisy_header(alias: str, rng: random.Random) -> str:
     h = alias
     for k, v in ABBREV.items():
@@ -291,7 +438,14 @@ def build_column_corpus(
                 header = _noisy_header(aliases[lab][k], rng)
                 group, kind = f"{lab}:{k}", "ALIAS"
             col = values.column(lab, pools.get(lab, []), n_rows)
-            null_rate = rng.uniform(0.05, 0.40)
+            # Real exports have complete, partly empty and sparse columns.
+            roll = rng.random()
+            if roll < 0.40:
+                null_rate = 0.0
+            elif roll < 0.85:
+                null_rate = rng.uniform(0.01, 0.40)
+            else:
+                null_rate = rng.uniform(0.50, 0.95)
             col = ["" if rng.random() < null_rate else v for v in col]
             cols.append((header, col, lab, group, kind))
         with (tables_dir / f"{tid}.csv").open("w", encoding="utf-8", newline="") as fh:

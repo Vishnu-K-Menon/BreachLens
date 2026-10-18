@@ -15,6 +15,7 @@ paths:
   output_dir: data/output
   cache_dir: data/cache
   reference_dir: data/reference
+  models_dir: models          # trained column classifier (breachlens train column-classifier)
 
 # PDF track (M2). Scans are deskewed, binarized (removes the light-gray watermark) and
 # OCR'd with Tesseract (TESSERACT_CMD in .env). psm 11 = sparse text: keeps large titles and

@@ -27,9 +27,16 @@ def _pdf_track(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
     return stage_pdf_track(df, ctx)
 
 
+def _sheet_track(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
+    from breachlens.sheets.sheet_track import stage_sheet_track
+
+    return stage_sheet_track(df, ctx)
+
+
 # (name, StagesConfig toggle, stage) in execution order; each milestone adds its stages.
 STAGES: list[tuple[str, str, Stage]] = [
     ("pdf_track", "pdf_track", _pdf_track),
+    ("sheet_track", "sheet_track", _sheet_track),
 ]
 
 

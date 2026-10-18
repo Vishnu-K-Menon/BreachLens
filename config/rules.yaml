@@ -8,4 +8,6 @@ titles: [DR, MR, MRS, MS, MX, REV, HON, PROF, SGT, CAPT]
 date_display_format: "%m/%d/%Y"
 # Publicized / sample SSNs that were never validly issued (SSN_KNOWN_INVALID).
 known_invalid_ssns: ["078051120", "123456789", "219099999"]
+# States whose ZIPs start with 0 (XL_ZIP_LEADING_ZERO_RESTORED pads 4-digit ZIPs here).
+zip_leading_zero_states: [CT, MA, ME, NH, NJ, PR, RI, VT, VI]
 rules: []

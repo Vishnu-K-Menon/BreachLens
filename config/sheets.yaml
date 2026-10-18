@@ -1,0 +1,49 @@
+# Spreadsheet track settings (SPREADSHEET_TRACK.md). Rules live here, not in code.
+reader:
+  csv_sniff_bytes: 65536
+  csv_delimiters: [",", ";", "\t", "|"]
+  comment_prefix: "#"          # leading comment lines (e.g. the synthetic notice) are skipped
+  # Tried in order before falling back to charset-normalizer, which can confuse Western
+  # 8-bit text with Central European code pages (cp1250 decodes ñ as ń).
+  encodings: [utf-8, cp1252, latin-1]
+  large_file_rows: 100000      # above this, CSVs are read in chunks / xlsx via calamine
+
+layout:
+  header_scan_rows: 15
+  header_min_string_share: 0.60
+  header_max_numeric_share: 0.20
+  data_like_rows: 3
+  total_row_pattern: '^(total|grand total|count|sum)\b'
+  min_data_rows: 2
+  min_columns: 2
+
+repair:
+  excel_errors: ["#N/A", "#REF!", "#VALUE!", "#DIV/0!", "#NAME?", "#NULL!", "#NUM!"]
+  # Pre-masked values keep at most the last 4 characters visible.
+  premasked_pattern: '^(?:[Xx*#]{2,}[- ]?)+\d{2,4}$|^[Xx*#]{3}-[Xx*#]{2}-\d{4}$'
+  sci_notation_pattern: '^\d(?:\.\d+)?[Ee][+]?\d+$|^\d{12,}\.0$'
+  excel_serial_range: [1, 60000]      # plausible date serials (1900-01-01 .. 2064)
+  long_id_labels: [CARD, BANK_ACCOUNT, SSN, ROUTING, MEMBER_ID, MRN, DL_NUMBER, PASSPORT]
+  date_formats: ["%m/%d/%Y", "%Y-%m-%d", "%d %b %Y", "%m/%d/%y", "%d/%m/%Y", "%d/%m/%y", "%b %d, %Y"]
+
+reshape:
+  # Wide dependent columns: Dep1_First, Dependent2 DOB, Child3_Rel ...
+  wide_group_pattern: '^(?:dep|dependent|child)\s*_?(\d+)[_ ]+(.+)$'
+
+freetext:
+  ssn: '\b\d{3}-\d{2}-\d{4}\b'
+  card: '\b(?:\d[ -]?){13,19}\b'
+  mrn: '\bMRN\s*#?:?\s*(\d{6,10})\b'
+
+# Mention role from the column labels found in a sheet, first match wins.
+roles:
+  - {labels: [DEPENDENT_GROUP], role: SUBSCRIBER}
+  - {labels: [STUDENT_ID], role: STUDENT}
+  - {labels: [MRN], role: PATIENT}
+  - {labels: [CARD], role: CUSTOMER}
+  - {labels: [EMPLOYEE_ID], role: EMPLOYEE}
+default_role: MEMBER
+# A PHONE column whose header contains one of these words belongs to the guardian.
+guardian_header_words: [guardian, parent, responsible]
+# An ORG_NAME column whose header contains one of these words is the insurer.
+insurer_header_words: [insur, plan, payer]

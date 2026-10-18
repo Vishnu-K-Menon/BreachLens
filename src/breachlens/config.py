@@ -38,6 +38,7 @@ class PathsConfig(_Strict):
     output_dir: Path = Path("data/output")
     cache_dir: Path = Path("data/cache")
     reference_dir: Path = Path("data/reference")
+    models_dir: Path = Path("models")
 
 
 class StagesConfig(_Strict):
