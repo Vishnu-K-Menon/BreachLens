@@ -7,6 +7,7 @@ import secrets
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime
 from pathlib import Path
+from typing import Any
 
 from breachlens.audit.log import AuditLogger
 from breachlens.config import PipelineConfig
@@ -70,3 +71,5 @@ class Context:
     offline: bool
     as_of_date: date
     schema_version: str = SCHEMA_VERSION
+    # Side tables produced by stages (inventory, excluded_*, diagnostics, …), ADR-054.
+    tables: dict[str, Any] = field(default_factory=dict, repr=False)

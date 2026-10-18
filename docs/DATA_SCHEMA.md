@@ -107,7 +107,10 @@ get `<e>_key` (HMAC, 16 hex characters).
 | meta | run_id, processed_at | str | |
 
 Transient (never persisted): `_raw_ssn`, `_raw_dl`, `_raw_state_id`, `_raw_passport`,
-`_raw_bank_account`, `_raw_routing`, `_raw_card`, `_raw_mrn`, `_raw_member_id`.
+`_raw_bank_account`, `_raw_routing`, `_raw_card`, `_raw_mrn`, `_raw_member_id`, plus (M2,
+ADR-054) `_raw_group_number`, `_raw_diagnosis`, `_raw_procedure`, `_raw_date_of_service`,
+`_raw_dob` (the date as printed, for the 2-digit-year rule) and `_raw_value` in
+`excluded_identifiers` (masked into `value_masked` in M4).
 
 ## Table: `people` (golden records)
 person_id, first_name, middle_initial, last_name, name_suffix, address_line1,

@@ -111,7 +111,7 @@ def run(
 ) -> None:
     """Run the pipeline end to end."""
     from breachlens.config import ConfigError
-    from breachlens.pipeline import STAGES, load_context, run_pipeline
+    from breachlens.pipeline import enabled_stages, load_context, run_pipeline
 
     try:
         ctx = load_context(config, input_dir=input_dir)
@@ -119,8 +119,14 @@ def run(
         typer.echo(f"error: {exc}", err=True)
         raise typer.Exit(code=2) from exc
     logger.info("run %s: offline=%s, input=%s", ctx.run_id, ctx.offline, ctx.paths.input_dir)
-    run_pipeline(ctx)
-    typer.echo(f"run {ctx.run_id} finished: {len(STAGES)} stages executed.")
+    stages = enabled_stages(ctx.config)
+    mentions = run_pipeline(ctx)
+    typer.echo(
+        f"run {ctx.run_id} finished: {len(stages)} stage(s) executed, {len(mentions)} mentions."
+    )
+    summary = ctx.tables.get("pdf_summary")
+    if summary:
+        typer.echo("pdf_track: " + ", ".join(f"{k}={v}" for k, v in summary.items()))
 
 
 @app.command()

@@ -106,11 +106,17 @@ breachlens/
 `is_exact_duplicate`, `doc_date` (nullable; ADR-029).
 
 ### Unstructured track
-- **Text:** pdfplumber words with boxes. No text layer → PyMuPDF raster at 300 dpi →
-  `pytesseract.image_to_data` with confidences. Both produce one token table.
+- **Text:** pdfplumber words with boxes (watermark glyphs > 30 pt dropped). No text layer →
+  PyMuPDF raster at 300 dpi → deskew (projection profile) → binarize (drops the gray
+  watermark) → erase form box borders → `pytesseract.image_to_data` (psm 11) with
+  confidences; flat or low-confidence words are dropped. Both produce one token table;
+  lines are rebuilt from word boxes by vertical overlap (ADR-054).
 - **Doc type:** keyword scores from template YAML. Below threshold → `UNKNOWN` and review.
-- **Fields:** template YAML `persons:` blocks (role → fields). Each field has `label`
-  regex, `direction` (right/below), `max_distance`, `pattern`, and `target` column.
+- **Fields:** template YAML `persons:` blocks (role → fields). Each field has a `label`
+  (whole words, space-tolerant; `alt_labels`, fuzzy fallback for OCR), `direction`
+  (right / below / inline / block), `max_distance`, `pattern`, `shape`/`charset` for OCR
+  character repair, and `parse`. `boundaries:` lists printed labels that only bound
+  neighbouring values. Every field reports a diagnostic status (ADR-054).
   Confidence is 1.0 for text-layer tokens, mean OCR conf/100 otherwise.
 - **Identifiers:** label proximity decides SSN / EIN / ITIN / NPI. Business IDs go to
   `excluded_identifiers`.

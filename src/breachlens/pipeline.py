@@ -13,15 +13,28 @@ from pathlib import Path
 import pandas as pd
 
 from breachlens.audit.log import AuditLogger
-from breachlens.config import load_config, load_salt, project_root_for
+from breachlens.config import PipelineConfig, load_config, load_salt, project_root_for
 from breachlens.context import Context, Paths, new_run_id
 
 logger = logging.getLogger(__name__)
 
 Stage = Callable[[pd.DataFrame, Context], pd.DataFrame]
 
-# (name, stage) pairs in execution order. Empty in M0; each milestone registers its stages.
-STAGES: list[tuple[str, Stage]] = []
+
+def _pdf_track(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
+    from breachlens.extract.pdf_track import stage_pdf_track
+
+    return stage_pdf_track(df, ctx)
+
+
+# (name, StagesConfig toggle, stage) in execution order; each milestone adds its stages.
+STAGES: list[tuple[str, str, Stage]] = [
+    ("pdf_track", "pdf_track", _pdf_track),
+]
+
+
+def enabled_stages(config: PipelineConfig) -> list[tuple[str, Stage]]:
+    return [(name, fn) for name, toggle, fn in STAGES if getattr(config.stages, toggle)]
 
 
 def load_context(
@@ -52,9 +65,9 @@ def load_context(
 
 
 def run_pipeline(ctx: Context, stages: list[tuple[str, Stage]] | None = None) -> pd.DataFrame:
-    """Run `stages` (default: `STAGES`) in order, starting from an empty DataFrame."""
+    """Run `stages` (default: the enabled `STAGES`) in order, from an empty DataFrame."""
     df = pd.DataFrame()
-    for name, stage in STAGES if stages is None else stages:
+    for name, stage in enabled_stages(ctx.config) if stages is None else stages:
         logger.info("stage %s: start (%d rows in)", name, len(df))
         df = stage(df, ctx)
         logger.info("stage %s: done (%d rows out)", name, len(df))

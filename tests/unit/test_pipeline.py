@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 from breachlens.context import RUN_ID_PATTERN, Context
-from breachlens.pipeline import STAGES, load_context, run_pipeline
+from breachlens.pipeline import STAGES, enabled_stages, load_context, run_pipeline
 
 
 def test_load_context_builds_everything(project, salt_env):
@@ -30,8 +30,23 @@ def test_load_context_reads_salt_from_project_env_file(project, monkeypatch):
 
 def test_run_pipeline_with_no_stages_returns_empty_frame(project, salt_env):
     ctx = load_context(project / "config" / "pipeline.yaml")
-    assert STAGES == []
+    assert run_pipeline(ctx, stages=[]).empty
+
+
+def test_stages_are_registered_and_toggleable(project, salt_env):
+    ctx = load_context(project / "config" / "pipeline.yaml")
+    assert [name for name, _, _ in STAGES] == ["pdf_track"]
+    assert [name for name, _ in enabled_stages(ctx.config)] == ["pdf_track"]
+    off = ctx.config.model_copy(
+        update={"stages": ctx.config.stages.model_copy(update={"pdf_track": False})}
+    )
+    assert enabled_stages(off) == []
+
+
+def test_pdf_stage_without_input_dir_is_a_no_op(project, salt_env):
+    ctx = load_context(project / "config" / "pipeline.yaml")
     assert run_pipeline(ctx).empty
+    assert ctx.tables["pdf_summary"] == {"pdf_files": 0}
 
 
 def test_run_pipeline_runs_stages_in_order(project, salt_env):

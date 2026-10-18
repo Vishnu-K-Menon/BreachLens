@@ -483,3 +483,27 @@ corpus_v1). It is the single source: the generator reads it (no date in `synth.y
 range is set to it. `age_at_run` means age at `as_of_date`.
 **Consequences:** Re-running a past configuration reproduces its results. Changing
 `as_of_date` is an explicit, versioned config change.
+
+### ADR-054 PDF track design: side tables, transient raws, OCR preprocessing
+**Context:** M2 needs more than one output table per stage, and the first OCR runs
+showed systematic failures on the scans (rows split by rotation, garbled text next to box
+borders, titles dropped, border remnants read as text).
+**Decision:**
+- `Context.tables` holds a stage's side tables (`inventory`, `excluded_identifiers`,
+  `excluded_entities`, `pdf_diagnostics`, `pdf_summary`). The stage signature stays
+  `run(df, ctx) -> df`, where `df` is `mentions`.
+- Extra transient columns: `_raw_group_number`, `_raw_diagnosis`, `_raw_procedure`,
+  `_raw_date_of_service`, `_raw_dob` (printed date) and `excluded_identifiers._raw_value`.
+  They are masked or dropped in M4 like every `_raw_*` column.
+- Text layer: pdfplumber reports the rotated watermark glyphs as upright, so words above
+  `text_layer.max_font_size` (30 pt) are dropped instead.
+- OCR: deskew (projection profile), binarize at 160, erase box borders (dark runs
+  ≥ 80 px), Tesseract psm 11 (psm 6 dropped large titles), and drop words below 0.30
+  confidence or 3 pt height. All of these are settings under `ocr:` in `pipeline.yaml`.
+- Templates: labels match whole words with optional spaces (OCR merges words), with
+  `alt_labels` and a fuzzy fallback for OCR. `boundaries:` lists printed labels that
+  bound neighbouring values. `shape`/`charset` repair OCR look-alikes and stray marks.
+**Consequences:** Every field failure has a diagnostic status, which the evaluation uses
+to explain it. The templates and OCR settings were tuned on corpus_v1's layouts. This
+is listed as a limitation: new layouts need new templates (ADR-007), and accuracy on
+real scans will be lower (ADR-002).
