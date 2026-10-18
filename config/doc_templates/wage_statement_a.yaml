@@ -1,0 +1,24 @@
+# W-2 style wage statement, layout A (values to the right of labels). ADR-007.
+doc_type: WAGE_STATEMENT
+layout: A
+keywords:
+  - {text: "WAGE AND TAX STATEMENT", weight: 3}
+  - {text: "Employee's social security number", weight: 2}
+  - {text: "Employer identification number", weight: 2}
+  - {text: "Copy B", weight: 1}
+doc_date:
+  rule: {direction: inline, inline: 'Tax year (\d{4})', parse: year_end}
+document:
+  employer_name: {label: "Employer's name, address and ZIP code", direction: below, lines: 1}
+persons:
+  EMPLOYEE:
+    name_order: FIRST_LAST
+    fields:
+      raw_name: {label: "Employee's name", direction: right}
+      _raw_ssn: {label: "Employee's social security number", direction: right, charset: digits,
+                 pattern: '\d{3}[- ]?\d{2}[- ]?\d{4}', parse: digits}
+      raw_address: {label: "Employee's address and ZIP code", direction: below, lines: 2}
+identifiers:
+  - {kind: EIN, label: "Employer identification number (EIN)", direction: right, charset: digits,
+     pattern: '\d{2}-\d{7}'}
+boundaries: ["1  Wages, tips, other compensation", "2  Federal income tax withheld", "15  State", "16  State wages", "d  Control number"]

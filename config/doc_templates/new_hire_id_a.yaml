@@ -1,0 +1,28 @@
+# New-hire identity verification worksheet, layout A (values right of labels). ADR-007.
+doc_type: NEW_HIRE_ID
+layout: A
+keywords:
+  - {text: "NEW HIRE IDENTITY VERIFICATION WORKSHEET", weight: 3}
+  - {text: "Legal name (Last, First, Middle)", weight: 2}
+  - {text: "Identity document presented", weight: 1}
+doc_date: {field: hire_date}
+document:
+  employer_name: {direction: inline, inline: 'Employer:\s*(.+?)\s+-\s+internal'}
+persons:
+  NEW_HIRE:
+    name_order: LAST_COMMA_FIRST
+    fields:
+      raw_name: {label: "Legal name (Last, First, Middle)", direction: right}
+      dob: {label: "Date of birth", direction: right, charset: digits, pattern: '\d{2}/\d{2}/\d{4}',
+            parse: date, formats: ["%m/%d/%Y"]}
+      _raw_ssn: {label: "Social Security number", direction: right, charset: digits,
+                 pattern: '\d{3}[- ]?\d{2}[- ]?\d{4}', parse: digits}
+      raw_address: {label: "Home address", direction: below, lines: 2}
+      phone: {label: "Telephone", direction: right, pattern: '\+1\d{10}'}
+      email: {label: "Email", direction: right, pattern: '[^\s@]+@[^\s@]+\.[a-z]+'}
+      hire_date: {label: "Date of hire", direction: right, charset: digits, pattern: '\d{2}/\d{2}/\d{4}',
+                  parse: date, formats: ["%m/%d/%Y"]}
+      _raw_dl: {label: "License number", direction: right, pattern: '[A-Z0-9]{4,15}'}
+      dl_state: {label: "Issuing state", direction: right, pattern: '^[A-Z]{2}$'}
+      _raw_passport: {label: "Passport number", direction: right, shape: LDDDDDDDD, pattern: '[A-Z]\d{8}'}
+boundaries: ["Document type", "Issuing country"]

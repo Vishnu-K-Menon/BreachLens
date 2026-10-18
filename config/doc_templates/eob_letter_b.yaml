@@ -1,0 +1,24 @@
+# Explanation-of-benefits letter, layout B (summary table, values below labels). ADR-007.
+doc_type: EOB_LETTER
+layout: B
+keywords:
+  - {text: "EXPLANATION OF BENEFITS (EOB)", weight: 3}
+  - {text: "Amount billed", weight: 2}
+  - {text: "Date of service", weight: 1}
+  - {text: "Member services", weight: 1}
+doc_date:
+  rule: {direction: inline, parse: date, formats: ["%B %d, %Y"],
+         inline: '^((?:January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}, \d{4})$'}
+persons:
+  PATIENT:
+    name_order: FIRST_LAST
+    block_name_address:
+      direction: block
+      lines: 4
+      max_distance: 8
+      inline: '^(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}, \d{4}$'
+    fields:
+      _raw_member_id: {label: "Member ID", direction: below, shape: LLLDDDDDDDDD, pattern: '[A-Z]{3}\d{9}'}
+      date_of_service: {label: "Date of service", direction: below, charset: digits,
+                        pattern: '\d{2}/\d{2}/\d{4}', parse: date, formats: ["%m/%d/%Y"]}
+      _raw_procedure: {label: "Procedure", direction: below, charset: digits, pattern: '\d{5}'}

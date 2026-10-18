@@ -1,0 +1,31 @@
+# Employee onboarding identity record, layout B (values below labels). ADR-007.
+doc_type: NEW_HIRE_ID
+layout: B
+keywords:
+  - {text: "EMPLOYEE ONBOARDING", weight: 3}
+  - {text: "IDENTITY RECORD", weight: 2}
+  - {text: "MIDDLE INITIAL", weight: 1}
+  - {text: "Identity document presented", weight: 1}
+doc_date: {field: hire_date}
+document:
+  employer_name: {direction: inline, inline: 'Employer:\s*(.+?)\s+-\s+internal'}
+persons:
+  NEW_HIRE:
+    name_order: LAST_COMMA_FIRST
+    compose_name: "{_last}, {_first} {_middle}"
+    fields:
+      _last: {label: "LAST NAME", direction: below}
+      _first: {label: "FIRST NAME", direction: below}
+      _middle: {label: "MIDDLE INITIAL", direction: below, pattern: '^[A-Z]$'}
+      dob: {label: "DATE OF BIRTH", direction: below, charset: digits, pattern: '\d{2}/\d{2}/\d{4}',
+            parse: date, formats: ["%m/%d/%Y"]}
+      _raw_ssn: {label_regex: '(?<![\w])SSN(?![\w])', direction: below, charset: digits,
+                 pattern: '\d{3}[- ]?\d{2}[- ]?\d{4}', parse: digits}
+      raw_address: {label: "HOME ADDRESS", direction: below, lines: 2}
+      phone: {label: "PHONE", direction: below, pattern: '\+1\d{10}'}
+      hire_date: {label: "HIRE DATE", direction: below, charset: digits, pattern: '\d{2}/\d{2}/\d{4}',
+                  parse: date, formats: ["%m/%d/%Y"]}
+      _raw_dl: {label: "License number", direction: below, pattern: '[A-Z0-9]{4,15}'}
+      dl_state: {label: "Issuing state", direction: below, pattern: '^[A-Z]{2}$'}
+      _raw_passport: {label: "Passport number", direction: below, shape: LDDDDDDDD, pattern: '[A-Z]\d{8}'}
+boundaries: ["Document type", "Issuing country"]

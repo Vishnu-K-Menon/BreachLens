@@ -1,0 +1,24 @@
+# W-2 style earnings summary, layout B (values below labels). ADR-007.
+doc_type: WAGE_STATEMENT
+layout: B
+keywords:
+  - {text: "EMPLOYEE EARNINGS SUMMARY", weight: 3}
+  - {text: "PAYROLL AGENT", weight: 2}
+  - {text: "SOCIAL SECURITY NO", weight: 2}
+  - {text: "W-2 style", weight: 1}
+doc_date:
+  rule: {direction: inline, inline: 'TAX YEAR (\d{4})', parse: year_end}
+document:
+  employer_name: {label_regex: '(?<![\w])EMPLOYER(?!\s+EIN)(?![\w])', direction: below, lines: 1}
+persons:
+  EMPLOYEE:
+    name_order: LAST_COMMA_FIRST
+    fields:
+      raw_name: {label: "EMPLOYEE (LAST, FIRST M)", direction: below}
+      _raw_ssn: {label: "SOCIAL SECURITY NO.", direction: below, charset: digits,
+                 pattern: '\d{3}[- ]?\d{2}[- ]?\d{4}', parse: digits}
+      raw_address: {label: "HOME ADDRESS", direction: below, lines: 2}
+identifiers:
+  - {kind: EIN, label: "EMPLOYER EIN", direction: below, charset: digits, pattern: '\d{2}-\d{7}'}
+  - {kind: EIN, label: "PAYROLL AGENT EIN", direction: below, charset: digits, pattern: '\d{2}-\d{7}'}
+boundaries: ["PAYROLL AGENT", "GROSS WAGES", "FEDERAL TAX WITHHELD", "STATE"]

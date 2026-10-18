@@ -1,0 +1,26 @@
+# Explanation-of-benefits letter, layout A (free text). ADR-007.
+doc_type: EOB_LETTER
+layout: A
+keywords:
+  - {text: "Explanation of Benefits - this is not a bill", weight: 3}
+  - {text: "We have processed a claim", weight: 2}
+  - {text: "Member services", weight: 1}
+  - {text: "Claims Department", weight: 1}
+doc_date:
+  rule: {direction: inline, parse: date, formats: ["%B %d, %Y"],
+         inline: '^((?:January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}, \d{4})$'}
+persons:
+  PATIENT:
+    name_order: FIRST_LAST
+    # The addressee block under the letter date: name line, then street / unit / city line.
+    block_name_address:
+      direction: block
+      lines: 4
+      max_distance: 8
+      inline: '^(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}, \d{4}$'
+    fields:
+      _raw_member_id: {direction: inline, inline: 'Member ID:\s*([A-Z0-9]{12})', shape: LLLDDDDDDDDD,
+                       pattern: '[A-Z]{3}\d{9}'}
+      date_of_service: {direction: inline, inline: 'received on (\d{2}/\d{2}/\d{4})', charset: digits,
+                        parse: date, formats: ["%m/%d/%Y"]}
+      _raw_procedure: {direction: inline, inline: 'procedure code (\d{5})', charset: digits, pattern: '\d{5}'}

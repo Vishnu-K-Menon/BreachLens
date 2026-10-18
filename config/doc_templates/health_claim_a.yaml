@@ -1,0 +1,40 @@
+# Professional health claim, layout A (numbered boxes, values right of labels). ADR-007.
+doc_type: HEALTH_CLAIM
+layout: A
+keywords:
+  - {text: "HEALTH INSURANCE CLAIM", weight: 3}
+  - {text: "INSURED'S I.D. NUMBER", weight: 2}
+  - {text: "PATIENT'S BIRTH DATE", weight: 1}
+  - {text: "FEDERAL TAX I.D. NUMBER", weight: 1}
+doc_date: {field: date_of_service}
+document:
+  insurer_name: {label: "11c. INSURANCE PLAN NAME", direction: right}
+persons:
+  PATIENT:
+    name_order: LAST_COMMA_FIRST
+    fields:
+      raw_name: {label: "2. PATIENT'S NAME (Last, First, Middle Initial)", direction: right}
+      dob: {label: "3. PATIENT'S BIRTH DATE", direction: right, charset: digits,
+            pattern: '\d{2} \d{2} \d{4}', parse: date, formats: ["%m %d %Y"]}
+      raw_address: {label: "5. PATIENT'S ADDRESS", direction: below, lines: 2}
+      relationship: {label: "6. PATIENT RELATIONSHIP TO INSURED", direction: right}
+      _raw_diagnosis: {label: "21. DIAGNOSIS CODES", direction: right, findall: true, shape: "L*",
+                       pattern: '^[A-Z]\d{2}(\.\d{1,4})?$'}
+      date_of_service: {label: "24A. DATE OF SERVICE", direction: right, charset: digits,
+                        pattern: '\d{2} \d{2} \d{2}', parse: date, formats: ["%m %d %y"]}
+      _raw_procedure: {label: "24D. PROCEDURE CODE", direction: right, charset: digits, pattern: '\d{5}'}
+  INSURED:
+    name_order: LAST_COMMA_FIRST
+    merge_into_if_absent: PATIENT   # insured "SAME": member ID / group belong to the patient
+    fields:
+      raw_name: {label: "4. INSURED'S NAME (Last, First, Middle Initial)", direction: right}
+      raw_address: {label: "7. INSURED'S ADDRESS", direction: below, lines: 2}
+      _raw_member_id: {label: "1a. INSURED'S I.D. NUMBER", alt_labels: ["1a. INSURED'S"], direction: right, shape: LLLDDDDDDDDD,
+                       pattern: '[A-Z]{3}\d{9}'}
+      _raw_group_number: {label: "11. INSURED'S POLICY GROUP NUMBER", direction: right,
+                          charset: digits, pattern: '\d{6}'}
+identifiers:
+  - {kind: NPI, label: "24J. RENDERING PROVIDER NPI", direction: right, charset: digits, pattern: '\d{10}'}
+  - {kind: PROVIDER_TIN, label: "25. FEDERAL TAX I.D. NUMBER", direction: right, charset: digits,
+     pattern: '\d{2}-\d{7}'}
+boundaries: ["33. BILLING PROVIDER INFO"]
