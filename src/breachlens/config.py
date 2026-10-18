@@ -55,6 +55,30 @@ class StagesConfig(_Strict):
     workbook: bool = True
 
 
+class OcrConfig(_Strict):
+    """Tesseract settings for image-only PDFs (ADR-015)."""
+
+    dpi: int = 300
+    lang: str = "eng"
+    psm: int = 11
+    binarize_threshold: int = 160
+    remove_lines_min_px: int = 80  # erase form box borders before OCR; 0 = off
+    min_conf: float = 0.30  # drop OCR words below this confidence
+    min_height_pt: float = 3.0  # drop flat OCR words (border remnants)
+
+
+class TextLayerConfig(_Strict):
+    """pdfplumber settings; words above `max_font_size` (the watermark) are dropped."""
+
+    max_font_size: float = 30.0
+
+
+class DoctypeConfig(_Strict):
+    """Keyword doc-type classifier: below `min_score` the type is UNKNOWN."""
+
+    min_score: float = 0.5
+
+
 class PipelineConfig(_Strict):
     """Top-level shape of `config/pipeline.yaml`.
 
@@ -68,6 +92,9 @@ class PipelineConfig(_Strict):
     seed: int = 42
     paths: PathsConfig = PathsConfig()
     stages: StagesConfig = StagesConfig()
+    ocr: OcrConfig = OcrConfig()
+    text_layer: TextLayerConfig = TextLayerConfig()
+    doctype: DoctypeConfig = DoctypeConfig()
 
 
 def load_config(path: Path) -> PipelineConfig:

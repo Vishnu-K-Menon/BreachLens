@@ -16,6 +16,22 @@ paths:
   cache_dir: data/cache
   reference_dir: data/reference
 
+# PDF track (M2). Scans are deskewed, binarized (removes the light-gray watermark) and
+# OCR'd with Tesseract (TESSERACT_CMD in .env). psm 11 = sparse text: keeps large titles and
+# scattered form fields; the extractor rebuilds lines from word boxes.
+ocr:
+  dpi: 300
+  lang: eng
+  psm: 11
+  binarize_threshold: 160
+  remove_lines_min_px: 80   # erase form box borders (dark runs >= 80 px) before OCR
+  min_conf: 0.30            # drop OCR words below this confidence (border remnants, noise)
+  min_height_pt: 3.0        # drop flat OCR words (remnants of erased box borders)
+text_layer:
+  max_font_size: 30   # the 54 pt watermark glyphs are dropped
+doctype:
+  min_score: 0.5      # keyword score below this -> UNKNOWN (DOC_TYPE_UNKNOWN)
+
 stages:
   pdf_track: true
   sheet_track: true
