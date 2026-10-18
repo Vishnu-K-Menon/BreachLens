@@ -26,9 +26,13 @@
    `ts`), plus `*_key`, `zip4` and `phone`. `run_id` uses the format
    `R20261017-153000-ab12`, which none of the patterns match.
 
-   `tests/test_leak_guard.py` runs the whole pipeline on the sample corpus and scans
-   every output file. The guard is built in M4. Until then, no stage persists mentions
-   or identifiers to disk (ADR-044).
+   `tests/test_leak_guard.py` generates a corpus (both tracks: text PDFs, scans, all
+   spreadsheets), runs the whole pipeline with writes and scans every output file. It
+   also checks that no raw identifier from ground truth appears in any output byte
+   (ADR-058). Every write goes through `privacy/writer.py`. It scans all tables of a run
+   first and writes nothing on any finding. To scan a run directory by hand, use
+   `python -m breachlens.privacy.leak_guard data/output/<run_id>`. Findings name the
+   table, column, row and pattern, never the value.
 5. **Masked snippets.** `source_snippet` and audit entries are masked before storage.
 6. **Secrets.** `BREACHLENS_SALT`, `ANTHROPIC_API_KEY` (optional) and others live in `.env`. Commit
    `.env.example` only.

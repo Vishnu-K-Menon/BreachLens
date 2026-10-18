@@ -27,5 +27,14 @@ ASSUMPTIONS_LIMITATIONS.md:
   place on headers like `ID` / `Column7` (0.90 vs 0.01), and the decision table
   combines both. One known wrong ML override (`Insurer` → SCHOOL, p 0.83) is reported,
   not patched.
+- Validation (M4): street lines are kept as printed; the offline ZIP check uses USPS-based
+  `zipcodes` data, while the address pool has Census ZIPs. In M4 an address is INVALID or
+  NOT_CHECKED; VERIFIED/CORRECTED need Census (M5). Mention-level REVIEW counts include
+  column-level mapping doubts copied to every affected person (ADR-059).
+- Ground-truth quirks found in M4 (reported, not changed): routing is left out of the
+  truth when the account cell is `#N/A`; guardian rows carry the person's suffix even
+  when it isn't printed; the seed-43 generator gave one person the suffix `MR`.
+- OCR on accented names (`eng` model) loses accents, and `Jr.` can read as `Ir.`. Neither
+  is fixed (holdout numbers are untuned).
 - Spreadsheet fixes are tuned on the planted cases P27–P44 (synthetic Excel damage).
   Real exports will show damage the generator does not produce.

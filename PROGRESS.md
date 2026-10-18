@@ -196,3 +196,65 @@ Append-only build log. Format: see docs/WORKFLOW.md.
   0 vendor mentions, and ML > rules on uninformative headers. ruff check/format clean.
   `run` exits 0 with 438 mentions (33 PDF + 405 spreadsheet) and writes nothing.
 - Next: M4 normalize + validate + privacy.
+
+## 2026-10-18 (Day 3) — M4 normalize + validate + privacy
+- [M4] New stages `normalize → validate → privacy` after both tracks. This is the first
+  milestone that writes outputs: `data/output/<run_id>/` (8 CSV tables + audit JSONL +
+  counts-only summary), all through `privacy/writer.py` and the leak guard (ADR-058).
+  ADR-059: rules.yaml is the one severity source; COL_* WARN codes reach the mentions
+  that used the column. ADR-060: masks, HMAC keys, PII in notes counts as exposure.
+- [AC: reason codes] Of 63 declared codes, 58 are emitted in M4 and each has ≥ 1
+  positive and ≥ 1 negative case. That is 68 positive + 68 negative cases in
+  `tests/unit/code_cases.py`, plus a meta-test that fails if any M4 code lacks either.
+  Five codes need Census or clusters and come in M5: ADDR_GEOCODE_NOMATCH,
+  ADDR_GEOCODE_TIE, DOB_CONFLICT_IN_CLUSTER, DUPLICATE_CANDIDATE, NOTIFY_STATE_UNKNOWN.
+- [AC: planted cases] `python -m breachlens.evaluate.validation`:
+
+  | corpus | planted-case recall | mentions matched | qc_status |
+  |---|---|---|---|
+  | corpus_v1 (dev, tuned) | **306/306 = 1.000** (P01–P04, P06, P07, P09–P16, P19–P23, P26–P44) | 438/438 | PASS 235, REVIEW 189, FAIL 14 |
+  | holdout seed 43 (untuned) | 299/302 = 0.990 | 434/434 | PASS 226, REVIEW 197, FAIL 11 |
+
+  - Holdout misses (reported, not fixed), all OCR:
+    - P02: `Jr.` was read as `Ir.`, so the suffix was lost and the last name became IR.
+    - P19: one EIN was not found (the same miss as the M2 holdout).
+    - P41: one scanned W-2 SSN label was not found, so that mention has no `ssn_key`.
+  - Rule precision on dev: every planted-code rule fires only where the truth expects it.
+    The one exception is PERSON_NO_QUALIFYING_ELEMENT on a scan whose member ID OCR
+    misread in M2, so the mention correctly goes to review.
+  - Normalized fields vs `exp_*` on dev:
+    - 1.000 for first/last/line1/city/state/zip5/dob on both tracks.
+    - PDF middle initial 25/26: the M2 extraction lost it.
+    - Sheet suffix 19/21: the truth stores a person's suffix on guardian rows that don't
+      print it.
+  - `*_present` vs truth `has_*`: ssn 438/438.
+    - routing 435/438: the generator omits routing from the truth when the account cell is
+      `#N/A`, but the routing number is printed.
+    - health member/group 437 and 436/438: OCR misses from M2.
+  - REVIEW volume on dev: 104 mentions come from 3 REVIEW columns (`Employee Middle`, `ID`,
+    `Guardian Name`) and 65 from the `Insurer` ML_OVERRIDE (ADR-059). Those 65 also get
+    `ferpa_flag` through the wrong SCHOOL label. Known, not patched.
+- [AC: leak guard] Both tracks were scanned.
+  - `tests/test_leak_guard.py` (generated corpus with text PDFs, OCR scans and all 8 sheets):
+    - 10 files scanned: mentions, inventory, excluded_entities, excluded_identifiers,
+      doc_codes, file_profile, column_profile, column_mapping, audit_<run>.jsonl and
+      run_summary.json
+    - 0 findings, and none of the raw ground-truth identifiers appear in any output byte
+  - corpus_v1 run R20261018-030553-079f: `python -m breachlens.privacy.leak_guard` gives
+    10 files, 0 findings. Cross-check: 0 of 122 SSNs, 34 cards, 15 accounts, 15 routing
+    numbers, 65 MRNs, 89 member IDs, 56 employee IDs, 30 student IDs, 5 DLs, 1 passport
+    and 26 excluded business IDs appear in any output.
+  - Holdout run R20261018-031800-3cea: 10 files written, 0 findings.
+- [checks] `pytest -q`: 426 passed (incl. both M4 integration suites). ruff clean. New tests:
+  - `tests/unit/test_reason_codes.py`, `test_privacy.py`, `test_validate_engine.py`
+  - `tests/test_leak_guard.py`
+  - `tests/integration/test_validation_planted.py`, sharing the session fixture
+    `generated_run`
+- [fixed during M4, dev]:
+  - per-row update merge: an ITIN routed out of one row nulled `_raw_ssn` in every row
+    (caught by a unit test before any corpus run)
+  - preflight scan of all tables, so no partial run directory is written
+- [docs] PRIVACY §4, DATA_SCHEMA (doc_codes, run outputs), VALIDATION_RULES
+  implementation notes. PLAN M4 ticked, and PLAN M8 now has the README quick start with
+  `breachlens train column-classifier`.
+- Next: M5 address (Census) + matching + notification + scale test.

@@ -100,11 +100,11 @@ Spec: `SPREADSHEET_TRACK.md`, `ML_MODELS.md §C`.
 - The vendor file produces 0 person mentions.
 
 ## M4 — Normalize + validate + privacy (Day 3)
-- [ ] `normalize/names.py`, `normalize/addresses.py`, `normalize/dates.py`,
+- [x] `normalize/names.py`, `normalize/addresses.py`, `normalize/dates.py`,
       `normalize/contact.py` per `VALIDATION_RULES.md`.
-- [ ] `validate/engine.py`: every rule in `config/rules.yaml`, with reason codes and
+- [x] `validate/engine.py`: every rule in `config/rules.yaml`, with reason codes and
       severities.
-- [ ] `privacy/`: masking, HMAC keys, `drop_raw()`, `leak_guard` (patterns and scope
+- [x] `privacy/`: masking, HMAC keys, `drop_raw()`, `leak_guard` (patterns and scope
       per ADR-027).
 
 **AC:** Every reason code has positive and negative tests. All planted validation cases
@@ -166,7 +166,9 @@ Spec: `EXCEL_WORKBOOK.md` (as reduced by ADR-051).
 The KNIME guide can be assembled by a human in 45 minutes or less.
 
 ## M8 — Docs + release (Day 6) — Lite scope (ADR-051)
-- [ ] `README.md` per `WORKFLOW.md §README requirements` (without the Ask items);
+- [ ] `README.md` per `WORKFLOW.md §README requirements` (without the Ask items). The
+      quick start includes `breachlens train column-classifier`, because the model file is
+      git-ignored (ADR-057);
       `docs/METHODS.md`; `docs/ASSUMPTIONS_LIMITATIONS.md`.
 - [ ] `sample_output/`: workbook, metrics, scale report.
 - [ ] Fresh-clone test. Tag `v1.0`.

@@ -567,3 +567,73 @@ recover by design.
   values. Without a model the stage runs rules-only (`RULE_ONLY`) and logs a warning.
 - New dependency `olefile` reads the `.xls` creation date for `doc_date`.
 - New config: `models_dir` in `pipeline.yaml`.
+
+### ADR-058 M4 outputs, the guarded writer and the leak-guard test corpus
+**Context:** M4 is the first milestone that writes outputs. DuckDB arrives in M6 and the
+workbook in M7. PRIVACY.md §4 had the leak test run on `data/raw/sample/`, which is
+empty and would need its own subset of ground truth.
+**Decision:**
+- Each run writes CSV tables to `data/output/<run_id>/`: `mentions`, `inventory`,
+  `excluded_entities`, `excluded_identifiers`, `doc_codes`, `file_profile`,
+  `column_profile`, `column_mapping`. It also writes `audit_<run_id>.jsonl` and a
+  counts-only `run_summary.json`. CSV needs no new dependency and KNIME reads it.
+  `pdf_diagnostics` stays in memory.
+- `privacy/writer.py` is the only write path in the package, and M6/M7 reuse it. A run is
+  scanned completely before anything is written, and any finding means no file is
+  written. Writing is refused if the privacy stage is disabled.
+- `python -m breachlens.privacy.leak_guard <dir>` scans a written directory. It is
+  column-aware for CSV/JSONL and lists every file with its finding count.
+- `tests/test_leak_guard.py` generates a reduced corpus in tmp (both tracks: text PDFs,
+  scans, 8 spreadsheets), runs the full pipeline with writes, scans every output file,
+  and checks that no raw ground-truth identifier appears in any output byte.
+  `data/raw/sample/` is not used.
+- The offline ZIP check (`address/zipcheck.py`, `zipcodes`) moves from M5 into M4,
+  because ADDR_ZIP_STATE/CITY_MISMATCH are validation rules and P10 needs them. Census
+  stays in M5.
+- M4 address status is INVALID (unfixable state/ZIP) or NOT_CHECKED, with
+  `address_suggestion` set. The full status mapping (VERIFIED / CORRECTED / UNVERIFIED)
+  needs Census and is applied in M5.
+
+### ADR-059 Rule engine: one severity source, code scopes, column codes on mentions
+**Decision:**
+- `config/rules.yaml` declares every reason code with `severity`, `stage`, `scope`
+  (mention / doc / column / excluded) and `milestone`. The engine assigns severities
+  only from there, and an undeclared code is an error. M2/M3 producers keep emitting
+  bare codes.
+- `qc_status` is FAIL if any ERROR, REVIEW if any WARN, else PASS. `review_status` is
+  PENDING unless PASS.
+- `sheet_codes` is renamed `doc_codes` (+ `severity`), because DOC_TYPE_UNKNOWN is
+  doc-level too.
+- Column-level WARN codes (COL_MAPPING_LOW_CONF, COL_MAPPING_ML_OVERRIDE,
+  COL_UNMAPPED_SENSITIVE) are copied to every mention that took a non-empty value from
+  that column. Wide dependent columns go to dependents only, and guardian columns to
+  guardians only. A reviewer then sees the uncertainty on the person it affects; one
+  column decision clears them all (M7).
+  - Consequence: the known `Insurer` → SCHOOL override (ADR-056) puts those patient
+    mentions in REVIEW. It also sets `ferpa_flag` on them through FERPA_RECORD. This is
+    reported, not patched.
+- Exclusion codes lead the `reason` of `excluded_*` rows. PROVIDER_TIN uses
+  EIN_EXCLUDED, since it has the same format and no separate code exists.
+- Small calls:
+  - Street lines are kept as printed, upper-cased (the ground truth keeps unabbreviated
+    suffixes); only units are standardized.
+  - ADDR_MISSING is skipped for mentions linked to a household mention (dependents,
+    guardians).
+  - NAME_SUFFIX_INVALID keeps the printed suffix; the suggestion goes in the audit
+    detail.
+  - LOW_OCR_CONFIDENCE applies to OCR mentions only.
+  - NAME_VARIANT_IN_DOC compares mentions with the same SSN in one document.
+
+### ADR-060 Masking, HMAC keys and exposure from notes
+**Decision:**
+- Masks keep the last 4 characters: `***-**-1234` for SSNs, `*`×(n−4)+last 4 for other
+  IDs. Pre-masked values keep their own mask.
+- `*_key` = first 16 hex characters of HMAC-SHA256(salt, `KIND:value`), with
+  `SSN:<9 digits>`, `DL:<state>:<number>`, `PASSPORT:<country>:<number>`. The kind
+  prefix keeps equal digits of different kinds apart. Pre-masked and precision-lost
+  values get no key.
+- `<e>_valid` is PASS, the element's first reason code (including PREMASKED_VALUE /
+  XL_NUMBER_PRECISION_LOST), or null when absent.
+- An SSN, MRN or card found in a notes column counts as an exposed element of that row's
+  person (`*_present`, masked, keyed), next to FREE_TEXT_PII_FOUND.
+- Free-text masking hides every run of 9+ digits, phone numbers included.

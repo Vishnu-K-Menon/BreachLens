@@ -158,9 +158,18 @@ HEALTH INSURANCE INFO · dob → DATE OF BIRTH · student_id → STUDENT RECORD
 - `column_mapping`: doc_id, sheet, col_idx, header_raw, rule_label, ml_label, ml_proba,
   final_label, decision (AGREE / ML_ONLY / ML_OVERRIDE / RULE_ONLY / REVIEW; see
   `SPREADSHEET_TRACK.md §4` and ADR-034), reviewed_label, codes (`;`-joined COL_* codes).
-- `sheet_codes` (ADR-057): doc_id, sheet, col_idx (null for sheet-level), code, detail.
-  Sheet- and column-level reason codes (SHEET_*, CSV_ENCODING_DETECTED, COL_*); M4 turns
-  them into review items.
+- `doc_codes` (ADR-057, renamed from `sheet_codes` in ADR-059): doc_id, sheet, col_idx
+  (null for doc/sheet level), code, detail, severity. These are the doc-, sheet- and
+  column-level reason codes (DOC_TYPE_UNKNOWN, SHEET_*, CSV_ENCODING_DETECTED, COL_*).
+  COL_* WARN codes are also copied to the mentions that took a value from that column.
+
+## Run outputs (M4, ADR-058)
+`data/output/<run_id>/` holds `mentions.csv`, `inventory.csv`, `excluded_entities.csv`,
+`excluded_identifiers.csv`, `doc_codes.csv`, `file_profile.csv`, `column_profile.csv`,
+`column_mapping.csv`, `audit_<run_id>.jsonl` and `run_summary.json` (counts only). Every
+file is written through the leak guard. `mentions.csv` follows the column order of the
+`mentions` table above. The `person_id` and `cluster_confidence` columns stay empty until
+M5. `excluded_*.reason` starts with its reason code, e.g. `EIN_EXCLUDED (label:employer)`.
 
 ## Matching and review tables
 - `pair_features`: mention_a, mention_b, f_first_jw, f_last_jw, f_dob, f_zip_eq,

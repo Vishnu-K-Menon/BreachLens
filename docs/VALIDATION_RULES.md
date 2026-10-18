@@ -123,6 +123,22 @@ MA: ['^[A-Z]\d{8}$', '^\d{9}$']
 | NOTIFY_STATE_UNKNOWN | WARN | jurisdiction not in config (uses `default`) |
 | FERPA_RECORD | INFO | student ID / school / education record present → `ferpa_flag` (informational, not a state trigger) |
 
+## Implementation notes (M4, ADR-059)
+- `config/rules.yaml` declares every code above with its severity, the emitting stage and
+  its scope (mention / doc / column / excluded). It is the only severity source.
+- Five codes need Census or entity resolution and arrive in M5: ADDR_GEOCODE_NOMATCH,
+  ADDR_GEOCODE_TIE, DOB_CONFLICT_IN_CLUSTER, DUPLICATE_CANDIDATE, NOTIFY_STATE_UNKNOWN.
+- ADDR_ZIP_STATE_MISMATCH and ADDR_ZIP_CITY_MISMATCH use the offline ZIP check
+  (`address/zipcheck.py`, `zipcodes`) in M4. Census stays in M5.
+- Street lines are kept as printed and upper-cased; only units are standardized and
+  moved to line 2.
+- ADDR_MISSING is not raised for a dependent or guardian linked to a household mention.
+- NAME_SUFFIX_INVALID keeps the printed suffix; the suggestion is in the audit event.
+- LOW_OCR_CONFIDENCE applies to OCR mentions only.
+- A provider TIN is excluded as EIN_EXCLUDED.
+- PII found in notes counts as an exposed element.
+- `tests/unit/code_cases.py` holds the positive and negative cases per code.
+
 ## `config/rules.yaml` shape
 ```yaml
 ocr_conf_threshold: 0.80
