@@ -95,3 +95,44 @@ def project(tmp_path: Path) -> Path:
     (tmp_path / "config").mkdir()
     shutil.copy(ROOT / "config" / "pipeline.yaml", tmp_path / "config" / "pipeline.yaml")
     return tmp_path
+
+
+@pytest.fixture(scope="session")
+def generated_run(tmp_path_factory: pytest.TempPathFactory):
+    """A freshly generated corpus (both tracks) run through the whole pipeline, with the
+    run tables written through the guarded writer. Shared by the M4 integration tests
+    (mark them `libreoffice` + `tesseract`). Uses `models/column_classifier.joblib` if it
+    exists, else trains a small classifier in tmp (the joblib is git-ignored, ADR-057)."""
+    from dataclasses import replace
+
+    from breachlens.pipeline import load_context, run_pipeline, write_outputs
+    from breachlens.synth.generate import generate_corpus
+    from breachlens.synth.settings import load_synth_settings
+
+    s = load_synth_settings(ROOT / "config")
+    c = s.config
+    cfg = c.model_copy(
+        update={
+            "column_corpus": c.column_corpus.model_copy(update={"tables": 80, "max_rows": 60}),
+            "scale": c.scale.model_copy(update={"large_claims_rows": 50}),
+        }
+    )
+    base = tmp_path_factory.mktemp("m4run")
+    out = base / "raw" / "corpus_v1"
+    generate_corpus(replace(s, config=cfg), ROOT, out)
+    mp = pytest.MonkeyPatch()
+    mp.setenv("BREACHLENS_SALT", TEST_SALT)
+    ctx = load_context(ROOT / "config" / "pipeline.yaml", input_dir=out / "docs")
+    mp.undo()
+    models = ROOT / "models"
+    if not (models / "column_classifier.joblib").is_file():
+        from breachlens.ml.column_classifier import train
+        from breachlens.sheets.settings import load_sheet_settings
+
+        models = base / "models"
+        settings = load_sheet_settings(ROOT / "config")
+        train(out.parent / "column_corpus", {"dev": out}, models, settings, ctx.as_of_date)
+    ctx.paths = replace(ctx.paths, models_dir=models, run_dir=base / "output" / ctx.run_id)
+    mentions = run_pipeline(ctx)
+    written = write_outputs(ctx, mentions)
+    return ctx, mentions, written, out / "truth"

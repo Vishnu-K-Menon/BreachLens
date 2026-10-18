@@ -1,13 +1,100 @@
-# Validation rules (VALIDATION_RULES.md). The scalar settings are used from M1 on
-# (the generator avoids known-invalid SSNs); the rule list is filled in M4.
+# Validation rules (VALIDATION_RULES.md). Every reason code is declared here with its
+# severity; this file is the single severity source (ADR-059). ERROR -> FAIL,
+# WARN -> REVIEW, INFO -> no status change.
 ocr_conf_threshold: 0.80
 column_mapping: {agree_low_proba: 0.60, ml_only_min: 0.70, override_min: 0.80}
 qualifying_elements: [ssn, dl, state_id, passport, dob, bank_account, card, mrn, health_member_id, student_id]
 valid_suffixes: [JR, SR, II, III, IV, V]
+# Printed variants that normalize to a valid suffix (NAME_SUFFIX_INVALID otherwise).
+suffix_variants: {JUNIOR: JR, SENIOR: SR, 2ND: II, 3RD: III, 4TH: IV}
 titles: [DR, MR, MRS, MS, MX, REV, HON, PROF, SGT, CAPT]
+# Surname particles: in "FIRST [MIDDLE] DE LA VEGA" the last name starts at the particle.
+name_particles: [DE, DEL, DELA, LA, LE, VAN, VON, DER, DEN, DA, DI, DOS, DU, ST, SAN]
 date_display_format: "%m/%d/%Y"
+max_age_years: 120
+minor_age_years: 18
 # Publicized / sample SSNs that were never validly issued (SSN_KNOWN_INVALID).
 known_invalid_ssns: ["078051120", "123456789", "219099999"]
 # States whose ZIPs start with 0 (XL_ZIP_LEADING_ZERO_RESTORED pads 4-digit ZIPs here).
 zip_leading_zero_states: [CT, MA, ME, NH, NJ, PR, RI, VT, VI]
-rules: []
+zip_city_suggest_min_similarity: 0.80
+
+# `stage` names the module that emits the code:
+#   normalize   - normalize/ (names, addresses, dates, contact) and address/zipcheck
+#   validate    - validate/ checks run by the engine
+#   extract     - PDF / sheet extraction (M2/M3); exclusions are recorded on the
+#                 excluded_* tables, not on mentions
+#   sheet_track - M3 spreadsheet producers (repair, layout, mapping, free text)
+# `scope`: mention (qc_reasons), doc (doc_codes), column (column_mapping.codes, also
+# copied to the mentions that used the column, ADR-059), excluded (excluded_* reason).
+# `milestone: M5` codes need Census or entity resolution and are not emitted in M4.
+rules:
+  # names
+  - {id: NAME_MISSING, severity: ERROR, stage: normalize, scope: mention}
+  - {id: NAME_TITLE_REMOVED, severity: INFO, stage: normalize, scope: mention}
+  - {id: NAME_SUFFIX_INVALID, severity: WARN, stage: normalize, scope: mention}
+  - {id: NAME_SUFFIX_IN_NAME, severity: WARN, stage: normalize, scope: mention}
+  - {id: NAME_ORDER_AMBIGUOUS, severity: WARN, stage: normalize, scope: mention}
+  - {id: NAME_PUNCT_FIXED, severity: INFO, stage: normalize, scope: mention}
+  - {id: NAME_WHITESPACE, severity: INFO, stage: normalize, scope: mention}
+  - {id: NAME_ORG_LIKE, severity: WARN, stage: extract, scope: excluded}
+  - {id: NAME_VARIANT_IN_DOC, severity: WARN, stage: validate, scope: mention}
+  # addresses
+  - {id: ADDR_MISSING, severity: WARN, stage: normalize, scope: mention}
+  - {id: ADDR_LINE2_SPLIT, severity: INFO, stage: normalize, scope: mention}
+  - {id: ADDR_UNIT_FORMAT, severity: INFO, stage: normalize, scope: mention}
+  - {id: ADDR_STATE_INVALID, severity: ERROR, stage: normalize, scope: mention}
+  - {id: ADDR_ZIP_FORMAT, severity: ERROR, stage: normalize, scope: mention}
+  - {id: ADDR_ZIP_STATE_MISMATCH, severity: WARN, stage: normalize, scope: mention}
+  - {id: ADDR_ZIP_CITY_MISMATCH, severity: WARN, stage: normalize, scope: mention}
+  - {id: ADDR_GEOCODE_NOMATCH, severity: WARN, stage: address, scope: mention, milestone: M5}
+  - {id: ADDR_GEOCODE_TIE, severity: WARN, stage: address, scope: mention, milestone: M5}
+  - {id: ADDR_PO_BOX, severity: INFO, stage: normalize, scope: mention}
+  # dates of birth
+  - {id: DOB_UNPARSEABLE, severity: ERROR, stage: validate, scope: mention}
+  - {id: DOB_TWO_DIGIT_YEAR, severity: WARN, stage: validate, scope: mention}
+  - {id: DOB_FUTURE, severity: ERROR, stage: validate, scope: mention}
+  - {id: DOB_IMPLAUSIBLE, severity: ERROR, stage: validate, scope: mention}
+  - {id: DOB_MINOR, severity: INFO, stage: validate, scope: mention}
+  - {id: DOB_CONFLICT_IN_CLUSTER, severity: WARN, stage: resolve, scope: mention, milestone: M5}
+  # identifiers
+  - {id: SSN_FORMAT, severity: ERROR, stage: validate, scope: mention}
+  - {id: SSN_AREA_INVALID, severity: ERROR, stage: validate, scope: mention}
+  - {id: SSN_GROUP_INVALID, severity: ERROR, stage: validate, scope: mention}
+  - {id: SSN_SERIAL_INVALID, severity: ERROR, stage: validate, scope: mention}
+  - {id: SSN_KNOWN_INVALID, severity: ERROR, stage: validate, scope: mention}
+  - {id: ITIN_DETECTED, severity: INFO, stage: validate, scope: excluded}
+  - {id: EIN_EXCLUDED, severity: INFO, stage: extract, scope: excluded}
+  - {id: NPI_EXCLUDED, severity: INFO, stage: extract, scope: excluded}
+  - {id: DL_FORMAT_STATE, severity: WARN, stage: validate, scope: mention}
+  - {id: DL_STATE_MISSING, severity: ERROR, stage: validate, scope: mention}
+  - {id: PASSPORT_FORMAT, severity: WARN, stage: validate, scope: mention}
+  - {id: CARD_LUHN_FAIL, severity: ERROR, stage: validate, scope: mention}
+  - {id: ROUTING_CHECKSUM_FAIL, severity: ERROR, stage: validate, scope: mention}
+  # spreadsheets (SPREADSHEET_TRACK.md)
+  - {id: SHEET_HEADER_OFFSET, severity: INFO, stage: sheet_track, scope: doc}
+  - {id: SHEET_MERGED_HEADER, severity: INFO, stage: sheet_track, scope: doc}
+  - {id: SHEET_HIDDEN_ROWS, severity: INFO, stage: sheet_track, scope: mention}
+  - {id: SHEET_TOTAL_ROW_DROPPED, severity: INFO, stage: sheet_track, scope: doc}
+  - {id: SHEET_SKIPPED, severity: INFO, stage: sheet_track, scope: doc}
+  - {id: CSV_ENCODING_DETECTED, severity: INFO, stage: sheet_track, scope: doc}
+  - {id: COL_MAPPING_LOW_CONF, severity: WARN, stage: sheet_track, scope: column}
+  - {id: COL_MAPPING_AGREE_LOW_PROBA, severity: INFO, stage: sheet_track, scope: column}
+  - {id: COL_MAPPING_ML_OVERRIDE, severity: WARN, stage: sheet_track, scope: column}
+  - {id: COL_UNMAPPED_SENSITIVE, severity: WARN, stage: sheet_track, scope: column}
+  - {id: XL_ZIP_LEADING_ZERO_RESTORED, severity: INFO, stage: sheet_track, scope: mention}
+  - {id: XL_SSN_ZERO_PADDED, severity: WARN, stage: sheet_track, scope: mention}
+  - {id: XL_DATE_SERIAL_CONVERTED, severity: INFO, stage: sheet_track, scope: mention}
+  - {id: DOB_AMBIGUOUS_FORMAT, severity: WARN, stage: sheet_track, scope: mention}
+  - {id: XL_NUMBER_PRECISION_LOST, severity: ERROR, stage: sheet_track, scope: mention}
+  - {id: XL_ERROR_VALUE, severity: INFO, stage: sheet_track, scope: mention}
+  - {id: PREMASKED_VALUE, severity: INFO, stage: sheet_track, scope: mention}
+  - {id: FREE_TEXT_PII_FOUND, severity: WARN, stage: sheet_track, scope: mention}
+  - {id: ROW_DUPLICATE_IN_FILE, severity: INFO, stage: sheet_track, scope: mention}
+  # completeness and person level
+  - {id: PERSON_NO_QUALIFYING_ELEMENT, severity: WARN, stage: validate, scope: mention}
+  - {id: DUPLICATE_CANDIDATE, severity: WARN, stage: resolve, scope: mention, milestone: M5}
+  - {id: LOW_OCR_CONFIDENCE, severity: WARN, stage: validate, scope: mention}
+  - {id: DOC_TYPE_UNKNOWN, severity: WARN, stage: validate, scope: doc}
+  - {id: NOTIFY_STATE_UNKNOWN, severity: WARN, stage: notify, scope: mention, milestone: M5}
+  - {id: FERPA_RECORD, severity: INFO, stage: validate, scope: mention}

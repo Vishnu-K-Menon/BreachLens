@@ -80,6 +80,44 @@ class DoctypeConfig(_Strict):
     min_score: float = 0.5
 
 
+class LeakGuardConfig(_Strict):
+    """Leak-guard patterns and column scope (PRIVACY.md §4, ADR-027)."""
+
+    ssn_pattern: str = r"\b\d{3}([- ]?)\d{2}\1\d{4}\b"
+    card_pattern: str = r"\b\d{13,19}\b"
+    account_pattern: str = r"\b\d{9,17}\b"
+    # The account-like pattern runs only on these string columns (plus `*_masked`).
+    account_scan_columns: tuple[str, ...] = (
+        "source_snippet",
+        "raw_name",
+        "raw_address",
+        "address_suggestion",
+        "value_masked",
+        "detail_json",
+        "old_value_masked",
+        "new_value_masked",
+    )
+    # Never scanned: numeric/meta columns, keys (`*_key`), zip4 and phone.
+    exempt_columns: tuple[str, ...] = (
+        "bytes",
+        "processing_ms",
+        "started_at",
+        "finished_at",
+        "processed_at",
+        "reviewed_at",
+        "ts",
+        "zip4",
+        "phone",
+    )
+
+
+class PrivacyConfig(_Strict):
+    """Output writing (ADR-058). Every write goes through the leak guard."""
+
+    write_outputs: bool = True
+    leak_guard: LeakGuardConfig = LeakGuardConfig()
+
+
 class PipelineConfig(_Strict):
     """Top-level shape of `config/pipeline.yaml`.
 
@@ -96,6 +134,7 @@ class PipelineConfig(_Strict):
     ocr: OcrConfig = OcrConfig()
     text_layer: TextLayerConfig = TextLayerConfig()
     doctype: DoctypeConfig = DoctypeConfig()
+    privacy: PrivacyConfig = PrivacyConfig()
 
 
 def load_config(path: Path) -> PipelineConfig:

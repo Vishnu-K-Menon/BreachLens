@@ -133,6 +133,18 @@ def run(
                 f"{name.removesuffix('_summary')}_track: "
                 + ", ".join(f"{k}={v}" for k, v in summary.items())
             )
+    if "qc_status" in mentions:
+        typer.echo(
+            "qc_status: "
+            + ", ".join(f"{k}={v}" for k, v in mentions["qc_status"].value_counts().items())
+        )
+    if ctx.config.privacy.write_outputs and ctx.config.stages.privacy:
+        from breachlens.pipeline import write_outputs
+
+        written = write_outputs(ctx, mentions)
+        typer.echo(f"leak guard: 0 findings; wrote {len(written)} file(s) to {ctx.paths.run_dir}")
+        for p in written:
+            typer.echo(f"  {p.name}")
 
 
 @app.command()

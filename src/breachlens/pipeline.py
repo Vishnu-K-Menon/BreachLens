@@ -33,10 +33,43 @@ def _sheet_track(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
     return stage_sheet_track(df, ctx)
 
 
+def _normalize(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
+    from breachlens.normalize.stage import stage_normalize
+
+    return stage_normalize(df, ctx)
+
+
+def stage_validate(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
+    from breachlens.validate.engine import stage_validate as _validate
+
+    return _validate(df, ctx)
+
+
+def _privacy(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
+    from breachlens.privacy.stage import stage_privacy
+
+    return stage_privacy(df, ctx)
+
+
 # (name, StagesConfig toggle, stage) in execution order; each milestone adds its stages.
+# M5 inserts `address` (Census) before `privacy`.
 STAGES: list[tuple[str, str, Stage]] = [
     ("pdf_track", "pdf_track", _pdf_track),
     ("sheet_track", "sheet_track", _sheet_track),
+    ("normalize", "normalize", _normalize),
+    ("validate", "validation", stage_validate),
+    ("privacy", "privacy", _privacy),
+]
+
+# Run tables written to data/output/<run_id>/ (ADR-058), all through the leak guard.
+OUTPUT_TABLES = [
+    "inventory",
+    "excluded_entities",
+    "excluded_identifiers",
+    "doc_codes",
+    "file_profile",
+    "column_profile",
+    "column_mapping",
 ]
 
 
@@ -79,3 +112,37 @@ def run_pipeline(ctx: Context, stages: list[tuple[str, Stage]] | None = None) ->
         df = stage(df, ctx)
         logger.info("stage %s: done (%d rows out)", name, len(df))
     return df
+
+
+def write_outputs(ctx: Context, mentions: pd.DataFrame) -> list[Path]:
+    """Write the run tables, the audit trail and a counts-only summary through the
+    guarded writer. Refused unless the privacy stage ran (no `_` columns may remain)."""
+    from breachlens.privacy.leak_guard import LeakError, LeakGuard
+    from breachlens.privacy.writer import GuardedWriter
+
+    if not ctx.config.stages.privacy:
+        raise RuntimeError("refusing to write outputs: the privacy stage is disabled")
+    guard = LeakGuard(ctx.config.privacy.leak_guard)
+    tables = {"mentions": mentions}
+    tables |= {n: t for n in OUTPUT_TABLES if isinstance(t := ctx.tables.get(n), pd.DataFrame)}
+    events = [e.__dict__ | {"ts": e.ts.isoformat(timespec="seconds")} for e in ctx.audit.events]
+    findings = [f for n, t in tables.items() for f in guard.scan_frame(t, f"{n}.csv")]
+    findings += guard.scan_records(events, f"audit_{ctx.run_id}.jsonl")
+    if findings:  # scan everything first: a finding leaves no partial run directory
+        raise LeakError(findings)
+    w = GuardedWriter(guard, ctx.paths.run_dir)
+    for name, t in tables.items():
+        w.write_csv(t, f"{name}.csv")
+    counts = {name: len(t) for name, t in tables.items()}
+    w.write_jsonl(events, f"audit_{ctx.run_id}.jsonl")
+    qc = mentions["qc_status"].value_counts().to_dict() if "qc_status" in mentions else {}
+    summary = {
+        "run_id": ctx.run_id,
+        "as_of_date": ctx.as_of_date.isoformat(),
+        "rows": counts,
+        "audit_events": len(events),
+        "qc_status": qc,
+        "files": [p.name for p in w.written] + ["run_summary.json"],
+    }
+    w.write_json(summary, "run_summary.json")
+    return w.written

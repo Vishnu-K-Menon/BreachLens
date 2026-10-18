@@ -1,0 +1,22 @@
+# Address normalization (VALIDATION_RULES.md, address rules). Street lines are kept as
+# printed (upper-cased); only units are standardized and moved to address_line2 (ADR-059).
+# USPS state and territory codes (ADDR_STATE_INVALID otherwise).
+states: [AL, AK, AZ, AR, CA, CO, CT, DE, DC, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME,
+         MD, MA, MI, MN, MS, MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, RI,
+         SC, SD, TN, TX, UT, VT, VA, WA, WV, WI, WY, AS, GU, MP, PR, VI, AA, AE, AP]
+# Unit designators that take a number: printed form -> USPS standard.
+unit_designators:
+  APT: APT
+  APARTMENT: APT
+  UNIT: UNIT
+  STE: STE
+  SUITE: STE
+  FL: FL
+  FLOOR: FL
+  RM: RM
+  ROOM: RM
+  BLDG: BLDG
+  "#": "#"
+# Units printed without a number.
+standalone_units: [UPPER, LOWER, REAR, FRONT, BSMT, BASEMENT]
+po_box_pattern: '^(?:P\.?\s*O\.?\s*BOX|POST\s+OFFICE\s+BOX)\s+\w+'

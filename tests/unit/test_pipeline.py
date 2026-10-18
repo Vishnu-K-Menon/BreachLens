@@ -35,15 +35,11 @@ def test_run_pipeline_with_no_stages_returns_empty_frame(project, salt_env):
 
 def test_stages_are_registered_and_toggleable(project, salt_env):
     ctx = load_context(project / "config" / "pipeline.yaml")
-    assert [name for name, _, _ in STAGES] == ["pdf_track", "sheet_track"]
-    assert [name for name, _ in enabled_stages(ctx.config)] == ["pdf_track", "sheet_track"]
-    off = ctx.config.model_copy(
-        update={
-            "stages": ctx.config.stages.model_copy(
-                update={"pdf_track": False, "sheet_track": False}
-            )
-        }
-    )
+    names = ["pdf_track", "sheet_track", "normalize", "validate", "privacy"]
+    assert [name for name, _, _ in STAGES] == names
+    assert [name for name, _ in enabled_stages(ctx.config)] == names
+    toggles = {toggle: False for _, toggle, _ in STAGES}
+    off = ctx.config.model_copy(update={"stages": ctx.config.stages.model_copy(update=toggles)})
     assert enabled_stages(off) == []
 
 
