@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:15:58+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "UTICA",
+      "fromAddress": "301",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "NY",
+      "streetName": "GENESEE",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "309",
+      "zip": "13501"
+     },
+     "coordinates": {
+      "x": -75.239643582965,
+      "y": 43.097235912501
+     },
+     "matchedAddress": "303 GENESEE ST, UTICA, NY, 13501",
+     "tigerLine": {
+      "side": "L",
+      "tigerLineId": "171530841"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "303 Genesee St, Utica, NY 13501"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

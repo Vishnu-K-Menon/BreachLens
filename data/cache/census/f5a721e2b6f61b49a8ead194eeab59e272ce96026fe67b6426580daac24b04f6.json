@@ -1,0 +1,15 @@
+{
+ "fetched_at": "2026-10-18T04:54:53+00:00",
+ "response": {
+  "row": [
+   "5",
+   "4603 ANDERSON KEYS, ORLANDO, FL, 32825",
+   "Match",
+   "Non_Exact",
+   "4603 ANDERSON RD, ORLANDO, FL, 32812",
+   "-81.327741778889,28.502463869358",
+   "94426794",
+   "L"
+  ]
+ }
+}

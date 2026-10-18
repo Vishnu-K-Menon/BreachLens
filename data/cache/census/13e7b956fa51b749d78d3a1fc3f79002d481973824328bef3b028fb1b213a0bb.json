@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:24+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "TRENTON",
+      "fromAddress": "301",
+      "preDirection": "E",
+      "preQualifier": "",
+      "preType": "",
+      "state": "NJ",
+      "streetName": "STATE",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "399",
+      "zip": "08608"
+     },
+     "coordinates": {
+      "x": -74.759391490325,
+      "y": 40.220564540202
+     },
+     "matchedAddress": "319 E STATE ST, TRENTON, NJ, 08608",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "60179153"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "319 E State St, Trenton, NJ 08608"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

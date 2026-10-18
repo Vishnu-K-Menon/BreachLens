@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:15:56+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "YONKERS",
+      "fromAddress": "22",
+      "preDirection": "S",
+      "preQualifier": "",
+      "preType": "",
+      "state": "NY",
+      "streetName": "BROADWAY",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "",
+      "toAddress": "98",
+      "zip": "10701"
+     },
+     "coordinates": {
+      "x": -73.898748741902,
+      "y": 40.932899100106
+     },
+     "matchedAddress": "40 S BROADWAY, YONKERS, NY, 10701",
+     "tigerLine": {
+      "side": "L",
+      "tigerLineId": "139841895"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "40 S Broadway, Yonkers, NY 10701"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

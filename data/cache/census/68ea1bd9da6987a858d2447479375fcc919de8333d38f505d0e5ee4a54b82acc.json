@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:18+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "ROANOKE",
+      "fromAddress": "700",
+      "preDirection": "S",
+      "preQualifier": "",
+      "preType": "",
+      "state": "VA",
+      "streetName": "JEFFERSON",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "798",
+      "zip": "24016"
+     },
+     "coordinates": {
+      "x": -79.940600164999,
+      "y": 37.268313901439
+     },
+     "matchedAddress": "706 S JEFFERSON ST, ROANOKE, VA, 24016",
+     "tigerLine": {
+      "side": "L",
+      "tigerLineId": "62910345"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "706 S Jefferson St, Roanoke, VA 24016"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

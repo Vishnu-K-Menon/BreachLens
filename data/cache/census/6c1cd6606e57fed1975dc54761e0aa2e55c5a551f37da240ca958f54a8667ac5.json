@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:12+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "ERIE",
+      "fromAddress": "600",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "PA",
+      "streetName": "STATE",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "698",
+      "zip": "16501"
+     },
+     "coordinates": {
+      "x": -80.08491905775,
+      "y": 42.128817747544
+     },
+     "matchedAddress": "626 STATE ST, ERIE, PA, 16501",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "117494246"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "626 State St, Erie, PA 16501"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,19 @@
+{
+ "fetched_at": "2026-10-17T20:15:55+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [],
+   "input": {
+    "address": {
+     "address": "24 Eagle St, Albany, NY 12207"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:15:52+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "BERKELEY",
+      "fromAddress": "2024",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "CA",
+      "streetName": "KITTREDGE",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "2098",
+      "zip": "94704"
+     },
+     "coordinates": {
+      "x": -122.268156189376,
+      "y": 37.86841564028
+     },
+     "matchedAddress": "2090 KITTREDGE ST, BERKELEY, CA, 94704",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "124994072"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "2090 Kittredge St, Berkeley, CA 94704"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

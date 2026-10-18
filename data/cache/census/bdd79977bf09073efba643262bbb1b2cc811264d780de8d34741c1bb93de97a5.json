@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:02+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "EL PASO",
+      "fromAddress": "501",
+      "preDirection": "N",
+      "preQualifier": "",
+      "preType": "",
+      "state": "TX",
+      "streetName": "OREGON",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "599",
+      "zip": "79901"
+     },
+     "coordinates": {
+      "x": -106.490023310322,
+      "y": 31.760480740412
+     },
+     "matchedAddress": "501 N OREGON ST, EL PASO, TX, 79901",
+     "tigerLine": {
+      "side": "L",
+      "tigerLineId": "189341586"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "501 N Oregon St, El Paso, TX 79901"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:04+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "PLANO",
+      "fromAddress": "1514",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "TX",
+      "streetName": "K",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "AVE",
+      "toAddress": "1598",
+      "zip": "75074"
+     },
+     "coordinates": {
+      "x": -96.69916701093,
+      "y": 33.020386876736
+     },
+     "matchedAddress": "1520 K AVE, PLANO, TX, 75074",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "123489915"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "1520 K Ave, Plano, TX 75074"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

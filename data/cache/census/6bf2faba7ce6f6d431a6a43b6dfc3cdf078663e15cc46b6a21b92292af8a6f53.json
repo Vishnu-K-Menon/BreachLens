@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:13+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "SCRANTON",
+      "fromAddress": "300",
+      "preDirection": "N",
+      "preQualifier": "",
+      "preType": "",
+      "state": "PA",
+      "streetName": "WASHINGTON",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "AVE",
+      "toAddress": "398",
+      "zip": "18503"
+     },
+     "coordinates": {
+      "x": -75.661774055773,
+      "y": 41.409572278037
+     },
+     "matchedAddress": "340 N WASHINGTON AVE, SCRANTON, PA, 18503",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "139327038"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "340 N Washington Ave, Scranton, PA 18503"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

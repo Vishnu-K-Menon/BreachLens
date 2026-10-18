@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:05+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "MIAMI",
+      "fromAddress": "101",
+      "preDirection": "W",
+      "preQualifier": "",
+      "preType": "",
+      "state": "FL",
+      "streetName": "FLAGLER",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "199",
+      "zip": "33130"
+     },
+     "coordinates": {
+      "x": -80.196142918607,
+      "y": 25.774137137663
+     },
+     "matchedAddress": "101 W FLAGLER ST, MIAMI, FL, 33130",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "656768734"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "101 W Flagler St, Miami, FL 33130"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:10+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "PITTSBURGH",
+      "fromAddress": "4300",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "PA",
+      "streetName": "FORBES",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "AVE",
+      "toAddress": "4598",
+      "zip": "15213"
+     },
+     "coordinates": {
+      "x": -79.949648885758,
+      "y": 40.444130718136
+     },
+     "matchedAddress": "4400 FORBES AVE, PITTSBURGH, PA, 15213",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "51935502"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "4400 Forbes Ave, Pittsburgh, PA 15213"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

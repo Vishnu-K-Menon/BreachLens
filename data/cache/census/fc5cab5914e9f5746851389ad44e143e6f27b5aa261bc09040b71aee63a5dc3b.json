@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:19+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "CHARLOTTESVILLE",
+      "fromAddress": "501",
+      "preDirection": "E",
+      "preQualifier": "",
+      "preType": "",
+      "state": "VA",
+      "streetName": "MAIN",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "699",
+      "zip": "22902"
+     },
+     "coordinates": {
+      "x": -78.477664018352,
+      "y": 38.029665855771
+     },
+     "matchedAddress": "605 E MAIN ST, CHARLOTTESVILLE, VA, 22902",
+     "tigerLine": {
+      "side": "L",
+      "tigerLineId": "83406129"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "605 E Main St, Charlottesville, VA 22902"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:09+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "TALLAHASSEE",
+      "fromAddress": "300",
+      "preDirection": "S",
+      "preQualifier": "",
+      "preType": "",
+      "state": "FL",
+      "streetName": "ADAMS",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "398",
+      "zip": "32301"
+     },
+     "coordinates": {
+      "x": -84.282003911768,
+      "y": 30.439542993858
+     },
+     "matchedAddress": "300 S ADAMS ST, TALLAHASSEE, FL, 32301",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "636385603"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "300 S Adams St, Tallahassee, FL 32301"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

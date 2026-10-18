@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:26+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "CAMBRIDGE",
+      "fromAddress": "775",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "MA",
+      "streetName": "MASSACHUSETTS",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "AVE",
+      "toAddress": "799",
+      "zip": "02139"
+     },
+     "coordinates": {
+      "x": -71.106028874368,
+      "y": 42.366867121346
+     },
+     "matchedAddress": "795 MASSACHUSETTS AVE, CAMBRIDGE, MA, 02139",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "636988566"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "795 Massachusetts Ave, Cambridge, MA 02139"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

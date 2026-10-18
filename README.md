@@ -1,11 +1,53 @@
 # BreachLens
 Python + KNIME pipeline that extracts PII/PHI from synthetic breach documents, validates it, verifies addresses, matches people across documents, and produces a state-grouped breach notification list.
 
+## Status (interim, 2026-10-18)
+Milestones M0–M5 are done. M6 (DuckDB + reference SQL, Lite), M7 (Excel review workbook +
+KNIME guide for the spreadsheet track) and M8 (docs + v1.0 release) are planned. The full
+README arrives in M8; details per milestone are in `PROGRESS.md`. SYNTHETIC DATA ONLY.
+
+| metric (synthetic data) | value |
+|---|---|
+| Notification list vs ground truth, corpus_v1 | **155/155** people, by state identical, 0 missed / 0 extra |
+| Notification list, held-out seed-43 corpus (untuned) | **159/159** |
+| Entity resolution, pairwise precision / recall (corpus_v1) | **1.000 / 0.933** (holdout 1.000 / 0.918); twins kept apart, 0/78 unrelated shared-address pairs merged |
+| Scale test, 50k-row claims file | **50,000 rows in 40 s** end to end (~1,240 rows/s, peak ~1 GB) |
+| PDF extraction recall (text layer / OCR) | text 1.000 on every field (corpus_v1 and holdout); OCR on corpus_v1 1.000 except member ID 3/4. Holdout OCR, untuned, on small counts: name 7/9, SSN-present 6/7, DL 2/3, diagnosis 0/1, email 1/2 |
+| Spreadsheet extraction recall | 1.000 per field; every planted spreadsheet case P27–P44 handled |
+| Planted validation cases caught | 306/306 (holdout 299/302) |
+| Address status vs expected (Census) | 396/398 mentions |
+| Leak guard | 0 findings on every written output; no raw identifier in any output byte |
+
+**Hand-built parts.** These are the project owner's own work, never created or edited by
+the coding agent (AGENTS.md):
+- `notebooks/`: exploration notebooks
+- `excel/manual/`: a manual Excel cleanup of the HR roster with formulas, a pivot and a
+  macro
+- also protected: `knime/manual/`, `docs/memos/` and the content of `sql/queries/*.sql`
+
+**Census cache.** `data/cache/census/` is committed (Census Geocoder responses for the
+synthetic corpora's addresses only; no names or identifiers). A fresh clone therefore
+gets real address statuses offline, with no network call. The pipeline is offline by
+default. `breachlens run --online` is only needed for addresses that are not cached yet
+(e.g. a new seed); it sends street/city/state/ZIP only. In offline runs, addresses with
+no cache entry are NOT_CHECKED (ADR-063).
+
 ## Docs backlog (written into the full docs in M8)
 README:
 - All identifiers are randomly generated; any match to a real number is coincidental.
 
 ASSUMPTIONS_LIMITATIONS.md:
+- **Known limitations (M5):**
+  - Review volume: 43 people need review on corpus_v1 vs 10 card-review cases in the
+    ground truth. Most come from household members who share surname and address, with
+    no DOB on one side: their pair scores land in the gray zone (0.70–0.87) and are sent
+    to review, not merged. Possible fix: cap the pair score when first names conflict.
+  - 125 14TH ST, Oakland (a pool address) is No_Match in the Census batch geocoder but
+    matches in the single-line lookup, so its mentions are UNVERIFIED instead of VERIFIED
+    (2/398 on corpus_v1, 8/394 on the holdout). Possible fix: retry batch No_Match rows
+    with the single-line lookup.
+  - Guardian rows with only a name stay separate, in review, by design: a name alone
+    never merges (ADR-064), even when the guardian is a person with other records.
 - The address pool uses Census-assigned ZIPs, which can differ from USPS ZIPs
   (630 W 5th St, Los Angeles: USPS 90071 vs Census 90012; Corpus Christi City Hall:
   78401 vs 78408). Census confirms an address-range match, not USPS deliverability.

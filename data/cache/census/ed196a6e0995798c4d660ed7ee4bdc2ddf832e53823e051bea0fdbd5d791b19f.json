@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:21+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "NEWARK",
+      "fromAddress": "1",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "NJ",
+      "streetName": "WASHINGTON",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "31",
+      "zip": "07102"
+     },
+     "coordinates": {
+      "x": -74.170331146686,
+      "y": 40.74433010822
+     },
+     "matchedAddress": "5 WASHINGTON ST, NEWARK, NJ, 07102",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "657094737"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "5 Washington St, Newark, NJ 07102"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

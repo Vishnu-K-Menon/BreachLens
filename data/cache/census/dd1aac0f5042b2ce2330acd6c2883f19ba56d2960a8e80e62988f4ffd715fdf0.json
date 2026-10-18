@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:15:59+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "AUSTIN",
+      "fromAddress": "700",
+      "preDirection": "W",
+      "preQualifier": "",
+      "preType": "",
+      "state": "TX",
+      "streetName": "CESAR CHAVEZ",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "798",
+      "zip": "78701"
+     },
+     "coordinates": {
+      "x": -97.751323998498,
+      "y": 30.265386639112
+     },
+     "matchedAddress": "710 W CESAR CHAVEZ ST, AUSTIN, TX, 78701",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "657260618"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "710 W Cesar Chavez St, Austin, TX 78701"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

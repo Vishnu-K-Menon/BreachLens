@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:22+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "JERSEY CITY",
+      "fromAddress": "274",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "NJ",
+      "streetName": "GROVE",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "280",
+      "zip": "07302"
+     },
+     "coordinates": {
+      "x": -74.043717132591,
+      "y": 40.718074519278
+     },
+     "matchedAddress": "280 GROVE ST, JERSEY CITY, NJ, 07302",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "59606245"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "280 Grove St, Jersey City, NJ 07302"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

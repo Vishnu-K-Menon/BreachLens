@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:23+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "PRINCETON",
+      "fromAddress": "65",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "NJ",
+      "streetName": "WITHERSPOON",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "99",
+      "zip": "08542"
+     },
+     "coordinates": {
+      "x": -74.660354730292,
+      "y": 40.351266576623
+     },
+     "matchedAddress": "65 WITHERSPOON ST, PRINCETON, NJ, 08542",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "60170796"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "65 Witherspoon St, Princeton, NJ 08542"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

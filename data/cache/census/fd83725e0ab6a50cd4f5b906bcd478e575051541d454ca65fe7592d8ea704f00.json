@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:15:53+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "BUFFALO",
+      "fromAddress": "7",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "NY",
+      "streetName": "NIAGARA",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "SQ",
+      "toAddress": "99",
+      "zip": "14202"
+     },
+     "coordinates": {
+      "x": -78.878820395245,
+      "y": 42.886618818501
+     },
+     "matchedAddress": "65 NIAGARA SQ, BUFFALO, NY, 14202",
+     "tigerLine": {
+      "side": "L",
+      "tigerLineId": "48290578"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "65 Niagara Sq, Buffalo, NY 14202"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

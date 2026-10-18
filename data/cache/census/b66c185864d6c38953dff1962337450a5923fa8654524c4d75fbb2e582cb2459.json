@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:28+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "SPRINGFIELD",
+      "fromAddress": "200",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "MA",
+      "streetName": "STATE",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "298",
+      "zip": "01103"
+     },
+     "coordinates": {
+      "x": -72.584795501845,
+      "y": 42.103002429829
+     },
+     "matchedAddress": "220 STATE ST, SPRINGFIELD, MA, 01103",
+     "tigerLine": {
+      "side": "L",
+      "tigerLineId": "4035166"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "220 State St, Springfield, MA 01103"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

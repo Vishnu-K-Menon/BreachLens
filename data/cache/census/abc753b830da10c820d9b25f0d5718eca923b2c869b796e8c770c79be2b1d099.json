@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:15:54+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "ROCHESTER",
+      "fromAddress": "101",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "NY",
+      "streetName": "SOUTH",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "AVE",
+      "toAddress": "199",
+      "zip": "14604"
+     },
+     "coordinates": {
+      "x": -77.607999363231,
+      "y": 43.154538177338
+     },
+     "matchedAddress": "115 SOUTH AVE, ROCHESTER, NY, 14604",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "14539907"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "115 South Ave, Rochester, NY 14604"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

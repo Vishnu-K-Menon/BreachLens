@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:01+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "SAN ANTONIO",
+      "fromAddress": "600",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "TX",
+      "streetName": "SOLEDAD",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "698",
+      "zip": "78205"
+     },
+     "coordinates": {
+      "x": -98.493319016992,
+      "y": 29.431097145428
+     },
+     "matchedAddress": "600 SOLEDAD ST, SAN ANTONIO, TX, 78205",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "101526107"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "600 Soledad St, San Antonio, TX 78205"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

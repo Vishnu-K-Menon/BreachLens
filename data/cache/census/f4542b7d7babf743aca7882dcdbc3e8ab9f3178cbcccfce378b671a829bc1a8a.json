@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:03+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "CORPUS CHRISTI",
+      "fromAddress": "1201",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "TX",
+      "streetName": "LEOPARD",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "1299",
+      "zip": "78408"
+     },
+     "coordinates": {
+      "x": -97.403085097075,
+      "y": 27.79634601164
+     },
+     "matchedAddress": "1201 LEOPARD ST, CORPUS CHRISTI, TX, 78408",
+     "tigerLine": {
+      "side": "L",
+      "tigerLineId": "178516402"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "1201 Leopard St, Corpus Christi, TX 78401"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

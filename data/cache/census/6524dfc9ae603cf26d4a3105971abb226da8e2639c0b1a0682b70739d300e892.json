@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:07+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "TAMPA",
+      "fromAddress": "301",
+      "preDirection": "E",
+      "preQualifier": "",
+      "preType": "",
+      "state": "FL",
+      "streetName": "KENNEDY",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "BLVD",
+      "toAddress": "407",
+      "zip": "33602"
+     },
+     "coordinates": {
+      "x": -82.457760795252,
+      "y": 27.947682102022
+     },
+     "matchedAddress": "315 E KENNEDY BLVD, TAMPA, FL, 33602",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "104530577"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "315 E Kennedy Blvd, Tampa, FL 33602"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:15:54+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "ALBANY",
+      "fromAddress": "133",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "NY",
+      "streetName": "WASHINGTON",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "AVE",
+      "toAddress": "199",
+      "zip": "12210"
+     },
+     "coordinates": {
+      "x": -73.762013070966,
+      "y": 42.656084264903
+     },
+     "matchedAddress": "161 WASHINGTON AVE, ALBANY, NY, 12210",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "18310352"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "161 Washington Ave, Albany, NY 12210"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

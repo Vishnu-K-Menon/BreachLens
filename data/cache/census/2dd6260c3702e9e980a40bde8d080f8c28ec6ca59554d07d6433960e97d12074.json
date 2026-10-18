@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:15:50+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "OAKLAND",
+      "fromAddress": "101",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "CA",
+      "streetName": "14TH",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "",
+      "toAddress": "145",
+      "zip": "94612"
+     },
+     "coordinates": {
+      "x": -122.26360620685,
+      "y": 37.801240729976
+     },
+     "matchedAddress": "125 14TH, OAKLAND, CA, 94612",
+     "tigerLine": {
+      "side": "L",
+      "tigerLineId": "633935607"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "125 14th St, Oakland, CA 94612"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

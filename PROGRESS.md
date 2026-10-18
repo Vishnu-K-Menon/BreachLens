@@ -337,3 +337,18 @@ Append-only build log. Format: see docs/WORKFLOW.md.
   - evaluator checks for P05/P08/P41 test the tagged rows. Their second clusters are
     name-only guardian rows of the same person.
 - Next: M6 database + SQL (Lite).
+
+## 2026-10-18 (Day 4) — post-M5 docs follow-ups
+- [cache] `data/cache/census/` was git-ignored (`data/cache/*`). It is now committed:
+  266 files, 491 KB (220 per-address batch entries for corpus_v1 + holdout, 46
+  single-line entries from building the M1 pool).
+  - Audited before committing: only `fetched_at` + Census response fields (input
+    address, match status, matched address, coordinates, TIGER line), no names or
+    identifiers.
+  - A fresh clone gets real address statuses offline. `*.tmp` stays ignored.
+- [README] Interim "Status" section (M0–M5 done, M6–M8 planned, key metrics, hand-built
+  parts `notebooks/` and `excel/manual/`). Census cache note. "Known limitations" in the
+  backlog: review volume (fix idea: cap the score on first-name conflict), the Oakland
+  batch No_Match (fix idea: single-line retry), and name-only guardian rows staying in
+  review.
+- No pipeline code changed. Next: M6.

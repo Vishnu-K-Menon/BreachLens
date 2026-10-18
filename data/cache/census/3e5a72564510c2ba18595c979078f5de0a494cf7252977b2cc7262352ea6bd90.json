@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:15:46+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "LOS ANGELES",
+      "fromAddress": "600",
+      "preDirection": "W",
+      "preQualifier": "",
+      "preType": "",
+      "state": "CA",
+      "streetName": "5TH",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "698",
+      "zip": "90012"
+     },
+     "coordinates": {
+      "x": -118.256474469338,
+      "y": 34.051747923407
+     },
+     "matchedAddress": "630 W 5TH ST, LOS ANGELES, CA, 90012",
+     "tigerLine": {
+      "side": "L",
+      "tigerLineId": "141617170"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "630 W 5th St, Los Angeles, CA 90071"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

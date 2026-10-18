@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:25+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "BOSTON",
+      "fromAddress": "700",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "MA",
+      "streetName": "BOYLSTON",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "742",
+      "zip": "02116"
+     },
+     "coordinates": {
+      "x": -71.079557048813,
+      "y": 42.349435525485
+     },
+     "matchedAddress": "700 BOYLSTON ST, BOSTON, MA, 02116",
+     "tigerLine": {
+      "side": "L",
+      "tigerLineId": "85733449"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "700 Boylston St, Boston, MA 02116"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

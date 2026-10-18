@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:15:47+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "SAN FRANCISCO",
+      "fromAddress": "100",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "CA",
+      "streetName": "LARKIN",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "198",
+      "zip": "94102"
+     },
+     "coordinates": {
+      "x": -122.416519933386,
+      "y": 37.77872365984
+     },
+     "matchedAddress": "100 LARKIN ST, SAN FRANCISCO, CA, 94102",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "192298611"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "100 Larkin St, San Francisco, CA 94102"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

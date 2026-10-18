@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:15+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "RICHMOND",
+      "fromAddress": "101",
+      "preDirection": "E",
+      "preQualifier": "",
+      "preType": "",
+      "state": "VA",
+      "streetName": "FRANKLIN",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "199",
+      "zip": "23219"
+     },
+     "coordinates": {
+      "x": -77.442654524777,
+      "y": 37.543296666897
+     },
+     "matchedAddress": "101 E FRANKLIN ST, RICHMOND, VA, 23219",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "201539301"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "101 E Franklin St, Richmond, VA 23219"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

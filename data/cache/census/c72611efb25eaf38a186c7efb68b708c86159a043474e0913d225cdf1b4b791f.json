@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:15:57+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "SYRACUSE",
+      "fromAddress": "401",
+      "preDirection": "S",
+      "preQualifier": "",
+      "preType": "",
+      "state": "NY",
+      "streetName": "SALINA",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "499",
+      "zip": "13202"
+     },
+     "coordinates": {
+      "x": -76.152172680944,
+      "y": 43.045801390685
+     },
+     "matchedAddress": "447 S SALINA ST, SYRACUSE, NY, 13202",
+     "tigerLine": {
+      "side": "L",
+      "tigerLineId": "46622823"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "447 S Salina St, Syracuse, NY 13202"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

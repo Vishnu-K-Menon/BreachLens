@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:16:16+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "NORFOLK",
+      "fromAddress": "201",
+      "preDirection": "E",
+      "preQualifier": "",
+      "preType": "",
+      "state": "VA",
+      "streetName": "PLUME",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "299",
+      "zip": "23510"
+     },
+     "coordinates": {
+      "x": -76.290725231133,
+      "y": 36.846950508045
+     },
+     "matchedAddress": "235 E PLUME ST, NORFOLK, VA, 23510",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "122127432"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "235 E Plume St, Norfolk, VA 23510"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

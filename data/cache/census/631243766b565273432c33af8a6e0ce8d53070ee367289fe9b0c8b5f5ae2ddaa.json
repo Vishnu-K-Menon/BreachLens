@@ -1,0 +1,45 @@
+{
+ "fetched_at": "2026-10-17T20:15:51+00:00",
+ "response": {
+  "result": {
+   "addressMatches": [
+    {
+     "addressComponents": {
+      "city": "FRESNO",
+      "fromAddress": "2600",
+      "preDirection": "",
+      "preQualifier": "",
+      "preType": "",
+      "state": "CA",
+      "streetName": "FRESNO",
+      "suffixDirection": "",
+      "suffixQualifier": "",
+      "suffixType": "ST",
+      "toAddress": "2698",
+      "zip": "93721"
+     },
+     "coordinates": {
+      "x": -119.786060995932,
+      "y": 36.740250711973
+     },
+     "matchedAddress": "2600 FRESNO ST, FRESNO, CA, 93721",
+     "tigerLine": {
+      "side": "R",
+      "tigerLineId": "197579248"
+     }
+    }
+   ],
+   "input": {
+    "address": {
+     "address": "2600 Fresno St, Fresno, CA 93721"
+    },
+    "benchmark": {
+     "benchmarkDescription": "Public Address Ranges - Current Benchmark",
+     "benchmarkName": "Public_AR_Current",
+     "id": "4",
+     "isDefault": true
+    }
+   }
+  }
+ }
+}

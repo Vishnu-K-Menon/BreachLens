@@ -16,6 +16,10 @@ data/output/*
 !data/output/.gitkeep
 data/cache/*
 !data/cache/.gitkeep
+# The Census cache is committed (synthetic addresses only) so a fresh clone gets real
+# address statuses offline (README); temp files from interrupted writes are not.
+!data/cache/census/
+data/cache/census/*.tmp
 data/raw/corpus_v1/
 data/raw/column_corpus/
 data/raw/corpus_holdout/
