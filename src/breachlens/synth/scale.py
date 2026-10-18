@@ -54,7 +54,7 @@ def flat_records(n: int, settings: SynthSettings, seed: int | None = None) -> li
         ),
         key=lambda z: z["zip_code"],
     )
-    ref = cfg.reference_date
+    ref = cfg.as_of_date
     rows = []
     for i in range(1, n + 1):
         z = rng.choice(zips)

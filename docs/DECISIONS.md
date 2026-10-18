@@ -455,3 +455,31 @@ on a fake street counts as an error.
 **Consequences:** `PLAN.md` lists the dropped items. ADR-033 (F01–F04 few-shot) and
 ADR-040 (Ask surface) only apply if Ask is built. `DATABASE_AND_ASK.md` and
 `EXCEL_WORKBOOK.md` are read through this ADR.
+
+### ADR-052 Card exposure: present vs trigger vs review
+**Context:** Spreadsheets hold pre-masked cards (`XXXX-XXXX-XXXX-1234`), cards destroyed by
+scientific notation, and one number that fails Luhn. Not all of these should drive a notice.
+**Decision** (illustrative, not legal advice):
+
+| card value | card_present | triggers notice | review |
+|---|---|---|---|
+| full valid number | Y | yes | no |
+| PREMASKED (at most last 4 visible) | Y | **no** (treated as redacted) | no |
+| PRECISION_LOST (sci-notation) | Y | yes (most digits exposed) | yes: field stays ERROR `XL_NUMBER_PRECISION_LOST`, person `needs_review` |
+| LUHN_FAIL | Y | yes (full number exposed) | yes: field `CARD_LUHN_FAIL` (ERROR), person `needs_review` |
+
+Encoded under `element_rules.card` in `jurisdictions.yaml`. Ground truth: `gt_mentions`
+`card_status` includes `LUHN_FAIL`; `gt_people` adds `card_triggers` and `card_review`,
+and `notify_required` excludes people whose only card exposure is pre-masked.
+**Consequences:** The rule catalogue is unchanged. The limitation is listed for
+ASSUMPTIONS_LIMITATIONS.md.
+
+### ADR-053 Fixed `as_of_date`
+**Context:** Ages, minor status, DOB plausibility, the 2-digit-year pivot and the
+workbook's RunDate depended on "today", so results would drift over time.
+**Decision:** `config/pipeline.yaml` has a required `as_of_date` (2026-10-01 for
+corpus_v1). It is the single source: the generator reads it (no date in `synth.yaml`),
+`Context.as_of_date` carries it through the pipeline, and the workbook's `RunDate` named
+range is set to it. `age_at_run` means age at `as_of_date`.
+**Consequences:** Re-running a past configuration reproduces its results. Changing
+`as_of_date` is an explicit, versioned config change.

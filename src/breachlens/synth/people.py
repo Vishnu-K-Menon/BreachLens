@@ -109,7 +109,7 @@ class Population:
     orgs: dict[str, Org]
     roles: dict[str, str]  # planted role -> pid
     pool_households: dict[str, list[str]]  # pool_id -> household ids
-    reference_date: date
+    as_of_date: date
 
     def by_cast(self, cast: str) -> list[Person]:
         return [p for p in self.people.values() if p.cast == cast]
@@ -156,7 +156,7 @@ class _Builder:
         return f"H{self._hh:04d}"
 
     def dob_for_age(self, lo: int, hi: int) -> date:
-        ref = self.cfg.reference_date
+        ref = self.cfg.as_of_date
         age = self.rng.randint(lo, hi)
         return ref - timedelta(days=age * 365 + self.rng.randint(30, 330))
 
@@ -244,7 +244,7 @@ class _Builder:
         )
         if r.random() < self.cfg.rates.middle:
             p.middle = self.fake.first_name()
-        adult = p.age_on(self.cfg.reference_date) >= 18
+        adult = p.age_on(self.cfg.as_of_date) >= 18
         if adult and r.random() < self.cfg.rates.title:
             p.title = r.choice(["MS", "MRS", "DR"] if sex == "F" else ["MR", "DR"])
         if adult and sex == "M" and r.random() < self.cfg.rates.suffix:
@@ -294,7 +294,7 @@ class _Builder:
         return next(o for o in self.orgs.values() if o.role == role)
 
     def build_base(self) -> list[Person]:
-        ref = self.cfg.reference_date
+        ref = self.cfg.as_of_date
         employer_group = ids.group_number(self.rng)
         base: list[Person] = []
         for state, n in self.cfg.base_people_per_state.items():
@@ -397,7 +397,7 @@ class _Builder:
             d = self.make_person(DEPENDENT, sub.household, sub.address, age, last=last)
             d.subscriber, d.relationship = sub.pid, rel
             d.title = d.suffix = "" if rel == "CHILD" else d.title
-            if d.age_on(self.cfg.reference_date) >= 18:
+            if d.age_on(self.cfg.as_of_date) >= 18:
                 self.adult_ids(d)
             self.health_ids(d, sub.group_number)
             if i == 0:
@@ -496,7 +496,7 @@ class _Builder:
                     self.health_ids(p, group)
                 if sheet in {"hr_roster.xlsx"}:
                     p.employee_id = ids.employee_id(r)
-                    p.hire_date = cfg.reference_date - timedelta(days=r.randint(60, 3000))
+                    p.hire_date = cfg.as_of_date - timedelta(days=r.randint(60, 3000))
                 if sheet == "customer_cards.xlsx" and not p.card:
                     p.card = ids.card_number(r, cfg.card_iins)
         # P13 invalid SSNs on two singletons (hr_roster: area 666, legacy: group 00).
@@ -526,7 +526,7 @@ def build_population(settings: SynthSettings, pool: list[dict[str, str]]) -> Pop
         orgs=b.orgs,
         roles=b.roles,
         pool_households=b.pool_households,
-        reference_date=settings.config.reference_date,
+        as_of_date=settings.config.as_of_date,
     )
 
 

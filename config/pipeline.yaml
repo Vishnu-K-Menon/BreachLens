@@ -2,6 +2,10 @@
 # Unknown keys are rejected. Relative paths resolve against the project root
 # (the parent of this config/ directory). Secrets live in .env, never here.
 
+# Fixed "as of" date for ages, minor status, DOB plausibility, the 2-digit-year pivot,
+# the generator and the workbook RunDate (ADR-053). Results do not drift over time.
+as_of_date: 2026-10-01
+
 # true = no network calls except the local Ollama endpoint (on-prem mode).
 offline: true
 seed: 42

@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 import secrets
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 from breachlens.audit.log import AuditLogger
@@ -68,4 +68,5 @@ class Context:
     audit: AuditLogger
     salt: bytes = field(repr=False)
     offline: bool
+    as_of_date: date
     schema_version: str = SCHEMA_VERSION

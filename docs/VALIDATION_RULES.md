@@ -48,10 +48,10 @@ first letter.
 | code | sev | check |
 |---|---|---|
 | DOB_UNPARSEABLE | ERROR | cannot be parsed |
-| DOB_TWO_DIGIT_YEAR | WARN | 2-digit year; pivot: `yy > current_yy` → 19yy, else 20yy, and flag |
-| DOB_FUTURE | ERROR | after the run date |
-| DOB_IMPLAUSIBLE | ERROR | age > 120 |
-| DOB_MINOR | INFO | age < 18 → `is_minor` |
+| DOB_TWO_DIGIT_YEAR | WARN | 2-digit year; pivot: `yy > as_of_yy` → 19yy, else 20yy, and flag (`as_of_date`, ADR-053) |
+| DOB_FUTURE | ERROR | after `as_of_date` |
+| DOB_IMPLAUSIBLE | ERROR | age > 120 at `as_of_date` |
+| DOB_MINOR | INFO | age < 18 at `as_of_date` → `is_minor` |
 | DOB_CONFLICT_IN_CLUSTER | WARN | the same person has different DOBs across documents |
 
 ## Identifier rules
@@ -179,6 +179,13 @@ VA:
   citation: "Va. Code § 18.2-186.6 (medical info: § 32.1-127.1:05)"
   verified: false
 ```
+Card element rules (ADR-052, illustrative): a card is always *present* when printed,
+but a pre-masked value (at most the last 4 digits visible) is treated as redacted and does
+not trigger notice. A precision-lost value (scientific notation) and a Luhn failure do
+trigger notice and also send the person to review (`needs_review`); their field rules
+stay ERROR (`XL_NUMBER_PRECISION_LOST`, `CARD_LUHN_FAIL`). Encoded under
+`element_rules.card` in `jurisdictions.yaml`.
+
 Financial account generally triggers only with an access code; for the demo, treat
 `bank_account` with `routing_number` present as covered, and say so in
 ASSUMPTIONS_LIMITATIONS.md.

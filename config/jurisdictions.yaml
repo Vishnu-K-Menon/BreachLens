@@ -2,6 +2,16 @@
 # Every entry stays verified: false until a human checks the current statute.
 # FERPA is handled as ferpa_flag + note, not as a covered element (ADR-024).
 # Demo assumption: bank_account counts as covered only with a routing number present.
+
+# Element-level trigger rules (ADR-052, illustrative). A card counts as present in every
+# case below; these flags decide whether it also triggers notice and review.
+element_rules:
+  card:
+    premasked_triggers: false      # at most the last 4 digits visible: treated as redacted
+    precision_lost_triggers: true  # sci-notation damage: most digits were exposed
+    invalid_triggers: true         # Luhn failure: the full (mis-keyed) number was exposed
+    review_on: [PRECISION_LOST, LUHN_FAIL]   # person goes to review (needs_review)
+
 default:
   covered_elements: [ssn, dl, state_id, bank_account, card]
   verified: false

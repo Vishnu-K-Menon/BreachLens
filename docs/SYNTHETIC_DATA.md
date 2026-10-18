@@ -1,7 +1,8 @@
 # SYNTHETIC_DATA.md — Test corpus specification
 
 Purpose: a realistic but 100% fake "breach" corpus with ground truth, so every metric is
-measured rather than claimed. Seed 42. Output (ADR-047): `data/raw/corpus_v1/docs/` (the
+measured rather than claimed. Seed 42. Ages and minor status use `as_of_date` from
+`config/pipeline.yaml` (2026-10-01 for corpus_v1, ADR-053). Output (ADR-047): `data/raw/corpus_v1/docs/` (the
 breach input), `data/raw/corpus_v1/truth/` (ground truth + manifest),
 `data/raw/column_corpus/` and `data/raw/scale/`. All of it is regenerable and git-ignored.
 

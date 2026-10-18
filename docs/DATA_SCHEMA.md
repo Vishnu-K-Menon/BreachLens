@@ -73,8 +73,8 @@ get `<e>_key` (HMAC, 16 hex characters).
 | contact | phone | str | E.164 |
 | | email | str | lowercase |
 | demographics | dob | date | ISO |
-| | age_at_run | int | |
-| | is_minor | bool | age < 18 |
+| | age_at_run | int | age at `as_of_date` (config, ADR-053), not the wall clock |
+| | is_minor | bool | age < 18 at `as_of_date` |
 | gov IDs | ssn_present, ssn_masked, ssn_valid, ssn_key | trio + key | |
 | | dl_present, dl_masked, dl_valid, dl_key | trio + key | |
 | | dl_state | str | issuing state |

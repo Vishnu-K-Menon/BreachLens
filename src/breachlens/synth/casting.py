@@ -93,7 +93,7 @@ def cast_pdfs(pop: Population, settings: SynthSettings) -> list[PdfPlan]:
         return date(2026, 1, 5) + timedelta(days=rng.randint(0, 250))
 
     minor = role("minor_dependent")
-    student = next(p for p in pop.by_cast(STUDENT) if p.age_on(pop.reference_date) < 18)
+    student = next(p for p in pop.by_cast(STUDENT) if p.age_on(pop.as_of_date) < 18)
     spouse = next(p for p in pop.by_cast(DEPENDENT) if p.relationship == "SPOUSE")
     claims: list[tuple[Person, Person | Org | None, set[str], set[str]]] = [
         (minor, pop.people[minor.subscriber], {"P22"}, set()),
@@ -137,7 +137,7 @@ def cast_pdfs(pop: Population, settings: SynthSettings) -> list[PdfPlan]:
         add(
             NEW_HIRE_ID,
             i,
-            p.hire_date or pop.reference_date,
+            p.hire_date or pop.as_of_date,
             p,
             planted=set(tags),
             extra={"document": "PASSPORT" if k == "passport_hire" else "DL"},

@@ -79,7 +79,7 @@ class _Values:
 
     def __init__(self, settings: SynthSettings, rng: random.Random, fake: Faker) -> None:
         self.s, self.r, self.f = settings, rng, fake
-        self.ref = settings.config.reference_date
+        self.ref = settings.config.as_of_date
         zips = [
             z
             for z in zipcodes.filter_by()

@@ -11,6 +11,7 @@ logged or echoed.
 from __future__ import annotations
 
 import os
+from datetime import date
 from pathlib import Path
 
 import yaml
@@ -55,8 +56,14 @@ class StagesConfig(_Strict):
 
 
 class PipelineConfig(_Strict):
-    """Top-level shape of `config/pipeline.yaml`."""
+    """Top-level shape of `config/pipeline.yaml`.
 
+    `as_of_date` (ADR-053) is the fixed date that ages, minor status, DOB plausibility,
+    the 2-digit-year pivot, the generator and the workbook's RunDate all use, so results
+    never drift with the wall clock. It is required.
+    """
+
+    as_of_date: date
     offline: bool = True
     seed: int = 42
     paths: PathsConfig = PathsConfig()

@@ -81,7 +81,7 @@ def test_planted_roles(pop):
     assert not ids.luhn_valid(pop.role("luhn_fail").card)
     assert pop.role("leading_zero_ssn").ssn.startswith("0")
     assert pop.role("city_typo").address.city == "SACRAMENTO"
-    assert pop.role("minor_dependent").age_on(pop.reference_date) < 18
+    assert pop.role("minor_dependent").age_on(pop.as_of_date) < 18
     assert {pop.role(f"surname_{i}").last for i in range(3)} == {
         "Garcia-Lopez",
         "De La Vega",
@@ -104,3 +104,10 @@ def test_dependents_and_students_live_with_their_household(pop):
         assert d.address == pop.people[d.subscriber].address
     for s in pop.by_cast(STUDENT):
         assert s.address == pop.people[s.guardian].address
+
+
+def test_as_of_date_comes_from_pipeline_yaml(settings, pop):
+    from breachlens.config import load_config
+
+    as_of = load_config(ROOT / "config" / "pipeline.yaml").as_of_date
+    assert settings.config.as_of_date == as_of == pop.as_of_date

@@ -679,7 +679,7 @@ def render_benefits(pop: Population, s: SynthSettings, docs: Path, rng: random.R
         m.printed = {"suffix": suffix}
         out.mentions.append(m)
         for d in deps.get(p.pid, [])[:3]:
-            dt = {"P37"} | ({"P22"} if d.age_on(pop.reference_date) < 18 else set())
+            dt = {"P37"} | ({"P22"} if d.age_on(pop.as_of_date) < 18 else set())
             dm = _mention(doc_file, sheet, r, "DEPENDENT", d, planted=dt, related=m)
             dm.fields = {
                 **name_fields(d, with_middle=False),
@@ -769,7 +769,7 @@ def render_students(pop: Population, s: SynthSettings, docs: Path, rng: random.R
             st.student_id,
             last_comma_first(sn).title(),
             st.dob,
-            _grade(st, pop.reference_date),
+            _grade(st, pop.as_of_date),
             st.school.title(),
             f"{g.first} {g.last}",
             g.phone,
@@ -888,7 +888,9 @@ def render_customers(pop: Population, s: SynthSettings, docs: Path, rng: random.
             **name_fields(p, first=first, with_middle=False),
             **a,
             "card": card_field,
-            "card_status": {"sci": "PRECISION_LOST", "premasked": "PREMASKED"}.get(kind, "TEXT"),
+            "card_status": "LUHN_FAIL"
+            if "P14" in tags
+            else {"sci": "PRECISION_LOST", "premasked": "PREMASKED"}.get(kind, "TEXT"),
             "phone": p.phone,
         }
         m.printed = {"name": str(values[0]), "card": str(cell_val), "city_state_zip": csz}

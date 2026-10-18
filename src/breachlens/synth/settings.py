@@ -13,6 +13,8 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, ConfigDict
 
+from breachlens.config import load_config
+
 
 class _Strict(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -95,7 +97,7 @@ class ScaleSettings(_Strict):
 class SynthConfig(_Strict):
     version: str
     seed: int
-    reference_date: date
+    as_of_date: date
     base_people_per_state: dict[str, int]
     n_dependents: int
     n_students: int
@@ -121,11 +123,32 @@ class Jurisdiction(_Strict):
     citation: str | None = None
 
 
+class CardRule(_Strict):
+    """ADR-052: which card exposures trigger notice and review (illustrative)."""
+
+    premasked_triggers: bool
+    precision_lost_triggers: bool
+    invalid_triggers: bool
+    review_on: list[str]
+
+    def triggers(self, status: str) -> bool:
+        return {
+            "PREMASKED": self.premasked_triggers,
+            "PRECISION_LOST": self.precision_lost_triggers,
+            "LUHN_FAIL": self.invalid_triggers,
+        }.get(status, True)
+
+
+class ElementRules(_Strict):
+    card: CardRule
+
+
 @dataclass(frozen=True)
 class SynthSettings:
     config: SynthConfig
     dl_formats: dict[str, list[str]]
     jurisdictions: dict[str, Jurisdiction]
+    element_rules: ElementRules
     known_invalid_ssns: frozenset[str]
     valid_suffixes: tuple[str, ...]
     titles: tuple[str, ...]
@@ -140,15 +163,21 @@ def _yaml(path: Path) -> dict:
 
 
 def load_synth_settings(config_dir: Path, seed: int | None = None) -> SynthSettings:
-    """Load all generator settings; `seed` overrides the config seed."""
-    cfg = SynthConfig.model_validate(_yaml(config_dir / "synth.yaml"))
+    """Load all generator settings; `seed` overrides the config seed.
+
+    `as_of_date` comes from `pipeline.yaml` only (ADR-053), never from `synth.yaml`.
+    """
+    raw = _yaml(config_dir / "synth.yaml")
+    if "as_of_date" in raw:
+        raise ValueError("as_of_date belongs in pipeline.yaml (ADR-053), not synth.yaml")
+    raw["as_of_date"] = load_config(config_dir / "pipeline.yaml").as_of_date
+    cfg = SynthConfig.model_validate(raw)
     if seed is not None:
         cfg = cfg.model_copy(update={"seed": seed})
     rules = _yaml(config_dir / "rules.yaml")
-    juris = {
-        k: Jurisdiction.model_validate(v)
-        for k, v in _yaml(config_dir / "jurisdictions.yaml").items()
-    }
+    juris_raw = _yaml(config_dir / "jurisdictions.yaml")
+    element_rules = ElementRules.model_validate(juris_raw.pop("element_rules"))
+    juris = {k: Jurisdiction.model_validate(v) for k, v in juris_raw.items()}
     dl = {k: list(v) for k, v in _yaml(config_dir / "dl_formats.yaml").items()}
     missing = sorted(set(cfg.base_people_per_state) - set(dl))
     if missing:
@@ -157,6 +186,7 @@ def load_synth_settings(config_dir: Path, seed: int | None = None) -> SynthSetti
         config=cfg,
         dl_formats=dl,
         jurisdictions=juris,
+        element_rules=element_rules,
         known_invalid_ssns=frozenset(rules["known_invalid_ssns"]),
         valid_suffixes=tuple(rules["valid_suffixes"]),
         titles=tuple(rules["titles"]),

@@ -2,8 +2,6 @@
 # Everything generated from this file is fake. Same seed -> same corpus.
 version: corpus_v1
 seed: 42
-# Ages and minor status are computed against this date, never the wall clock.
-reference_date: 2026-10-01
 
 base_people_per_state: {CA: 6, NY: 6, TX: 6, FL: 6, PA: 6, VA: 6, NJ: 2, MA: 2}
 n_dependents: 10

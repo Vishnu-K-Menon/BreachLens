@@ -47,6 +47,7 @@ def load_context(
         audit=AuditLogger(run_id=run_id),
         salt=salt,
         offline=config.offline,
+        as_of_date=config.as_of_date,
     )
 
 

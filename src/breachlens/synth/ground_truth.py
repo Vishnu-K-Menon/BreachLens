@@ -321,6 +321,16 @@ def build_truth(
         hits = {e for e in covered if exposed.get(e)}
         if "bank_account" in hits and not bank_covered:
             hits.discard("bank_account")
+        # ADR-052: a card is present in every case, but only some exposures trigger notice
+        # (pre-masked values are treated as redacted) or send the person to review.
+        card_rule = settings.element_rules.card
+        card_statuses = {
+            m.fields.get("card_status") or "TEXT" for m in ms if _flags(m.fields)["card"]
+        }
+        card_triggers = any(card_rule.triggers(s) for s in card_statuses)
+        card_review = bool(card_statuses & set(card_rule.review_on))
+        if "card" in hits and not card_triggers:
+            hits.discard("card")
         names = list(dict.fromkeys(label for e, label in ELEMENTS if exposed[e]))
         planted = set().union(*(m.planted for m in ms))
         a = p.address
@@ -340,11 +350,13 @@ def build_truth(
                 "state": a.state,
                 "zip5": a.zip5,
                 "dob": p.dob.isoformat(),
-                "is_minor": p.age_on(cfg.reference_date) < 18,
+                "is_minor": p.age_on(cfg.as_of_date) < 18,
                 "jurisdiction": p.state,
                 "jurisdiction_rules": j,
                 **{f"{e}_exposed": exposed[e] for e in FLAGS},
                 "elements_exposed": "; ".join(names),
+                "card_triggers": card_triggers,
+                "card_review": card_review,
                 "notify_required": bool(hits),
                 "notify_elements": ";".join(sorted(hits)),
                 "ferpa_flag": exposed["student_id"],
@@ -479,7 +491,7 @@ def build_truth(
         "version": cfg.version,
         "generator_version": __version__,
         "seed": cfg.seed,
-        "reference_date": cfg.reference_date.isoformat(),
+        "as_of_date": cfg.as_of_date.isoformat(),
         "counts": {
             "people": len(pop.people),
             "people_by_cast": dict(sorted(Counter(p.cast for p in pop.people.values()).items())),
@@ -506,6 +518,7 @@ def build_truth(
             ),
             "unrelated_shared_address_pairs": len(s_rows),
             "notify_required": sum(1 for r in p_rows if r["notify_required"]),
+            "card_review": sum(1 for r in p_rows if r["card_review"]),
             "ferpa_flagged": sum(1 for r in p_rows if r["ferpa_flag"]),
             "minors": sum(1 for r in p_rows if r["is_minor"]),
         },

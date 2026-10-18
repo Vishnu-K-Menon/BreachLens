@@ -60,3 +60,17 @@ def test_element_flags_include_free_text_and_damaged_cards():
     assert f["mrn"] and f["card"] and f["health_member_id"] and not f["ssn"]
     assert _flags({"notes_pii": "SSN"})["ssn"]
     assert not _flags({"card_status": "TEXT"})["card"]
+
+
+@pytest.mark.parametrize(
+    ("status", "triggers"),
+    [("TEXT", True), ("PREMASKED", False), ("PRECISION_LOST", True), ("LUHN_FAIL", True)],
+)
+def test_card_trigger_rule(status, triggers):
+    from pathlib import Path
+
+    from breachlens.synth.settings import load_synth_settings
+
+    rule = load_synth_settings(Path(__file__).resolve().parents[2] / "config").element_rules.card
+    assert rule.triggers(status) is triggers
+    assert (status in rule.review_on) is (status in {"PRECISION_LOST", "LUHN_FAIL"})

@@ -1,3 +1,4 @@
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -22,10 +23,21 @@ def test_repo_pipeline_config_is_valid():
     assert config.paths.input_dir == Path("data/raw/corpus_v1/docs")
 
 
-def test_empty_config_uses_defaults(tmp_path):
+def test_minimal_config_uses_defaults(tmp_path):
+    path = tmp_path / "pipeline.yaml"
+    path.write_text("as_of_date: 2026-10-01\n", encoding="utf-8")
+    assert load_config(path) == PipelineConfig(as_of_date=date(2026, 10, 1))
+
+
+def test_as_of_date_is_required(tmp_path):
     path = tmp_path / "pipeline.yaml"
     path.write_text("", encoding="utf-8")
-    assert load_config(path) == PipelineConfig()
+    with pytest.raises(ConfigError, match="as_of_date"):
+        load_config(path)
+
+
+def test_repo_config_as_of_date():
+    assert load_config(ROOT / "config" / "pipeline.yaml").as_of_date == date(2026, 10, 1)
 
 
 @pytest.mark.parametrize(

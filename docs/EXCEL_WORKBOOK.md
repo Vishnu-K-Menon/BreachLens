@@ -18,7 +18,7 @@ the text format `@`.
 ## Sheets
 | Sheet | Table name | Content | Excel skills shown |
 |---|---|---|---|
-| `Summary` | — | KPI block + by-state block + by-field error block | `COUNTIFS`, `SUMPRODUCT`, `IFERROR`, `ROUND`, named ranges (`RunDate`, `RunId`) |
+| `Summary` | — | KPI block + by-state block + by-field error block | `COUNTIFS`, `SUMPRODUCT`, `IFERROR`, `ROUND`, named ranges (`RunDate` = `as_of_date`, `RunId`) |
 | `Mentions` | `tblMentions` | full mention schema | Formula-based conditional formatting, freeze panes, autofilter |
 | `Review_Queue` | `tblReview` | issues to review + macro buttons | Data validation dropdown, `HYPERLINK` to source, macros |
 | `People` | `tblPeople` | golden records | Calculated columns |
