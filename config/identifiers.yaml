@@ -1,0 +1,17 @@
+# Identifier disambiguation (M2, extract/identifiers.py; VALIDATION_RULES.md §Identifier).
+# The kind of an ID-shaped number is decided by the nearest printed label: on the same
+# line to its left (within max_label_gap points) or on the line directly above it.
+# Business identifiers go to excluded_identifiers; only SSNs stay on the person.
+labels:            # checked in this order; first hit wins
+  PROVIDER_TIN: ["provider tin", "federal tax i.d.", "federal tax id"]
+  EIN: ["payroll agent ein", "employer ein", "employer identification", "(ein)", "ein"]
+  NPI: ["npi"]
+  SSN: ["social security", "soc sec", "ssn", "ss#"]
+shapes:
+  EIN: '^\d{2}-\d{7}$'
+  PROVIDER_TIN: '^\d{2}-\d{7}$'
+  NPI: '^\d{10}$'
+  SSN: '^\d{3}[- ]?\d{2}[- ]?\d{4}$'
+max_label_gap: 160
+# ITIN: area 9xx with a group in these ranges (IRS). Checked before SSN validity (ADR-035).
+itin_group_ranges: [[50, 65], [70, 88], [90, 92], [94, 99]]

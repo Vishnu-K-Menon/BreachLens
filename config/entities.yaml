@@ -1,0 +1,7 @@
+# PERSON vs ORG lexicon (M2, extract/entity_type.py). A name in a person field is an
+# organization when any word matches `org_words`, or its last word matches `org_suffixes`.
+# ORG names go to excluded_entities and never become mentions (P21).
+org_suffixes: [INC, LLC, LLP, PLLC, CORP, CORPORATION, CO, COMPANY, LTD, GROUP, LP, PC, NA]
+org_words: [CLINIC, HOSPITAL, PLAN, BANK, UNIVERSITY, SCHOOL, DISTRICT, SERVICES, LOGISTICS,
+            ASSOCIATES, PARTNERS, FOUNDATION, TRUST, INSURANCE, HEALTHCARE, PHARMACY, SUPPLY,
+            DEPARTMENT, AGENCY, COUNTY, CITY OF]
