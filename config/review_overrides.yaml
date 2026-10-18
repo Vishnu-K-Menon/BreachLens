@@ -1,0 +1,15 @@
+# Human column decisions (ADR-061). A reviewer records one entry per column; it is
+# applied on every run and logged as an audit event REVIEW_OVERRIDE_APPLIED. The column
+# classifier and the ADR-034 decision table are not changed: the model's label and the
+# decision stay in column_mapping as history, `reviewed_label` holds the human decision.
+#   file:   input-relative path; sheet: sheet name or null (any sheet); header: as printed
+#   reviewed_label: one of the 34 column labels, OTHER, or a reviewed-only label
+#                   (INSURER = an organization column routed to insurer_name)
+overrides:
+  - file: sheets/patient_list.xlsx
+    sheet: null
+    header: Insurer
+    reviewed_label: INSURER
+    reviewed_by: project owner
+    reviewed_on: "2026-10-18"
+    note: "Insurer column holds insurers, not schools (ML override was wrong, ADR-056)"

@@ -150,6 +150,10 @@ Spec: `EXCEL_WORKBOOK.md` (as reduced by ADR-051).
       `People`, `Notification_List`, `Excluded`, `About`; Excel Tables, named ranges
       (`RunDate` = `as_of_date`), live formulas (`COUNTIFS`, `SUMPRODUCT`, `XLOOKUP`,
       `IF(AND(...))`), formula-based conditional formatting, data validation.
+      `Review_Queue` groups column-level warnings (COL_*) as **one item per column** with
+      an `affected_rows` count, not one row per person (ADR-062). Row-level codes stay one
+      item per mention. Columns with a `reviewed_label` (config/review_overrides.yaml)
+      are shown as resolved.
 - [ ] `excel/ReviewHelpers.bas` with 2 macros (`ShowPendingOnly`, `ExportDecisions`).
       **Human step:** import it into a blank workbook, save as `.xlsm`, and run
       `vba_extract.py` → `excel/vbaProject.bin`. The writer embeds it and adds buttons.

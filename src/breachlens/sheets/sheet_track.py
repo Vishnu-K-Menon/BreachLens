@@ -31,7 +31,7 @@ from breachlens.sheets.mapping import decide, rule_label, unmapped_sensitive
 from breachlens.sheets.profile import column_profiles, file_profile
 from breachlens.sheets.reader import as_text, read_file
 from breachlens.sheets.reshape import wide_groups
-from breachlens.sheets.settings import SheetSettings, load_sheet_settings
+from breachlens.sheets.settings import REVIEWED_LABELS, SheetSettings, load_sheet_settings
 
 logger = logging.getLogger(__name__)
 SHEET_KINDS = {"XLSX", "XLS", "CSV"}
@@ -66,6 +66,7 @@ class SheetMapping:
     proba: list[float | None]
     groups: dict[int, dict[int, str]]
     rows: list[dict[str, Any]] = field(default_factory=list)  # column_mapping rows
+    fields: dict[int, str] = field(default_factory=dict)  # column -> mention field (reviewed)
 
 
 def map_columns(
@@ -74,6 +75,7 @@ def map_columns(
     lex = default_lexicons(s.org_suffixes)
     groups = wide_groups(t.headers, s.sheets.reshape.wide_group_pattern)
     labels, probas, rows = [], [], []
+    field_map: dict[int, str] = {}
     n = len(t.headers)
     for j, header in enumerate(t.headers):
         values = [vals[j] for _, vals in t.rows]
@@ -87,7 +89,31 @@ def map_columns(
         feats = column_features(header, values, j / max(n - 1, 1), ctx.as_of_date, lex)
         if unmapped_sensitive(d.final_label, feats):
             codes.append("COL_UNMAPPED_SENSITIVE")
-        labels.append(d.final_label)
+        final, reviewed = d.final_label, None
+        ov = next((o for o in s.overrides if o.matches(t.raw.path, t.raw.sheet, header)), None)
+        if ov is not None:  # a human decision (ADR-061); the model and decision stay as history
+            reviewed = ov.reviewed_label
+            final, fld = REVIEWED_LABELS.get(reviewed, (reviewed, None))
+            if fld:
+                field_map[j] = fld
+            applied = getattr(ctx, "tables", {}).setdefault("overrides_applied", [])
+            applied.append(ov)
+            if getattr(ctx, "audit", None) is not None:
+                ctx.audit.log(
+                    "sheet_track",
+                    "REVIEW_OVERRIDE_APPLIED",
+                    item_id=f"{t.raw.doc_id}:{t.raw.sheet}:{j + 1}",
+                    field=header,
+                    old_value_masked=d.final_label,
+                    new_value_masked=reviewed,
+                    detail={
+                        "file": ov.file,
+                        "reviewed_by": ov.reviewed_by,
+                        "reviewed_on": ov.reviewed_on,
+                        "note": ov.note,
+                    },
+                )
+        labels.append(final)
         probas.append(p)
         rows.append(
             {
@@ -98,13 +124,13 @@ def map_columns(
                 "rule_label": rule,
                 "ml_label": ml,
                 "ml_proba": None if p is None else round(p, 4),
-                "final_label": d.final_label,
+                "final_label": final,
                 "decision": d.decision,
-                "reviewed_label": None,
+                "reviewed_label": reviewed,
                 "codes": ";".join(codes),
             }
         )
-    return SheetMapping(labels, probas, groups, rows)
+    return SheetMapping(labels, probas, groups, rows, field_map)
 
 
 def _first(labels: list[str], label: str, skip: set[int]) -> int | None:
@@ -304,7 +330,7 @@ def process_sheet(
             org = as_text(vals[j]).strip()
             if not org:
                 continue
-            key_name = (
+            key_name = m.fields.get(j) or (
                 "insurer_name" if any(w in t.headers[j].lower() for w in iw) else "employer_name"
             )
             if person.get("raw_name"):
@@ -518,6 +544,14 @@ def stage_sheet_track(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
         "excluded_identifiers": len(ex_ids),
         "excluded_entities": len(ex_ents),
     }
+    applied = ctx.tables.get("overrides_applied", [])
+    unmatched = [o for o in s.overrides if o not in applied]
+    for o in unmatched:
+        logger.warning(
+            "review override not applied (no such column): %s / %s / %s", o.file, o.sheet, o.header
+        )
+    summary["overrides_applied"] = len(applied)
+    summary["overrides_unmatched"] = len(unmatched)
     ctx.tables["sheet_summary"] = summary
     logger.info("sheet_track: %s", summary)
     if df.empty:

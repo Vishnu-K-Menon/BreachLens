@@ -79,6 +79,30 @@ class MappingThresholds(_Strict):
     override_min: float
 
 
+class ReviewOverride(_Strict):
+    """A human column decision (config/review_overrides.yaml, ADR-061)."""
+
+    file: str  # input-relative path, e.g. sheets/patient_list.xlsx
+    sheet: str | None = None  # None = any sheet of the file
+    header: str
+    reviewed_label: str
+    reviewed_by: str
+    reviewed_on: str
+    note: str = ""
+
+    def matches(self, path: str, sheet: str | None, header: str) -> bool:
+        same_sheet = self.sheet is None or (self.sheet or "") == (sheet or "")
+        return (
+            self.file == path
+            and same_sheet
+            and self.header.strip().lower() == header.strip().lower()
+        )
+
+
+# Reviewed-only labels (not model labels): reviewed label -> (mapping label, mention field).
+REVIEWED_LABELS = {"INSURER": ("ORG_NAME", "insurer_name")}
+
+
 @dataclass(frozen=True)
 class SheetSettings:
     sheets: SheetsCfg
@@ -86,6 +110,7 @@ class SheetSettings:
     thresholds: MappingThresholds
     zip_leading_zero_states: frozenset[str]
     org_suffixes: tuple[str, ...]
+    overrides: tuple[ReviewOverride, ...] = ()
 
 
 def _yaml(path: Path) -> dict:
@@ -102,4 +127,22 @@ def load_sheet_settings(config_dir: Path) -> SheetSettings:
         thresholds=MappingThresholds.model_validate(rules["column_mapping"]),
         zip_leading_zero_states=frozenset(rules["zip_leading_zero_states"]),
         org_suffixes=tuple(ents["org_suffixes"]),
+        overrides=load_overrides(config_dir),
     )
+
+
+def load_overrides(config_dir: Path) -> tuple[ReviewOverride, ...]:
+    """Human column decisions. A reviewed label must be a model label or a reviewed-only
+    label (REVIEWED_LABELS); anything else is a config error."""
+    path = config_dir / "review_overrides.yaml"
+    if not path.is_file():
+        return ()
+    data = _yaml(path) or {}
+    out = tuple(ReviewOverride.model_validate(o) for o in data.get("overrides") or [])
+    labels = (
+        set(_yaml(config_dir / "column_corpus_aliases.yaml")) | {"OTHER"} | set(REVIEWED_LABELS)
+    )
+    bad = [o.reviewed_label for o in out if o.reviewed_label not in labels]
+    if bad:
+        raise ValueError(f"review_overrides.yaml: unknown reviewed_label {bad}")
+    return out

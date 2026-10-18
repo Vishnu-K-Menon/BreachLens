@@ -149,7 +149,7 @@ def column_codes(
     sheets = df[df["source_type"] == "SPREADSHEET"]
     for _, col in mapping.iterrows():
         warn = [c for c in _split(col.get("codes")) if c in COLUMN_WARN]
-        if not warn:
+        if not warn or present(col.get("reviewed_label")):  # a human resolved it (ADR-061)
             continue
         same = sheets[
             (sheets["doc_id"] == col["doc_id"])

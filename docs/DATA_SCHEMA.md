@@ -158,6 +158,10 @@ HEALTH INSURANCE INFO · dob → DATE OF BIRTH · student_id → STUDENT RECORD
 - `column_mapping`: doc_id, sheet, col_idx, header_raw, rule_label, ml_label, ml_proba,
   final_label, decision (AGREE / ML_ONLY / ML_OVERRIDE / RULE_ONLY / REVIEW; see
   `SPREADSHEET_TRACK.md §4` and ADR-034), reviewed_label, codes (`;`-joined COL_* codes).
+  `reviewed_label` comes from `config/review_overrides.yaml` (ADR-061). It is one of the
+  34 labels, OTHER, or the reviewed-only INSURER (an organization column routed to
+  `insurer_name`). Then `final_label` follows the human, while `decision`, `ml_label` and
+  `codes` keep the model's history.
 - `doc_codes` (ADR-057, renamed from `sheet_codes` in ADR-059): doc_id, sheet, col_idx
   (null for doc/sheet level), code, detail, severity. These are the doc-, sheet- and
   column-level reason codes (DOC_TYPE_UNKNOWN, SHEET_*, CSV_ENCODING_DETECTED, COL_*).

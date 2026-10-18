@@ -637,3 +637,33 @@ empty and would need its own subset of ground truth.
 - An SSN, MRN or card found in a notes column counts as an exposed element of that row's
   person (`*_present`, masked, keyed), next to FREE_TEXT_PII_FOUND.
 - Free-text masking hides every run of 9+ digits, phone numbers included.
+
+---
+## Revision 6: M5 (2026-10-18)
+
+### ADR-061 Human column overrides (`config/review_overrides.yaml`)
+**Context:** The `Insurer` column of `patient_list.xlsx` is overridden by the ML (SCHOOL,
+p 0.83, ADR-056). The project owner decided not to tune the model after seeing test
+results; a human corrects the column instead.
+**Decision:**
+- Each entry in `config/review_overrides.yaml` is `file, sheet (null = any), header →
+  reviewed_label`, plus `reviewed_by`, `reviewed_on`, `note`. Entries are applied on every
+  run in `sheet_track.map_columns`.
+- The classifier and the ADR-034 decision table are unchanged. `column_mapping` keeps the
+  model's label, decision and codes as history; `reviewed_label` and `final_label` follow
+  the human.
+- Each application logs an audit event `REVIEW_OVERRIDE_APPLIED`: item
+  `doc_id:sheet:col`, field = header, old/new label, detail = file/reviewer/date/note.
+  An entry that matches no column is a logged warning (`overrides_unmatched`).
+- Reviewed labels: the 34 model labels, OTHER, and the reviewed-only INSURER (ORG_NAME
+  routed to `insurer_name`). Anything else is a config error.
+- A reviewed column's COL_* warnings no longer reach mentions (the human resolved them).
+- First entry: `sheets/patient_list.xlsx` / `Insurer` → INSURER.
+**Consequences** (corpus_v1): REVIEW mentions 189 → 137. The 65 patients lose the FERPA
+flag (65 → 0) and gain `insurer_name`. 13 of them stay in REVIEW for their own row codes.
+
+### ADR-062 Review_Queue groups column-level warnings (for M7)
+**Decision:** In the M7 workbook, column-level warnings (COL_MAPPING_LOW_CONF,
+COL_MAPPING_ML_OVERRIDE, COL_UNMAPPED_SENSITIVE) are one Review_Queue item per column,
+with `affected_rows`, not one item per person. Row-level codes stay one item per
+mention. Reviewed columns show as resolved.

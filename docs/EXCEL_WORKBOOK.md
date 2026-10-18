@@ -31,6 +31,12 @@ the text format `@`.
 | `QC_Summary` | `tblQC` | per-field present / FAIL / REVIEW rates | `COUNTIFS` over `tblMentions` |
 | `About` | — | synthetic-data notice, schema version, "not legal advice", how to enable macros | — |
 
+`Review_Queue` items (ADR-062): one item per **column** for column-level warnings
+(COL_MAPPING_LOW_CONF, COL_MAPPING_ML_OVERRIDE, COL_UNMAPPED_SENSITIVE), with an
+`affected_rows` count of the mentions that used the column. Row-level reason codes stay
+one item per mention. A column decision is recorded in `config/review_overrides.yaml`
+(ADR-061) and applied on the next run.
+
 `LET` parameter names must carry the `_xlpm.` prefix in the written formula (e.g.
 `=LET(_xlpm.st,$B$1,…)`); `use_future_functions` does not add it (ADR-041).
 `tblPeople[notify_required]` and `tblPeople[medical_exposed]` are real `people`
