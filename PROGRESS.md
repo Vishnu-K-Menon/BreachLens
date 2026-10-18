@@ -135,3 +135,64 @@ Append-only build log. Format: see docs/WORKFLOW.md.
   found on one new-hire scan; E11.9 read as B11.9; one email not found; one EIN missed.
   Text-layer extraction generalizes fully; OCR loses about 10–20% on some fields once
   untuned.
+
+## 2026-10-18 (Day 2–3) — M3 spreadsheet track + ML column classifier
+- [M3] Spreadsheet track complete (`sheets/` reader → layout → profile → mapping →
+  repair → reshape → free text → `sheet_track` stage, after `pdf_track`). Mentions stay
+  in memory (ADR-044). Side tables and transient columns are recorded in ADR-057.
+- [ML] Column classifier. The first model scored 0.97 out-of-fold but 0.75 on
+  corpus_v1's sheets, because of a training/test shift in the column-corpus generator.
+  The generator was broadened (ADR-055), and corpus_v1's sheets became the **dev** set.
+  The seed-43 holdout sheets are the **test** set. Macro-F1 (`models/model_card.md`):
+
+  | model | validation (GroupKFold by alias) | **uninformative headers (OOF)** | dev sheets | test sheets | combined (OOF + test) |
+  |---|---|---|---|---|---|
+  | R header rules | 0.640 | **0.005** | 0.991 | 0.991 | 0.147 |
+  | V values only (HGB) | 0.623 | 0.662 | 0.793 | 0.808 | 0.674 |
+  | H+V (HV_lr, calibrated) | 0.898 | **0.899** | 0.872 | 0.872 | 0.899 |
+
+  - AC: ML beats the header-only baseline on the held-out confusing-headers set, 0.899 vs
+    0.005 (combined with the test sheets: 0.899 vs 0.147).
+  - On normal headers the rules are better (0.991 vs 0.872). Final mapping after the
+    ADR-034 decision table: accuracy 0.990, macro-F1 0.976 on both dev and test.
+    Decisions: AGREE 74, ML_ONLY 14, RULE_ONLY 6, REVIEW 3, ML_OVERRIDE 1.
+  - One wrong final label: `Insurer` ORG_NAME → SCHOOL, an ML override at p 0.83.
+    Reported, not patched.
+  - ECE: 0.031 out-of-fold (uncalibrated); after sigmoid calibration, 0.081 on dev and
+    0.053 on test.
+- [eval] `python -m breachlens.evaluate.sheets` (dev) and with `--input/--truth` on the
+  holdout (test). Identical outcome on both: 405/405 (dev) and 401/401 (test) person
+  mentions matched, field recall 1.000 on every field, 0 field failures. Exclusions:
+  EIN 25/25, ORG 26/26.
+- [AC] Planted cases, all handled on dev and test:
+  - P27 header at row 5, 3 title rows dropped. P28 merged headers joined (`Employee SSN`).
+  - P29 hidden rows kept and flagged. P30 total row dropped. P31 ZIP leading zeros
+    restored. P32 all DOBs correct (serials and mixed formats).
+  - P33 sci-notation / numeric cards flagged XL_NUMBER_PRECISION_LOST. P34 pre-masked
+    values flagged.
+  - P35 cp1252 + `;` + `SS#` → SSN, with accents intact. P36 `ID` → SSN (ML 0.63,
+    REVIEW) and `Column7` → DOB (ML 0.70–0.71).
+  - P37 10 dependents unpivoted and linked. P38 notes PII flagged. P39 vendor file:
+    0 person mentions. P40 30 students, guardians linked.
+  - P41 exact SSNs (the merge is M5). P42 duplicate kept once and flagged. P43 `#N/A`
+    flagged and nulled. P44 8-digit SSNs padded.
+- [process] Fixed during M3 on dev:
+  - cards stored as 16+ digit numbers weren't flagged as precision-lost (P33)
+  - `#N/A` in unmapped columns wasn't flagged (P43)
+  - the `shape()` mask bug
+  - `Home Address State` matched `address` before `state` (ADR-056)
+  - ML OTHER overriding a concrete rule label (ADR-056)
+  **Disclosure:** the ML error list behind the OTHER rule was first printed for the
+  test set. The dev set has the identical errors, so the fix holds on dev alone, but the
+  test set is no longer strictly unseen for that rule. Nothing else was changed after
+  looking at test results.
+- [data] Column corpus regenerated (seed 42, 6071 columns). corpus_v1 was regenerated in
+  the scratchpad and compared: `docs/` unchanged (the .xls by cell content), and the only
+  manifest change is the column_corpus block. Only `truth/manifest.json` was copied, so
+  `docs/` was not touched.
+- [knime] `knime/SPREADSHEET_TRACK_NODES.md`: native nodes for reader → layout → repair.
+- [checks] `pytest -q`: 253 passed. This includes `tests/integration/test_sheet_track.py`,
+  which generates a corpus, trains a small model and asserts P27–P44 handled or flagged,
+  0 vendor mentions, and ML > rules on uninformative headers. ruff check/format clean.
+  `run` exits 0 with 438 mentions (33 PDF + 405 spreadsheet) and writes nothing.
+- Next: M4 normalize + validate + privacy.

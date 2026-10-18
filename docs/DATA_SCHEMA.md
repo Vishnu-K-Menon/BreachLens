@@ -110,7 +110,10 @@ Transient (never persisted): `_raw_ssn`, `_raw_dl`, `_raw_state_id`, `_raw_passp
 `_raw_bank_account`, `_raw_routing`, `_raw_card`, `_raw_mrn`, `_raw_member_id`, plus (M2,
 ADR-054) `_raw_group_number`, `_raw_diagnosis`, `_raw_procedure`, `_raw_date_of_service`,
 `_raw_dob` (the date as printed, for the 2-digit-year rule) and `_raw_value` in
-`excluded_identifiers` (masked into `value_masked` in M4).
+`excluded_identifiers` (masked into `value_masked` in M4). Spreadsheet track (M3,
+ADR-057): `_raw_student_id`, `_raw_employee_id`, `_ssn_status` / `_card_status` (TEXT /
+PRECISION_LOST / PREMASKED), `_repair_codes` (`;`-joined row-level reason codes for the
+M4 validation engine), `_freetext_hits` (kinds found in notes) and `_raw_freetext`.
 
 ## Table: `people` (golden records)
 person_id, first_name, middle_initial, last_name, name_suffix, address_line1,
@@ -154,7 +157,10 @@ HEALTH INSURANCE INFO · dob → DATE OF BIRTH · student_id → STUDENT RECORD
   inferred_type, top_shapes (masked shape strings), min_len, max_len.
 - `column_mapping`: doc_id, sheet, col_idx, header_raw, rule_label, ml_label, ml_proba,
   final_label, decision (AGREE / ML_ONLY / ML_OVERRIDE / RULE_ONLY / REVIEW; see
-  `SPREADSHEET_TRACK.md §4` and ADR-034), reviewed_label.
+  `SPREADSHEET_TRACK.md §4` and ADR-034), reviewed_label, codes (`;`-joined COL_* codes).
+- `sheet_codes` (ADR-057): doc_id, sheet, col_idx (null for sheet-level), code, detail.
+  Sheet- and column-level reason codes (SHEET_*, CSV_ENCODING_DETECTED, COL_*); M4 turns
+  them into review items.
 
 ## Matching and review tables
 - `pair_features`: mention_a, mention_b, f_first_jw, f_last_jw, f_dob, f_zip_eq,

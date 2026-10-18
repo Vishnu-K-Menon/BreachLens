@@ -1,0 +1,2050 @@
+{
+  "model_version": "column-classifier-1",
+  "chosen_model": "HV_lr",
+  "data": {
+    "train_columns": 6071,
+    "uninformative_columns": 917,
+    "sheet_columns": {
+      "dev_corpus_v1": 98,
+      "test_holdout": 98
+    },
+    "labels": 34
+  },
+  "validation_macro_f1": {
+    "R": 0.6396,
+    "V_hgb": 0.6233,
+    "HV_lr": 0.8983,
+    "HV_hgb": 0.7893
+  },
+  "hard_test_macro_f1": {
+    "R": {
+      "uninformative_headers_oof": 0.0054,
+      "sheets_dev_corpus_v1": 0.9911,
+      "accuracy_dev_corpus_v1": 0.9796,
+      "combined_dev_corpus_v1": 0.1467,
+      "sheets_test_holdout": 0.9911,
+      "accuracy_test_holdout": 0.9796,
+      "combined_test_holdout": 0.1467
+    },
+    "V_hgb": {
+      "uninformative_headers_oof": 0.6618,
+      "sheets_dev_corpus_v1": 0.793,
+      "accuracy_dev_corpus_v1": 0.8571,
+      "combined_dev_corpus_v1": 0.6708,
+      "sheets_test_holdout": 0.8077,
+      "accuracy_test_holdout": 0.8878,
+      "combined_test_holdout": 0.6739
+    },
+    "HV (HV_lr, calibrated)": {
+      "uninformative_headers_oof": 0.899,
+      "sheets_dev_corpus_v1": 0.8718,
+      "accuracy_dev_corpus_v1": 0.9082,
+      "combined_dev_corpus_v1": 0.8992,
+      "sheets_test_holdout": 0.8718,
+      "accuracy_test_holdout": 0.9082,
+      "combined_test_holdout": 0.8992
+    }
+  },
+  "per_label_f1": {
+    "set": "uninformative OOF + test_holdout",
+    "f1": {
+      "ADDRESS_FULL": 1.0,
+      "ADDRESS_LINE1": 1.0,
+      "ADDRESS_LINE2": 1.0,
+      "BANK_ACCOUNT": 0.9565,
+      "CARD": 1.0,
+      "CITY": 1.0,
+      "CITY_STATE_ZIP": 1.0,
+      "DIAGNOSIS": 1.0,
+      "DL_NUMBER": 1.0,
+      "DL_STATE": 0.2564,
+      "DOB": 0.958,
+      "EIN": 1.0,
+      "EMAIL": 1.0,
+      "EMPLOYEE_ID": 0.6923,
+      "FIRST_NAME": 0.7778,
+      "FREE_TEXT": 1.0,
+      "FULL_NAME": 0.8333,
+      "GROUP_NUMBER": 0.8936,
+      "GUARDIAN_NAME": 0.2857,
+      "LAST_NAME": 0.9903,
+      "MEMBER_ID": 1.0,
+      "MIDDLE_NAME": 0.3636,
+      "MRN": 1.0,
+      "ORG_NAME": 0.9744,
+      "OTHER": 0.968,
+      "PASSPORT": 1.0,
+      "PHONE": 0.9908,
+      "ROUTING": 1.0,
+      "SCHOOL": 0.963,
+      "SSN": 0.9833,
+      "STATE": 0.6947,
+      "STUDENT_ID": 1.0,
+      "SUFFIX": 1.0,
+      "ZIP": 0.9908
+    }
+  },
+  "calibration": {
+    "ece_oof_uncalibrated": 0.0311,
+    "ece_dev_corpus_v1_calibrated": 0.0813,
+    "ece_test_holdout_calibrated": 0.0534,
+    "reliability_oof": [
+      {
+        "bin": "0.3-0.4",
+        "n": 2,
+        "confidence": 0.3751,
+        "accuracy": 0.0
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 16,
+        "confidence": 0.4666,
+        "accuracy": 0.3125
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 203,
+        "confidence": 0.5503,
+        "accuracy": 0.5271
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 211,
+        "confidence": 0.6507,
+        "accuracy": 0.5782
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 257,
+        "confidence": 0.7554,
+        "accuracy": 0.5642
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 389,
+        "confidence": 0.8568,
+        "accuracy": 0.6992
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 4993,
+        "confidence": 0.9882,
+        "accuracy": 0.9772
+      }
+    ],
+    "reliability_dev_corpus_v1": [
+      {
+        "bin": "0.6-0.7",
+        "n": 5,
+        "confidence": 0.6612,
+        "accuracy": 0.4
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 20,
+        "confidence": 0.7469,
+        "accuracy": 0.95
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 12,
+        "confidence": 0.8473,
+        "accuracy": 0.9167
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 61,
+        "confidence": 0.9633,
+        "accuracy": 0.9344
+      }
+    ],
+    "reliability_test_holdout": [
+      {
+        "bin": "0.5-0.6",
+        "n": 1,
+        "confidence": 0.5829,
+        "accuracy": 1.0
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 6,
+        "confidence": 0.6616,
+        "accuracy": 0.6667
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 13,
+        "confidence": 0.7505,
+        "accuracy": 0.8462
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 17,
+        "confidence": 0.8362,
+        "accuracy": 0.9412
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 61,
+        "confidence": 0.9633,
+        "accuracy": 0.9344
+      }
+    ]
+  },
+  "top_features_per_label": {
+    "ADDRESS_FULL": [
+      [
+        "has_comma",
+        0.6667
+      ],
+      [
+        "rx_csz",
+        0.0909
+      ],
+      [
+        "rx_comma_name",
+        0.0909
+      ]
+    ],
+    "ADDRESS_LINE1": [
+      [
+        "rx_street_like",
+        0.8519
+      ],
+      [
+        "luhn_valid",
+        0.0421
+      ],
+      [
+        "rx_digits6",
+        0.0052
+      ]
+    ],
+    "ADDRESS_LINE2": [
+      [
+        "space_frac",
+        1.0
+      ],
+      [
+        "rx_street_like",
+        0.9778
+      ],
+      [
+        "letter_digit_mix",
+        0.6
+      ]
+    ],
+    "BANK_ACCOUNT": [
+      [
+        "num_log_std",
+        0.1572
+      ],
+      [
+        "luhn_valid",
+        0.1287
+      ],
+      [
+        "rx_phone_fmt",
+        0.0569
+      ]
+    ],
+    "CARD": [
+      [
+        "luhn_valid",
+        0.6095
+      ],
+      [
+        "rx_sci",
+        0.0991
+      ],
+      [
+        "upper_frac",
+        0.0362
+      ]
+    ],
+    "CITY": [
+      [
+        "city_rate",
+        0.8947
+      ],
+      [
+        "last_name_rate",
+        0.7297
+      ],
+      [
+        "first_name_rate",
+        0.3043
+      ]
+    ],
+    "CITY_STATE_ZIP": [
+      [
+        "rx_csz",
+        1.0
+      ],
+      [
+        "null_frac",
+        0.0
+      ],
+      [
+        "col_pos",
+        0.0
+      ]
+    ],
+    "DIAGNOSIS": [
+      [
+        "rx_icd_like",
+        0.963
+      ],
+      [
+        "ssn_valid",
+        0.0256
+      ],
+      [
+        "rx_member_like",
+        0.0127
+      ]
+    ],
+    "DL_NUMBER": [
+      [
+        "rx_dl_like",
+        0.8571
+      ],
+      [
+        "rx_passport_like",
+        0.6279
+      ],
+      [
+        "rx_student_like",
+        0.5429
+      ]
+    ],
+    "DL_STATE": [
+      [
+        "header",
+        0.3304
+      ],
+      [
+        "distinct_ratio",
+        0.2474
+      ],
+      [
+        "state_code",
+        0.1415
+      ]
+    ],
+    "DOB": [
+      [
+        "serial_range",
+        0.1183
+      ],
+      [
+        "date_age_std",
+        0.102
+      ],
+      [
+        "date_age_mean",
+        0.0722
+      ]
+    ],
+    "EIN": [
+      [
+        "rx_ein_like",
+        0.9375
+      ],
+      [
+        "ssn_valid",
+        0.0204
+      ],
+      [
+        "null_frac",
+        0.0
+      ]
+    ],
+    "EMAIL": [
+      [
+        "rx_digits6",
+        0.0052
+      ],
+      [
+        "luhn_valid",
+        0.0052
+      ],
+      [
+        "null_frac",
+        0.0
+      ]
+    ],
+    "EMPLOYEE_ID": [
+      [
+        "has_dash",
+        0.2857
+      ],
+      [
+        "distinct_ratio",
+        0.2857
+      ],
+      [
+        "rx_digits9",
+        0.2857
+      ]
+    ],
+    "FIRST_NAME": [
+      [
+        "first_name_rate",
+        0.4328
+      ],
+      [
+        "any_name_token",
+        0.0345
+      ],
+      [
+        "space_frac",
+        0.0156
+      ]
+    ],
+    "FREE_TEXT": [
+      [
+        "has_dot",
+        0.5455
+      ],
+      [
+        "rx_sci",
+        0.037
+      ],
+      [
+        "null_frac",
+        0.0
+      ]
+    ],
+    "FULL_NAME": [
+      [
+        "last_name_rate",
+        0.441
+      ],
+      [
+        "header",
+        0.1678
+      ],
+      [
+        "first_name_rate",
+        0.1636
+      ]
+    ],
+    "GROUP_NUMBER": [
+      [
+        "rx_digits6",
+        0.9231
+      ],
+      [
+        "num_log_std",
+        0.9231
+      ],
+      [
+        "rx_digits9",
+        0.1958
+      ]
+    ],
+    "GUARDIAN_NAME": [
+      [
+        "header",
+        0.5489
+      ],
+      [
+        "last_name_rate",
+        0.4333
+      ],
+      [
+        "first_name_rate",
+        0.3683
+      ]
+    ],
+    "LAST_NAME": [
+      [
+        "last_name_rate",
+        0.7457
+      ],
+      [
+        "first_name_rate",
+        0.5558
+      ],
+      [
+        "any_name_token",
+        0.0367
+      ]
+    ],
+    "MEMBER_ID": [
+      [
+        "rx_member_like",
+        0.7023
+      ],
+      [
+        "num_log_std",
+        0.44
+      ],
+      [
+        "luhn_valid",
+        0.1569
+      ]
+    ],
+    "MIDDLE_NAME": [
+      [
+        "len_std",
+        0.0471
+      ],
+      [
+        "digit_frac",
+        0.0471
+      ],
+      [
+        "has_at",
+        0.0232
+      ]
+    ],
+    "MRN": [
+      [
+        "rx_digits8",
+        0.5556
+      ],
+      [
+        "rx_member_like",
+        0.5238
+      ],
+      [
+        "rx_alnum_prefix",
+        0.5
+      ]
+    ],
+    "ORG_NAME": [
+      [
+        "org_suffix_rate",
+        1.0
+      ],
+      [
+        "luhn_valid",
+        0.0303
+      ],
+      [
+        "null_frac",
+        0.0
+      ]
+    ],
+    "OTHER": [
+      [
+        "state_code",
+        0.3464
+      ],
+      [
+        "rx_suffix_token",
+        0.217
+      ],
+      [
+        "ssn_valid",
+        0.2099
+      ]
+    ],
+    "PASSPORT": [
+      [
+        "rx_passport_like",
+        1.0
+      ],
+      [
+        "rx_member_like",
+        0.0189
+      ],
+      [
+        "null_frac",
+        0.0
+      ]
+    ],
+    "PHONE": [
+      [
+        "rx_phone_fmt",
+        0.1137
+      ],
+      [
+        "phone_digits",
+        0.1079
+      ],
+      [
+        "num_log_std",
+        0.1041
+      ]
+    ],
+    "ROUTING": [
+      [
+        "aba_valid",
+        1.0
+      ],
+      [
+        "digit_frac",
+        0.3333
+      ],
+      [
+        "has_dash",
+        0.3333
+      ]
+    ],
+    "SCHOOL": [
+      [
+        "last_name_rate",
+        0.6018
+      ],
+      [
+        "has_dot",
+        0.4083
+      ],
+      [
+        "org_suffix_rate",
+        0.3886
+      ]
+    ],
+    "SSN": [
+      [
+        "ssn_valid",
+        0.6767
+      ],
+      [
+        "num_log_std",
+        0.1722
+      ],
+      [
+        "rx_masked",
+        0.1014
+      ]
+    ],
+    "STATE": [
+      [
+        "state_code",
+        0.1884
+      ],
+      [
+        "rx_short_alpha",
+        0.0721
+      ],
+      [
+        "ssn_valid",
+        0.0502
+      ]
+    ],
+    "STUDENT_ID": [
+      [
+        "rx_student_like",
+        1.0
+      ],
+      [
+        "null_frac",
+        0.0
+      ],
+      [
+        "col_pos",
+        0.0
+      ]
+    ],
+    "SUFFIX": [
+      [
+        "rx_suffix_token",
+        1.0
+      ],
+      [
+        "ssn_valid",
+        0.037
+      ],
+      [
+        "rx_member_like",
+        0.012
+      ]
+    ],
+    "ZIP": [
+      [
+        "serial_range",
+        0.3333
+      ],
+      [
+        "upper_frac",
+        0.2857
+      ],
+      [
+        "rx_zip5",
+        0.25
+      ]
+    ]
+  },
+  "sheet_predictions": {
+    "dev_corpus_v1": [
+      {
+        "header": "Employee ID",
+        "true": "EMPLOYEE_ID",
+        "rules": "EMPLOYEE_ID",
+        "ml": "EMPLOYEE_ID",
+        "ml_proba": 0.717
+      },
+      {
+        "header": "First Name",
+        "true": "FIRST_NAME",
+        "rules": "FIRST_NAME",
+        "ml": "FIRST_NAME",
+        "ml_proba": 0.938
+      },
+      {
+        "header": "Last Name",
+        "true": "LAST_NAME",
+        "rules": "LAST_NAME",
+        "ml": "LAST_NAME",
+        "ml_proba": 0.953
+      },
+      {
+        "header": "Suffix",
+        "true": "SUFFIX",
+        "rules": "SUFFIX",
+        "ml": "SUFFIX",
+        "ml_proba": 0.962
+      },
+      {
+        "header": "DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "DOB",
+        "ml_proba": 0.695
+      },
+      {
+        "header": "SSN",
+        "true": "SSN",
+        "rules": "SSN",
+        "ml": "SSN",
+        "ml_proba": 0.862
+      },
+      {
+        "header": "Plan",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.795
+      },
+      {
+        "header": "Group No",
+        "true": "GROUP_NUMBER",
+        "rules": "GROUP_NUMBER",
+        "ml": "GROUP_NUMBER",
+        "ml_proba": 0.707
+      },
+      {
+        "header": "Member ID",
+        "true": "MEMBER_ID",
+        "rules": "MEMBER_ID",
+        "ml": "MEMBER_ID",
+        "ml_proba": 0.789
+      },
+      {
+        "header": "Address",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.921
+      },
+      {
+        "header": "City",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.967
+      },
+      {
+        "header": "State",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.737
+      },
+      {
+        "header": "ZIP",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.959
+      },
+      {
+        "header": "Dep1_First",
+        "true": "FIRST_NAME",
+        "rules": "FIRST_NAME",
+        "ml": "FIRST_NAME",
+        "ml_proba": 0.742
+      },
+      {
+        "header": "Dep1_Last",
+        "true": "LAST_NAME",
+        "rules": "LAST_NAME",
+        "ml": "LAST_NAME",
+        "ml_proba": 0.839
+      },
+      {
+        "header": "Dep1_DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "OTHER",
+        "ml_proba": 0.71
+      },
+      {
+        "header": "Dep1_Rel",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.978
+      },
+      {
+        "header": "Dep2_First",
+        "true": "FIRST_NAME",
+        "rules": "FIRST_NAME",
+        "ml": "FIRST_NAME",
+        "ml_proba": 0.745
+      },
+      {
+        "header": "Dep2_Last",
+        "true": "LAST_NAME",
+        "rules": "LAST_NAME",
+        "ml": "LAST_NAME",
+        "ml_proba": 0.841
+      },
+      {
+        "header": "Dep2_DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "OTHER",
+        "ml_proba": 0.673
+      },
+      {
+        "header": "Dep2_Rel",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.978
+      },
+      {
+        "header": "Dep3_First",
+        "true": "FIRST_NAME",
+        "rules": "FIRST_NAME",
+        "ml": "OTHER",
+        "ml_proba": 0.937
+      },
+      {
+        "header": "Dep3_Last",
+        "true": "LAST_NAME",
+        "rules": "LAST_NAME",
+        "ml": "OTHER",
+        "ml_proba": 0.939
+      },
+      {
+        "header": "Dep3_DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "OTHER",
+        "ml_proba": 0.942
+      },
+      {
+        "header": "Dep3_Rel",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.945
+      },
+      {
+        "header": "Customer",
+        "true": "FULL_NAME",
+        "rules": "FULL_NAME",
+        "ml": "FULL_NAME",
+        "ml_proba": 0.875
+      },
+      {
+        "header": "Card Number",
+        "true": "CARD",
+        "rules": "CARD",
+        "ml": "CARD",
+        "ml_proba": 0.962
+      },
+      {
+        "header": "Exp",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.986
+      },
+      {
+        "header": "Street",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.972
+      },
+      {
+        "header": "City/State/Zip",
+        "true": "CITY_STATE_ZIP",
+        "rules": "CITY_STATE_ZIP",
+        "ml": "CITY_STATE_ZIP",
+        "ml_proba": 0.951
+      },
+      {
+        "header": "Phone",
+        "true": "PHONE",
+        "rules": "PHONE",
+        "ml": "PHONE",
+        "ml_proba": 0.99
+      },
+      {
+        "header": "Employee ID",
+        "true": "EMPLOYEE_ID",
+        "rules": "EMPLOYEE_ID",
+        "ml": "EMPLOYEE_ID",
+        "ml_proba": 0.968
+      },
+      {
+        "header": "Employee First",
+        "true": "FIRST_NAME",
+        "rules": "FIRST_NAME",
+        "ml": "FIRST_NAME",
+        "ml_proba": 0.79
+      },
+      {
+        "header": "Employee Middle",
+        "true": "MIDDLE_NAME",
+        "rules": "MIDDLE_NAME",
+        "ml": "FIRST_NAME",
+        "ml_proba": 0.676
+      },
+      {
+        "header": "Employee Last",
+        "true": "LAST_NAME",
+        "rules": "LAST_NAME",
+        "ml": "LAST_NAME",
+        "ml_proba": 0.959
+      },
+      {
+        "header": "Employee Suffix",
+        "true": "SUFFIX",
+        "rules": "SUFFIX",
+        "ml": "SUFFIX",
+        "ml_proba": 0.957
+      },
+      {
+        "header": "Employee SSN",
+        "true": "SSN",
+        "rules": "SSN",
+        "ml": "SSN",
+        "ml_proba": 0.869
+      },
+      {
+        "header": "Employee DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "DOB",
+        "ml_proba": 0.741
+      },
+      {
+        "header": "Home Address Street",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.93
+      },
+      {
+        "header": "Home Address City",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.97
+      },
+      {
+        "header": "Home Address State",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.852
+      },
+      {
+        "header": "Home Address ZIP",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.987
+      },
+      {
+        "header": "Contact Phone",
+        "true": "PHONE",
+        "rules": "PHONE",
+        "ml": "PHONE",
+        "ml_proba": 0.99
+      },
+      {
+        "header": "Contact Email",
+        "true": "EMAIL",
+        "rules": "EMAIL",
+        "ml": "EMAIL",
+        "ml_proba": 0.985
+      },
+      {
+        "header": "Hire Date",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.972
+      },
+      {
+        "header": "Department",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.979
+      },
+      {
+        "header": "ID",
+        "true": "SSN",
+        "rules": "OTHER",
+        "ml": "SSN",
+        "ml_proba": 0.632
+      },
+      {
+        "header": "NAME",
+        "true": "FULL_NAME",
+        "rules": "FULL_NAME",
+        "ml": "FULL_NAME",
+        "ml_proba": 0.774
+      },
+      {
+        "header": "ADDR1",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.948
+      },
+      {
+        "header": "CITY",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.959
+      },
+      {
+        "header": "ST",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.791
+      },
+      {
+        "header": "ZIP",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.955
+      },
+      {
+        "header": "Column7",
+        "true": "DOB",
+        "rules": "OTHER",
+        "ml": "DOB",
+        "ml_proba": 0.715
+      },
+      {
+        "header": "PHONE",
+        "true": "PHONE",
+        "rules": "PHONE",
+        "ml": "PHONE",
+        "ml_proba": 0.83
+      },
+      {
+        "header": "MRN",
+        "true": "MRN",
+        "rules": "MRN",
+        "ml": "MRN",
+        "ml_proba": 0.963
+      },
+      {
+        "header": "Patient Name",
+        "true": "FULL_NAME",
+        "rules": "FULL_NAME",
+        "ml": "FULL_NAME",
+        "ml_proba": 0.824
+      },
+      {
+        "header": "DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "DOB",
+        "ml_proba": 0.991
+      },
+      {
+        "header": "SSN",
+        "true": "SSN",
+        "rules": "SSN",
+        "ml": "SSN",
+        "ml_proba": 0.872
+      },
+      {
+        "header": "Member ID",
+        "true": "MEMBER_ID",
+        "rules": "MEMBER_ID",
+        "ml": "MEMBER_ID",
+        "ml_proba": 0.804
+      },
+      {
+        "header": "Insurer",
+        "true": "ORG_NAME",
+        "rules": "ORG_NAME",
+        "ml": "SCHOOL",
+        "ml_proba": 0.829
+      },
+      {
+        "header": "Address",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.951
+      },
+      {
+        "header": "City",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.968
+      },
+      {
+        "header": "State",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.731
+      },
+      {
+        "header": "ZIP",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.956
+      },
+      {
+        "header": "Phone",
+        "true": "PHONE",
+        "rules": "PHONE",
+        "ml": "PHONE",
+        "ml_proba": 0.99
+      },
+      {
+        "header": "Notes",
+        "true": "FREE_TEXT",
+        "rules": "FREE_TEXT",
+        "ml": "FREE_TEXT",
+        "ml_proba": 0.948
+      },
+      {
+        "header": "Emp No",
+        "true": "EMPLOYEE_ID",
+        "rules": "EMPLOYEE_ID",
+        "ml": "EMPLOYEE_ID",
+        "ml_proba": 0.705
+      },
+      {
+        "header": "Employee Name",
+        "true": "FULL_NAME",
+        "rules": "FULL_NAME",
+        "ml": "FULL_NAME",
+        "ml_proba": 0.871
+      },
+      {
+        "header": "SS#",
+        "true": "SSN",
+        "rules": "SSN",
+        "ml": "SSN",
+        "ml_proba": 0.958
+      },
+      {
+        "header": "Pay Date",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.958
+      },
+      {
+        "header": "Gross Pay",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.985
+      },
+      {
+        "header": "Net Pay",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.986
+      },
+      {
+        "header": "Bank Routing",
+        "true": "ROUTING",
+        "rules": "ROUTING",
+        "ml": "ROUTING",
+        "ml_proba": 0.701
+      },
+      {
+        "header": "Account No",
+        "true": "BANK_ACCOUNT",
+        "rules": "BANK_ACCOUNT",
+        "ml": "BANK_ACCOUNT",
+        "ml_proba": 0.931
+      },
+      {
+        "header": "Dept",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.972
+      },
+      {
+        "header": "Street",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.942
+      },
+      {
+        "header": "City",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.969
+      },
+      {
+        "header": "State",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.733
+      },
+      {
+        "header": "Zip",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.95
+      },
+      {
+        "header": "Student ID",
+        "true": "STUDENT_ID",
+        "rules": "STUDENT_ID",
+        "ml": "STUDENT_ID",
+        "ml_proba": 0.964
+      },
+      {
+        "header": "Student Name",
+        "true": "FULL_NAME",
+        "rules": "FULL_NAME",
+        "ml": "FULL_NAME",
+        "ml_proba": 0.789
+      },
+      {
+        "header": "DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "OTHER",
+        "ml_proba": 0.969
+      },
+      {
+        "header": "Grade",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.973
+      },
+      {
+        "header": "School",
+        "true": "SCHOOL",
+        "rules": "SCHOOL",
+        "ml": "SCHOOL",
+        "ml_proba": 0.931
+      },
+      {
+        "header": "Guardian Name",
+        "true": "GUARDIAN_NAME",
+        "rules": "GUARDIAN_NAME",
+        "ml": "FULL_NAME",
+        "ml_proba": 0.63
+      },
+      {
+        "header": "Guardian Phone",
+        "true": "PHONE",
+        "rules": "PHONE",
+        "ml": "PHONE",
+        "ml_proba": 0.99
+      },
+      {
+        "header": "Address",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.934
+      },
+      {
+        "header": "City",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.957
+      },
+      {
+        "header": "State",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.763
+      },
+      {
+        "header": "ZIP",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.947
+      },
+      {
+        "header": "Vendor",
+        "true": "ORG_NAME",
+        "rules": "ORG_NAME",
+        "ml": "ORG_NAME",
+        "ml_proba": 0.986
+      },
+      {
+        "header": "EIN",
+        "true": "EIN",
+        "rules": "EIN",
+        "ml": "EIN",
+        "ml_proba": 0.987
+      },
+      {
+        "header": "Address",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.98
+      },
+      {
+        "header": "City",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.966
+      },
+      {
+        "header": "State",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.763
+      },
+      {
+        "header": "ZIP",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.952
+      },
+      {
+        "header": "Phone",
+        "true": "PHONE",
+        "rules": "PHONE",
+        "ml": "PHONE",
+        "ml_proba": 0.99
+      },
+      {
+        "header": "Category",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.98
+      }
+    ],
+    "test_holdout": [
+      {
+        "header": "Employee ID",
+        "true": "EMPLOYEE_ID",
+        "rules": "EMPLOYEE_ID",
+        "ml": "EMPLOYEE_ID",
+        "ml_proba": 0.688
+      },
+      {
+        "header": "First Name",
+        "true": "FIRST_NAME",
+        "rules": "FIRST_NAME",
+        "ml": "FIRST_NAME",
+        "ml_proba": 0.938
+      },
+      {
+        "header": "Last Name",
+        "true": "LAST_NAME",
+        "rules": "LAST_NAME",
+        "ml": "LAST_NAME",
+        "ml_proba": 0.955
+      },
+      {
+        "header": "Suffix",
+        "true": "SUFFIX",
+        "rules": "SUFFIX",
+        "ml": "SUFFIX",
+        "ml_proba": 0.961
+      },
+      {
+        "header": "DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "DOB",
+        "ml_proba": 0.583
+      },
+      {
+        "header": "SSN",
+        "true": "SSN",
+        "rules": "SSN",
+        "ml": "SSN",
+        "ml_proba": 0.869
+      },
+      {
+        "header": "Plan",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.838
+      },
+      {
+        "header": "Group No",
+        "true": "GROUP_NUMBER",
+        "rules": "GROUP_NUMBER",
+        "ml": "GROUP_NUMBER",
+        "ml_proba": 0.808
+      },
+      {
+        "header": "Member ID",
+        "true": "MEMBER_ID",
+        "rules": "MEMBER_ID",
+        "ml": "MEMBER_ID",
+        "ml_proba": 0.791
+      },
+      {
+        "header": "Address",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.929
+      },
+      {
+        "header": "City",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.962
+      },
+      {
+        "header": "State",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.737
+      },
+      {
+        "header": "ZIP",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.957
+      },
+      {
+        "header": "Dep1_First",
+        "true": "FIRST_NAME",
+        "rules": "FIRST_NAME",
+        "ml": "FIRST_NAME",
+        "ml_proba": 0.82
+      },
+      {
+        "header": "Dep1_Last",
+        "true": "LAST_NAME",
+        "rules": "LAST_NAME",
+        "ml": "LAST_NAME",
+        "ml_proba": 0.841
+      },
+      {
+        "header": "Dep1_DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "OTHER",
+        "ml_proba": 0.746
+      },
+      {
+        "header": "Dep1_Rel",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.978
+      },
+      {
+        "header": "Dep2_First",
+        "true": "FIRST_NAME",
+        "rules": "FIRST_NAME",
+        "ml": "FIRST_NAME",
+        "ml_proba": 0.814
+      },
+      {
+        "header": "Dep2_Last",
+        "true": "LAST_NAME",
+        "rules": "LAST_NAME",
+        "ml": "LAST_NAME",
+        "ml_proba": 0.842
+      },
+      {
+        "header": "Dep2_DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "OTHER",
+        "ml_proba": 0.745
+      },
+      {
+        "header": "Dep2_Rel",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.978
+      },
+      {
+        "header": "Dep3_First",
+        "true": "FIRST_NAME",
+        "rules": "FIRST_NAME",
+        "ml": "OTHER",
+        "ml_proba": 0.937
+      },
+      {
+        "header": "Dep3_Last",
+        "true": "LAST_NAME",
+        "rules": "LAST_NAME",
+        "ml": "OTHER",
+        "ml_proba": 0.939
+      },
+      {
+        "header": "Dep3_DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "OTHER",
+        "ml_proba": 0.942
+      },
+      {
+        "header": "Dep3_Rel",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.945
+      },
+      {
+        "header": "Customer",
+        "true": "FULL_NAME",
+        "rules": "FULL_NAME",
+        "ml": "FULL_NAME",
+        "ml_proba": 0.873
+      },
+      {
+        "header": "Card Number",
+        "true": "CARD",
+        "rules": "CARD",
+        "ml": "CARD",
+        "ml_proba": 0.964
+      },
+      {
+        "header": "Exp",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.986
+      },
+      {
+        "header": "Street",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.973
+      },
+      {
+        "header": "City/State/Zip",
+        "true": "CITY_STATE_ZIP",
+        "rules": "CITY_STATE_ZIP",
+        "ml": "CITY_STATE_ZIP",
+        "ml_proba": 0.953
+      },
+      {
+        "header": "Phone",
+        "true": "PHONE",
+        "rules": "PHONE",
+        "ml": "PHONE",
+        "ml_proba": 0.99
+      },
+      {
+        "header": "Employee ID",
+        "true": "EMPLOYEE_ID",
+        "rules": "EMPLOYEE_ID",
+        "ml": "EMPLOYEE_ID",
+        "ml_proba": 0.971
+      },
+      {
+        "header": "Employee First",
+        "true": "FIRST_NAME",
+        "rules": "FIRST_NAME",
+        "ml": "FIRST_NAME",
+        "ml_proba": 0.805
+      },
+      {
+        "header": "Employee Middle",
+        "true": "MIDDLE_NAME",
+        "rules": "MIDDLE_NAME",
+        "ml": "FIRST_NAME",
+        "ml_proba": 0.659
+      },
+      {
+        "header": "Employee Last",
+        "true": "LAST_NAME",
+        "rules": "LAST_NAME",
+        "ml": "LAST_NAME",
+        "ml_proba": 0.952
+      },
+      {
+        "header": "Employee Suffix",
+        "true": "SUFFIX",
+        "rules": "SUFFIX",
+        "ml": "SUFFIX",
+        "ml_proba": 0.97
+      },
+      {
+        "header": "Employee SSN",
+        "true": "SSN",
+        "rules": "SSN",
+        "ml": "SSN",
+        "ml_proba": 0.869
+      },
+      {
+        "header": "Employee DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "DOB",
+        "ml_proba": 0.672
+      },
+      {
+        "header": "Home Address Street",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.927
+      },
+      {
+        "header": "Home Address City",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.973
+      },
+      {
+        "header": "Home Address State",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.852
+      },
+      {
+        "header": "Home Address ZIP",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.986
+      },
+      {
+        "header": "Contact Phone",
+        "true": "PHONE",
+        "rules": "PHONE",
+        "ml": "PHONE",
+        "ml_proba": 0.99
+      },
+      {
+        "header": "Contact Email",
+        "true": "EMAIL",
+        "rules": "EMAIL",
+        "ml": "EMAIL",
+        "ml_proba": 0.985
+      },
+      {
+        "header": "Hire Date",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.972
+      },
+      {
+        "header": "Department",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.979
+      },
+      {
+        "header": "ID",
+        "true": "SSN",
+        "rules": "OTHER",
+        "ml": "SSN",
+        "ml_proba": 0.635
+      },
+      {
+        "header": "NAME",
+        "true": "FULL_NAME",
+        "rules": "FULL_NAME",
+        "ml": "FULL_NAME",
+        "ml_proba": 0.769
+      },
+      {
+        "header": "ADDR1",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.946
+      },
+      {
+        "header": "CITY",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.965
+      },
+      {
+        "header": "ST",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.791
+      },
+      {
+        "header": "ZIP",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.953
+      },
+      {
+        "header": "Column7",
+        "true": "DOB",
+        "rules": "OTHER",
+        "ml": "DOB",
+        "ml_proba": 0.704
+      },
+      {
+        "header": "PHONE",
+        "true": "PHONE",
+        "rules": "PHONE",
+        "ml": "PHONE",
+        "ml_proba": 0.808
+      },
+      {
+        "header": "MRN",
+        "true": "MRN",
+        "rules": "MRN",
+        "ml": "MRN",
+        "ml_proba": 0.963
+      },
+      {
+        "header": "Patient Name",
+        "true": "FULL_NAME",
+        "rules": "FULL_NAME",
+        "ml": "FULL_NAME",
+        "ml_proba": 0.812
+      },
+      {
+        "header": "DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "DOB",
+        "ml_proba": 0.989
+      },
+      {
+        "header": "SSN",
+        "true": "SSN",
+        "rules": "SSN",
+        "ml": "SSN",
+        "ml_proba": 0.88
+      },
+      {
+        "header": "Member ID",
+        "true": "MEMBER_ID",
+        "rules": "MEMBER_ID",
+        "ml": "MEMBER_ID",
+        "ml_proba": 0.801
+      },
+      {
+        "header": "Insurer",
+        "true": "ORG_NAME",
+        "rules": "ORG_NAME",
+        "ml": "SCHOOL",
+        "ml_proba": 0.829
+      },
+      {
+        "header": "Address",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.937
+      },
+      {
+        "header": "City",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.977
+      },
+      {
+        "header": "State",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.731
+      },
+      {
+        "header": "ZIP",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.952
+      },
+      {
+        "header": "Phone",
+        "true": "PHONE",
+        "rules": "PHONE",
+        "ml": "PHONE",
+        "ml_proba": 0.99
+      },
+      {
+        "header": "Notes",
+        "true": "FREE_TEXT",
+        "rules": "FREE_TEXT",
+        "ml": "FREE_TEXT",
+        "ml_proba": 0.947
+      },
+      {
+        "header": "Emp No",
+        "true": "EMPLOYEE_ID",
+        "rules": "EMPLOYEE_ID",
+        "ml": "EMPLOYEE_ID",
+        "ml_proba": 0.702
+      },
+      {
+        "header": "Employee Name",
+        "true": "FULL_NAME",
+        "rules": "FULL_NAME",
+        "ml": "FULL_NAME",
+        "ml_proba": 0.855
+      },
+      {
+        "header": "SS#",
+        "true": "SSN",
+        "rules": "SSN",
+        "ml": "SSN",
+        "ml_proba": 0.974
+      },
+      {
+        "header": "Pay Date",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.958
+      },
+      {
+        "header": "Gross Pay",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.985
+      },
+      {
+        "header": "Net Pay",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.986
+      },
+      {
+        "header": "Bank Routing",
+        "true": "ROUTING",
+        "rules": "ROUTING",
+        "ml": "ROUTING",
+        "ml_proba": 0.698
+      },
+      {
+        "header": "Account No",
+        "true": "BANK_ACCOUNT",
+        "rules": "BANK_ACCOUNT",
+        "ml": "BANK_ACCOUNT",
+        "ml_proba": 0.906
+      },
+      {
+        "header": "Dept",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.973
+      },
+      {
+        "header": "Street",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.941
+      },
+      {
+        "header": "City",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.97
+      },
+      {
+        "header": "State",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.733
+      },
+      {
+        "header": "Zip",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.951
+      },
+      {
+        "header": "Student ID",
+        "true": "STUDENT_ID",
+        "rules": "STUDENT_ID",
+        "ml": "STUDENT_ID",
+        "ml_proba": 0.964
+      },
+      {
+        "header": "Student Name",
+        "true": "FULL_NAME",
+        "rules": "FULL_NAME",
+        "ml": "FULL_NAME",
+        "ml_proba": 0.781
+      },
+      {
+        "header": "DOB",
+        "true": "DOB",
+        "rules": "DOB",
+        "ml": "OTHER",
+        "ml_proba": 0.968
+      },
+      {
+        "header": "Grade",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.973
+      },
+      {
+        "header": "School",
+        "true": "SCHOOL",
+        "rules": "SCHOOL",
+        "ml": "SCHOOL",
+        "ml_proba": 0.931
+      },
+      {
+        "header": "Guardian Name",
+        "true": "GUARDIAN_NAME",
+        "rules": "GUARDIAN_NAME",
+        "ml": "FULL_NAME",
+        "ml_proba": 0.617
+      },
+      {
+        "header": "Guardian Phone",
+        "true": "PHONE",
+        "rules": "PHONE",
+        "ml": "PHONE",
+        "ml_proba": 0.99
+      },
+      {
+        "header": "Address",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.946
+      },
+      {
+        "header": "City",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.962
+      },
+      {
+        "header": "State",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.763
+      },
+      {
+        "header": "ZIP",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.922
+      },
+      {
+        "header": "Vendor",
+        "true": "ORG_NAME",
+        "rules": "ORG_NAME",
+        "ml": "ORG_NAME",
+        "ml_proba": 0.986
+      },
+      {
+        "header": "EIN",
+        "true": "EIN",
+        "rules": "EIN",
+        "ml": "EIN",
+        "ml_proba": 0.987
+      },
+      {
+        "header": "Address",
+        "true": "ADDRESS_LINE1",
+        "rules": "ADDRESS_LINE1",
+        "ml": "ADDRESS_LINE1",
+        "ml_proba": 0.98
+      },
+      {
+        "header": "City",
+        "true": "CITY",
+        "rules": "CITY",
+        "ml": "CITY",
+        "ml_proba": 0.974
+      },
+      {
+        "header": "State",
+        "true": "STATE",
+        "rules": "STATE",
+        "ml": "STATE",
+        "ml_proba": 0.763
+      },
+      {
+        "header": "ZIP",
+        "true": "ZIP",
+        "rules": "ZIP",
+        "ml": "ZIP",
+        "ml_proba": 0.949
+      },
+      {
+        "header": "Phone",
+        "true": "PHONE",
+        "rules": "PHONE",
+        "ml": "PHONE",
+        "ml_proba": 0.99
+      },
+      {
+        "header": "Category",
+        "true": "OTHER",
+        "rules": "OTHER",
+        "ml": "OTHER",
+        "ml_proba": 0.981
+      }
+    ]
+  }
+}

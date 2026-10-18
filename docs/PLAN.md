@@ -76,22 +76,22 @@ processed and their accuracy is reported separately.
 
 ## M3 — Spreadsheet track + ML column classifier (Day 2 afternoon → Day 3 morning)
 Spec: `SPREADSHEET_TRACK.md`, `ML_MODELS.md §C`.
-- [ ] `sheets/reader.py`: xlsx/xls/csv reading, encoding + delimiter detection,
+- [x] `sheets/reader.py`: xlsx/xls/csv reading, encoding + delimiter detection,
       multi-sheet handling.
-- [ ] `sheets/profile.py`: `file_profile` + `column_profile` tables.
-- [ ] `sheets/layout.py`: header-row detection, merged-cell fill, drop title, total and
+- [x] `sheets/profile.py`: `file_profile` + `column_profile` tables.
+- [x] `sheets/layout.py`: header-row detection, merged-cell fill, drop title, total and
       blank rows, hidden-row flag.
-- [ ] `sheets/features.py`: column feature engineering.
-- [ ] `sheets/mapping.py`: header-rules mapper (baseline) plus ML mapper
+- [x] `sheets/features.py`: column feature engineering.
+- [x] `sheets/mapping.py`: header-rules mapper (baseline) plus ML mapper
       (`breachlens train column-classifier`). The decision table (ADR-034) and
       confidence go to `column_mapping`; REVIEW columns go to review.
-- [ ] `sheets/repair.py`: ZIP padding, date serials, precision-loss flags, Excel error
+- [x] `sheets/repair.py`: ZIP padding, date serials, precision-loss flags, Excel error
       values, combined-field splits, pre-masked values.
-- [ ] `sheets/reshape.py`: unpivot wide dependent columns into rows.
-- [ ] `sheets/freetext.py`: regex + validator scan of notes/comment columns.
-- [ ] Emit `mentions` rows with `source_type=SPREADSHEET`, `source_file`,
+- [x] `sheets/reshape.py`: unpivot wide dependent columns into rows.
+- [x] `sheets/freetext.py`: regex + validator scan of notes/comment columns.
+- [x] Emit `mentions` rows with `source_type=SPREADSHEET`, `source_file`,
       `source_sheet`, `source_row` (in memory only until M4; ADR-044).
-- [ ] `knime/`: document the native-node version of steps reader → layout → repair.
+- [x] `knime/`: document the native-node version of steps reader → layout → repair.
 
 **AC:**
 - The ML mapper beats the header-only baseline on macro-F1 for the held-out

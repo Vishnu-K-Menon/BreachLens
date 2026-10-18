@@ -19,3 +19,13 @@ ASSUMPTIONS_LIMITATIONS.md:
   accents lost by the `eng` OCR model). Report both; neither represents real-world scans.
 - All dates that depend on "today" (age, minors, DOB plausibility, workbook RunDate) use
   the configured `as_of_date` so results are reproducible (ADR-053).
+- Column classifier (ADR-055): corpus_v1's spreadsheets are a **dev** set (used to find
+  the training-data shift); the seed-43 holdout spreadsheets are the **test** set. Both
+  reuse the same 8 header templates, so the holdout tests new values under known
+  layouts. The header-blind test is the out-of-fold uninformative-header set. With
+  normal headers the alias rules beat the ML (0.99 vs 0.87 macro-F1); the ML earns its
+  place on headers like `ID` / `Column7` (0.90 vs 0.01), and the decision table
+  combines both. One known wrong ML override (`Insurer` → SCHOOL, p 0.83) is reported,
+  not patched.
+- Spreadsheet fixes are tuned on the planted cases P27–P44 (synthetic Excel damage).
+  Real exports will show damage the generator does not produce.
