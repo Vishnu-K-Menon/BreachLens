@@ -689,8 +689,12 @@ allows network for this alone, opt-in, keeping `offline: true` as the pipeline d
   ANDERSON RD 32812). A rejected Non_Exact match is UNVERIFIED + ADDR_GEOCODE_NOMATCH.
 - The scale test never calls Census (cache only).
 **Consequences** (corpus_v1): mention status agreement with `expected_address_status` is
-396/398. Both misses are one pool address (125 14TH ST, Oakland): the oneline geocoder
-matched it in M1, but the batch geocoder returns No_Match. Reported, not patched.
+396/398. Both misses are one pool address (125 14TH ST, Oakland). The oneline geocoder
+matched it in M1. The batch geocoder returns Match + Non_Exact "125 14TH" with the
+street type dropped, which this rule rejects (street similarity 84 < 95), so the
+mentions are UNVERIFIED + ADDR_GEOCODE_NOMATCH. Corrected 2026-10-18: earlier notes
+said No_Match. Reported, not patched. A follow-up could compare streets without their
+type or retry with the single-line lookup.
 
 ### ADR-064 Matching details
 **Decision** (on top of ARCHITECTURE.md §resolve; settings in `config/matching.yaml`):

@@ -275,8 +275,10 @@ Append-only build log. Format: see docs/WORKFLOW.md.
   - Mention status vs `expected_address_status`: **396/398 = 0.995**
     (VERIFIED 273/275, CORRECTED 1/1, UNVERIFIED 121/121, INVALID 1/1). No fake street
     was VERIFIED.
-  - Both misses are the pool address 125 14TH ST, Oakland (batch No_Match; oneline matched
-    in M1).
+  - Both misses are the pool address 125 14TH ST, Oakland. Corrected 2026-10-18: the
+    batch result is Match + Non_Exact "125 14TH" (street type dropped), which the
+    Non_Exact acceptance rule rejects (street similarity 84 < 95); it is not a No_Match.
+    The oneline geocoder matched it in M1.
   - A live probe showed Non_Exact matches snapping fake streets to real ones, so these
     are now rejected.
   - People: expected VERIFIED 109 / UNVERIFIED 98; got 115 / 100 (215 records, see the
@@ -349,6 +351,12 @@ Append-only build log. Format: see docs/WORKFLOW.md.
 - [README] Interim "Status" section (M0–M5 done, M6–M8 planned, key metrics, hand-built
   parts `notebooks/` and `excel/manual/`). Census cache note. "Known limitations" in the
   backlog: review volume (fix idea: cap the score on first-name conflict), the Oakland
-  batch No_Match (fix idea: single-line retry), and name-only guardian rows staying in
+  address rejected by the Non_Exact rule (fix ideas: compare streets without their type,
+  or a single-line retry), and name-only guardian rows staying in
   review.
 - No pipeline code changed. Next: M6.
+- [correction] A fresh-clone check of the committed cache showed that the Oakland
+  address is not a batch No_Match. Census returns Match + Non_Exact "125 14TH" with the
+  street type dropped, and the ADR-063 acceptance rule rejects it (street similarity
+  84 < 95). The M5 report, ADR-063, PROGRESS and the README are corrected; the code is
+  unchanged.

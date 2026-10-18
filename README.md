@@ -42,10 +42,15 @@ ASSUMPTIONS_LIMITATIONS.md:
     ground truth. Most come from household members who share surname and address, with
     no DOB on one side: their pair scores land in the gray zone (0.70–0.87) and are sent
     to review, not merged. Possible fix: cap the pair score when first names conflict.
-  - 125 14TH ST, Oakland (a pool address) is No_Match in the Census batch geocoder but
-    matches in the single-line lookup, so its mentions are UNVERIFIED instead of VERIFIED
-    (2/398 on corpus_v1, 8/394 on the holdout). Possible fix: retry batch No_Match rows
-    with the single-line lookup.
+  - 125 14TH ST, Oakland (a pool address) comes back from the Census batch geocoder as
+    `Match` + `Non_Exact` → "125 14TH, OAKLAND, CA, 94612": the street type is dropped.
+    The single-line lookup in M1 matched it. The pipeline's Non_Exact acceptance rule
+    (same house number and street, token-sort ≥ 95; ADR-063) scores the street at 84 and
+    rejects it, so its mentions are UNVERIFIED + ADDR_GEOCODE_NOMATCH instead of VERIFIED
+    (2/398 on corpus_v1, 8/394 on the holdout). (Corrected 2026-10-18: earlier notes
+    called this a batch No_Match.) Possible fixes: compare the street without its
+    type/suffix in the acceptance rule, or retry rejected and No_Match batch rows with the
+    single-line lookup.
   - Guardian rows with only a name stay separate, in review, by design: a name alone
     never merges (ADR-064), even when the guardian is a person with other records.
 - The address pool uses Census-assigned ZIPs, which can differ from USPS ZIPs
@@ -81,8 +86,9 @@ ASSUMPTIONS_LIMITATIONS.md:
 - Census (M5, ADR-063): the pipeline is offline by default. Address status comes from
   cached Census batch results; `breachlens run --online` fills the cache once (addresses
   only), and addresses with no cache entry are NOT_CHECKED. The batch geocoder can differ
-  from the oneline one (Oakland 125 14TH ST: oneline Match, batch No_Match). It also
-  snaps fake streets to real ones nearby; such Non_Exact matches are rejected.
+  from the oneline one (Oakland 125 14TH ST: batch drops the street type, see Known
+  limitations). It also snaps fake streets to real ones nearby; such Non_Exact matches
+  are rejected.
 - Matching (M5): a name alone never merges. Household members who share a surname and
   address, with no DOB on one side, land in the gray zone (REVIEW) rather than merging,
   which raises `needs_review`. Guardian rows (name only) stay separate people in review.
