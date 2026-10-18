@@ -13,5 +13,9 @@ ASSUMPTIONS_LIMITATIONS.md:
   the last 4 digits) count as present but do not trigger notice, treated as redacted the
   way many state laws define it. Precision-lost (scientific-notation) and Luhn-failing
   numbers do trigger notice and send the person to review.
+- PDF extraction numbers on corpus_v1 are **tuned**: the templates and OCR settings were
+  adjusted on that corpus. The seed-43 held-out corpus gives the **untuned** numbers
+  (text layer still 1.000; OCR name 0.78, SSN-present 0.86, a few single-field misses,
+  accents lost by the `eng` OCR model). Report both; neither represents real-world scans.
 - All dates that depend on "today" (age, minors, DOB plausibility, workbook RunDate) use
   the configured `as_of_date` so results are reproducible (ADR-053).

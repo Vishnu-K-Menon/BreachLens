@@ -360,11 +360,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--config", type=Path, default=Path("config/pipeline.yaml"))
     parser.add_argument("--truth", type=Path, default=Path("data/raw/corpus_v1/truth"))
+    parser.add_argument("--input", type=Path, default=None, help="Input docs (overrides config).")
     args = parser.parse_args()
     from breachlens.extract.pdf_track import stage_pdf_track
     from breachlens.pipeline import load_context
 
-    ctx = load_context(args.config)
+    ctx = load_context(args.config, input_dir=args.input.resolve() if args.input else None)
     mentions = stage_pdf_track(pd.DataFrame(), ctx)
     print(render(evaluate(mentions, ctx.tables, args.truth)))
 

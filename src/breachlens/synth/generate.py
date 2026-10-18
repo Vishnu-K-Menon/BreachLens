@@ -44,11 +44,15 @@ def _reset(path: Path) -> None:
     path.mkdir(parents=True)
 
 
-def generate_corpus(settings: SynthSettings, root: Path, out_dir: Path) -> GenerateResult:
+def generate_corpus(
+    settings: SynthSettings, root: Path, out_dir: Path, *, corpus_only: bool = False
+) -> GenerateResult:
+    """Write the corpus. `corpus_only` writes docs/ + truth/ only and leaves the shared
+    column corpus and scale file alone (used for held-out corpora)."""
     cfg = settings.config
     docs, truth = out_dir / "docs", out_dir / "truth"
     column_dir, scale_dir = out_dir.parent / "column_corpus", out_dir.parent / "scale"
-    for d in (docs, truth, column_dir):
+    for d in (docs, truth) if corpus_only else (docs, truth, column_dir):
         _reset(d)
     pool = read_pool(root / "data" / "reference" / "address_pool.csv")
     pop = build_population(settings, pool)
@@ -85,11 +89,14 @@ def generate_corpus(settings: SynthSettings, root: Path, out_dir: Path) -> Gener
 
     rendered.extend(render_all_sheets(pop, settings, docs))
     logger.info("rendered 8 spreadsheets")
-    columns = build_column_corpus(
-        settings, root / "config" / "column_corpus_aliases.yaml", column_dir
-    )
-    logger.info("column corpus: %d tables, %d columns", columns["tables"], columns["columns"])
-    scale = write_large_claims(settings, scale_dir / "large_claims.csv")
+    if corpus_only:
+        columns = scale = {"skipped": "corpus_only (held-out corpus)"}
+    else:
+        columns = build_column_corpus(
+            settings, root / "config" / "column_corpus_aliases.yaml", column_dir
+        )
+        logger.info("column corpus: %d tables, %d columns", columns["tables"], columns["columns"])
+        scale = write_large_claims(settings, scale_dir / "large_claims.csv")
     summary = build_truth(pop, settings, rendered, docs, {"column_corpus": columns, "scale": scale})
     files = write_truth(summary, truth)
     return GenerateResult(out_dir, summary, files)

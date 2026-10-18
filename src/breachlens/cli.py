@@ -76,6 +76,9 @@ def generate(
         Path | None, typer.Option(help="Only write review previews to this directory.")
     ] = None,
     root: Annotated[Path, typer.Option(help="Project root (holds config/ and data/).")] = Path("."),
+    corpus_only: Annotated[
+        bool, typer.Option(help="Only docs/ + truth/ (keep the column corpus and scale file).")
+    ] = False,
 ) -> None:
     """Generate the synthetic corpus and ground truth."""
     from dotenv import load_dotenv
@@ -91,7 +94,7 @@ def generate(
     from breachlens.synth.settings import load_synth_settings
 
     settings = load_synth_settings(root / "config", seed)
-    result = generate_corpus(settings, root.resolve(), out.resolve())
+    result = generate_corpus(settings, root.resolve(), out.resolve(), corpus_only=corpus_only)
     counts = result.truth.manifest["counts"]
     typer.echo(
         f"corpus {settings.config.version} (seed {seed}) -> {out}: {counts['files']} files, "

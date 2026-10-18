@@ -107,3 +107,31 @@ Append-only build log. Format: see docs/WORKFLOW.md.
   - The Windows console shows accented names as `�`. That's display only (cp1252 bytes
     in a UTF-8 terminal); the extracted text is correct (U+00D1 etc.).
 - Next: M3 spreadsheet track.
+
+## 2026-10-18 (Day 2) — held-out PDF check
+- [M2 holdout] Second corpus, `--seed 43 --out data/raw/corpus_holdout --corpus-only`
+  (git-ignored). Same templates and config, **no retuning**; nothing was fixed based on
+  this result. `--corpus-only` writes docs/ + truth/ only, so the seed-42 column corpus
+  and scale file are untouched (hash checked). Recall, corpus_v1 (**tuned**) vs
+  holdout (**untuned**):
+
+  | field | v1 TEXT | v1 OCR | holdout TEXT | holdout OCR |
+  |---|---|---|---|---|
+  | name | 1.000 (23/23) | 1.000 (10/10) | 1.000 (24/24) | 0.778 (7/9) |
+  | DOB | 1.000 (10/10) | 1.000 (4/4) | 1.000 (9/9) | 1.000 (5/5) |
+  | SSN present | 1.000 (9/9) | 1.000 (5/5) | 1.000 (7/7) | 0.857 (6/7) |
+  | address line1/city/state/ZIP | 1.000 | 1.000 | 1.000 | 1.000 (9/9) |
+  | member ID | 1.000 (11/11) | 0.750 (3/4) | 1.000 (13/13) | 1.000 (2/2) |
+  | DL / DL state | 1.000 | 1.000 (1/1) | 1.000 | 0.667 (2/3) |
+  | diagnosis | 1.000 (5/5) | 1.000 (3/3) | 1.000 (7/7) | 0.000 (0/1) |
+  | procedure / date of service | 1.000 | 1.000 | 1.000 | 1.000 |
+  | phone | 1.000 | 1.000 (1/1) | 1.000 (2/2) | 1.000 (4/4) |
+  | email | 1.000 (3/3) | — | 1.000 (1/1) | 0.500 (1/2) |
+  | doc type / doc_date | 30/30, 30/30 | | 30/30, 30/30 | |
+  | EIN / NPI / TIN / ORG | 12/12, 8/8, 8/8, 1/1 | | 11/12, 8/8, 8/8, 1/1 | |
+
+  Holdout OCR failures (reported, not fixed): accents lost by the `eng` OCR model
+  (MUÑOZ → MUNOZ, 2 names); one SSN label not found on a scanned W-2; DL and state not
+  found on one new-hire scan; E11.9 read as B11.9; one email not found; one EIN missed.
+  Text-layer extraction generalizes fully; OCR loses about 10–20% on some fields once
+  untuned.
