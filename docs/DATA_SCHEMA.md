@@ -170,15 +170,18 @@ HEALTH INSURANCE INFO · dob → DATE OF BIRTH · student_id → STUDENT RECORD
 ## Run outputs (M4, ADR-058)
 `data/output/<run_id>/` holds `mentions.csv`, `inventory.csv`, `excluded_entities.csv`,
 `excluded_identifiers.csv`, `doc_codes.csv`, `file_profile.csv`, `column_profile.csv`,
-`column_mapping.csv`, `audit_<run_id>.jsonl` and `run_summary.json` (counts only). Every
+`column_mapping.csv`, and, from M5, `people.csv`, `notification_list.csv` and `pair_features.csv`,
+plus `audit_<run_id>.jsonl` and `run_summary.json` (counts only). Every
 file is written through the leak guard. `mentions.csv` follows the column order of the
-`mentions` table above. The `person_id` and `cluster_confidence` columns stay empty until
-M5. `excluded_*.reason` starts with its reason code, e.g. `EIN_EXCLUDED (label:employer)`.
+`mentions` table above. `excluded_*.reason` starts with its reason code, e.g. `EIN_EXCLUDED (label:employer)`.
 
 ## Matching and review tables
 - `pair_features`: mention_a, mention_b, f_first_jw, f_last_jw, f_dob, f_zip_eq,
   f_addr_tsr, f_ssn_key_eq, f_dl_key_eq, f_same_source_file, f_mi_eq, score,
-  pass (A/B/C), decision (MERGE / REVIEW / NO_MERGE), guard_fired.
+  pass (A/B/C), decision (MERGE / REVIEW / NO_MERGE), guard_fired (SSN_KEY_DIFFERS,
+  DOB_CONFLICT, NAME_ONLY, SAME_SOURCE_ROW, RELATED_MENTIONS, CLUSTER_CONFLICT),
+  same_person_id. Pairs whose SSN keys both exist and differ are counted, not stored
+  (ADR-064).
 - `review_decisions`: run_id, item_id, item_type (FIELD / PAIR / COLUMN), field,
   decision, reviewer_value_masked, reviewed_by, reviewed_at, note.
 - `runs`: run_id, started_at, finished_at, config_hash, schema_version, n_files,

@@ -41,6 +41,7 @@ first letter.
 | Census `Match` + `Exact`, and ZIP check OK | VERIFIED |
 | Census `Match` + `Non_Exact`, OR ZIP check produced an accepted city fix | CORRECTED (+ `address_suggestion`) |
 | Census `Tie`, or `No_Match` but ZIP/city/state consistent | UNVERIFIED |
+| Census `Match` + `Non_Exact` to another street or ZIP (snapped; ADR-063) | UNVERIFIED + ADDR_GEOCODE_NOMATCH |
 | Invalid state or ZIP format that can't be fixed | INVALID |
 | offline mode, or the stage is disabled | NOT_CHECKED |
 
@@ -126,8 +127,9 @@ MA: ['^[A-Z]\d{8}$', '^\d{9}$']
 ## Implementation notes (M4, ADR-059)
 - `config/rules.yaml` declares every code above with its severity, the emitting stage and
   its scope (mention / doc / column / excluded). It is the only severity source.
-- Five codes need Census or entity resolution and arrive in M5: ADDR_GEOCODE_NOMATCH,
-  ADDR_GEOCODE_TIE, DOB_CONFLICT_IN_CLUSTER, DUPLICATE_CANDIDATE, NOTIFY_STATE_UNKNOWN.
+- Five codes need Census or entity resolution and are emitted from M5 on (address,
+  resolve and notify stages): ADDR_GEOCODE_NOMATCH, ADDR_GEOCODE_TIE,
+  DOB_CONFLICT_IN_CLUSTER, DUPLICATE_CANDIDATE, NOTIFY_STATE_UNKNOWN.
 - ADDR_ZIP_STATE_MISMATCH and ADDR_ZIP_CITY_MISMATCH use the offline ZIP check
   (`address/zipcheck.py`, `zipcodes`) in M4. Census stays in M5.
 - Street lines are kept as printed and upper-cased; only units are standardized and

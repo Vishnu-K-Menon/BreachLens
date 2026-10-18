@@ -36,5 +36,15 @@ ASSUMPTIONS_LIMITATIONS.md:
   when it isn't printed; the seed-43 generator gave one person the suffix `MR`.
 - OCR on accented names (`eng` model) loses accents, and `Jr.` can read as `Ir.`. Neither
   is fixed (holdout numbers are untuned).
+- Census (M5, ADR-063): the pipeline is offline by default. Address status comes from
+  cached Census batch results; `breachlens run --online` fills the cache once (addresses
+  only), and addresses with no cache entry are NOT_CHECKED. The batch geocoder can differ
+  from the oneline one (Oakland 125 14TH ST: oneline Match, batch No_Match). It also
+  snaps fake streets to real ones nearby; such Non_Exact matches are rejected.
+- Matching (M5): a name alone never merges. Household members who share a surname and
+  address, with no DOB on one side, land in the gray zone (REVIEW) rather than merging,
+  which raises `needs_review`. Guardian rows (name only) stay separate people in review.
+- Notification rules are the demo subset in `jurisdictions.yaml` (NOT LEGAL ADVICE); NJ
+  and MA use `default` and are flagged NOTIFY_STATE_UNKNOWN.
 - Spreadsheet fixes are tuned on the planted cases P27–P44 (synthetic Excel damage).
   Real exports will show damage the generator does not produce.

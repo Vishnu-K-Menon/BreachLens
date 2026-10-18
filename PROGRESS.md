@@ -258,3 +258,82 @@ Append-only build log. Format: see docs/WORKFLOW.md.
   implementation notes. PLAN M4 ticked, and PLAN M8 now has the README quick start with
   `breachlens train column-classifier`.
 - Next: M5 address (Census) + matching + notification + scale test.
+
+## 2026-10-18 (Day 4) — review overrides + M5 address, resolution, notification, scale
+- [review] ADR-061: `config/review_overrides.yaml` holds human column decisions, applied
+  on every run, with an audit event `REVIEW_OVERRIDE_APPLIED`. The model and the decision
+  table are unchanged. First entry: patient_list `Insurer` → INSURER. Before/after on
+  corpus_v1 (pre-M5 stages):
+  - REVIEW mentions 189 → 137
+  - FERPA flag on the 65 patients 65 → 0; `insurer_name` set 0 → 65
+  - 13 patients stay in REVIEW for their own row codes
+  ADR-062 (for M7): Review_Queue groups column-level warnings into one item per column,
+  with `affected_rows`.
+- [address] ADR-063. Census batch geocoder, cache-first; `offline: true` stays the
+  default, and `run --online` (used once per corpus) fills the cache with addresses only.
+  - corpus_v1: 129 unique addresses fetched once, then cached.
+  - Mention status vs `expected_address_status`: **396/398 = 0.995**
+    (VERIFIED 273/275, CORRECTED 1/1, UNVERIFIED 121/121, INVALID 1/1). No fake street
+    was VERIFIED.
+  - Both misses are the pool address 125 14TH ST, Oakland (batch No_Match; oneline matched
+    in M1).
+  - A live probe showed Non_Exact matches snapping fake streets to real ones, so these
+    are now rejected.
+  - People: expected VERIFIED 109 / UNVERIFIED 98; got 115 / 100 (215 records, see the
+    split people below).
+- [matching] ADR-064 (`python -m breachlens.evaluate.resolution`):
+
+  | metric | corpus_v1 (dev) | holdout (untuned) |
+  |---|---|---|
+  | pairwise precision | **1.000** (664/664) | 1.000 (649/649) |
+  | pairwise recall | **0.933** (664/712) | 0.918 (649/707) |
+  | twins (P18) not merged | yes | yes |
+  | mover (P17) merged, newer address kept | yes (RICHMOND 23219) | yes (BUFFALO 14202) |
+  | payroll + W-2 (P41) one person_id | 8/8 | 7/8 (one W-2 lost its SSN to OCR, M2) |
+  | nickname P05 / surname variant P08 / P24 4+ sources | yes / yes / yes | yes / yes / yes |
+  | unrelated shared-address pairs merged | **0/78** | 0/59 |
+  | people predicted vs truth | 215 vs 207 (8 split) | 217 vs 207 (9 split) |
+
+  - The recall loss is guardian rows: name only, so capped at REVIEW by design.
+  - Gray zone on dev: 142 REVIEW pairs in 48 cluster pairs.
+    - 8 are the same person: a guardian row (name only, 0.89 NAME_ONLY) vs that
+      person's other records.
+    - 40 are different people: household members sharing surname and address with no
+      DOB on one side (0.70–0.87, e.g. R. G. / C. G. at 0.873).
+    - None of them merged; all are review items. This drives `needs_review` 43 (truth
+      card_review 10).
+- [notify] ADR-065:
+  - **155 listed vs 155 truth**, the same 155 people (0 missed, 0 extra, 0 duplicate
+    letters).
+  - By state, truth = listed: CA 30, FL 18, MA 7, NJ 8, NY 23, PA 22, TX 23, VA 24.
+  - NJ/MA use `default` + NOTIFY_STATE_UNKNOWN (19 records).
+  - 33 minors (truth 33) carry "Notify parent/guardian (P…)", with the linked
+    subscriber/guardian where one exists; students also get the FERPA note.
+  - Holdout: 159 vs 159.
+- [scale] ADR-066, `breachlens scale-test` on the 50k claims file: 40.3 s end to end
+  (1,240 rows/s), peak 973 MB.
+
+  | stage | s | rows/s |
+  |---|---|---|
+  | sheet_track (read + layout + ML mapping + repair) | 11.1 | 4,521 |
+  | normalize | 9.0 | 5,548 |
+  | validate | 2.6 | 19,141 |
+  | address (cache only) | 3.4 | 14,654 |
+  | privacy | 2.5 | 19,796 |
+  | resolve | 7.2 | 6,966 |
+  | notify | 4.5 | 11,094 |
+
+  - Resolve skips the 8,293,309 soundex-blocked pairs whose SSN keys differ.
+  - The first version scored them: 265 s and 10.9 GB, fixed in ADR-064.
+- [checks] `pytest -q`: 488 passed (incl. tests/integration/test_resolution.py). ruff clean.
+- [codes] All 63 reason codes are now emitted; the 5 M5 codes got positive/negative
+  cases, and the meta-test covers every code.
+- [leak guard] Runs write 13 files (+ people, notification_list, pair_features); 0
+  findings on corpus_v1, the holdout and the generated test corpus.
+- [fixed during M5, dev]:
+  - accent folding for the soundex key (MUÑOZ lost its Ñ)
+  - per-group pandas loops (validate 66 s → 3 s)
+  - SSN-guarded pairs dropped at blocking time
+  - evaluator checks for P05/P08/P41 test the tagged rows. Their second clusters are
+    name-only guardian rows of the same person.
+- Next: M6 database + SQL (Lite).

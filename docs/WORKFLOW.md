@@ -37,7 +37,7 @@ python -m breachlens generate --seed 42 --out data/raw/corpus_v1   # writes docs
 python -m breachlens train column-classifier            # (optional: match-model, doctype)
 python -m breachlens run --config config/pipeline.yaml --input data/raw/corpus_v1/docs
 python -m breachlens evaluate --run latest --truth data/raw/corpus_v1/truth   # TARGET defaults to pipeline (ADR-039)
-python -m breachlens scale-test --n 10000                # also reads data/raw/scale/large_claims.csv
+python -m breachlens scale-test                          # times each stage on data/raw/scale/large_claims.csv (50k rows, ADR-051)
 python -m breachlens apply-review --decisions data/output/<run_id>/review_decisions_<run_id>.csv
 python -m breachlens ask "How many people in Texas had both SSN and medical info exposed?"
 python -m breachlens evaluate ask

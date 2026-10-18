@@ -667,3 +667,71 @@ flag (65 → 0) and gain `insurer_name`. 13 of them stay in REVIEW for their own
 COL_MAPPING_ML_OVERRIDE, COL_UNMAPPED_SENSITIVE) are one Review_Queue item per column,
 with `affected_rows`, not one item per person. Row-level codes stay one item per
 mention. Reviewed columns show as resolved.
+
+### ADR-063 Census batch geocoder, cache-first and offline by default
+**Context:** M5 verifies addresses with the Census batch geocoder. The project owner
+allows network for this alone, opt-in, keeping `offline: true` as the pipeline default
+(the on-prem story).
+**Decision:**
+- `address/census.py` adds a batch client: POST `/geocoder/locations/addressbatch`,
+  `benchmark=Public_AR_Current`, at most 10,000 rows per request. Only street line 1
+  (without the unit), city, state and ZIP are sent.
+- One cache entry per address (`data/cache/census/<sha256>.json`). Only cache misses are
+  sent, so a later run with a different address set re-sends nothing that's cached.
+- `offline: true` stays the default. Offline runs read cached results, and addresses
+  with no cache entry are NOT_CHECKED. `breachlens run --online` is the explicit opt-in
+  that fills the cache; it is the only network path in the code base. Tests use a
+  recorded response and never call the service.
+- Status mapping: VALIDATION_RULES.md, plus one addition. A `Match` + `Non_Exact`
+  result counts as CORRECTED only if it keeps the house number and the street
+  (token-sort ≥ 95) and the ZIP or the city. The first live probe showed the geocoder
+  snapping a fake street to a real one nearby (4603 ANDERSON KEYS 32825 → 4603
+  ANDERSON RD 32812). A rejected Non_Exact match is UNVERIFIED + ADDR_GEOCODE_NOMATCH.
+- The scale test never calls Census (cache only).
+**Consequences** (corpus_v1): mention status agreement with `expected_address_status` is
+396/398. Both misses are one pool address (125 14TH ST, Oakland): the oneline geocoder
+matched it in M1, but the batch geocoder returns No_Match. Reported, not patched.
+
+### ADR-064 Matching details
+**Decision** (on top of ARCHITECTURE.md §resolve; settings in `config/matching.yaml`):
+- Runs after privacy, on HMAC keys and normalized fields only.
+- Pass C re-weights over the features present (null features drop out).
+- A pair with no DOB, ZIP or address evidence is capped at 0.89 (REVIEW, NAME_ONLY): a
+  name alone never merges.
+- DOB conflict (both present, `f_dob` ≤ 0.3) caps the score at 0.69. Day-month
+  transpositions (0.7) are not conflicts.
+- Never merged:
+  - both `ssn_key` present and different. These pairs are counted but not scored or
+    stored, which keeps the 50k run at 7 s and under 1 GB.
+  - two mentions on the same source row (subscriber/dependent)
+  - mentions linked by `related_mention_id`
+- Cluster-level cannot-link: union-find never joins clusters whose SSN keys or DOBs
+  conflict, so a no-SSN/no-DOB row cannot bridge twins.
+- Names are compared accent-folded (JOSÉ = JOSE) with nickname expansion
+  (`config/nicknames.csv`); the soundex key is accent-folded too.
+- REVIEW pairs across clusters → DUPLICATE_CANDIDATE. A same-SSN DOB conflict →
+  DOB_CONFLICT_IN_CLUSTER. `people.needs_review` = a card PRECISION_LOST / LUHN_FAIL
+  or either code.
+
+### ADR-065 Notification list
+**Decision:**
+- Jurisdiction = golden-record state. A state missing from `jurisdictions.yaml` (NJ, MA
+  in the demo) uses `default` and adds NOTIFY_STATE_UNKNOWN (WARN) to that person's
+  mentions.
+- Triggers: covered elements ∩ exposed elements, with the ADR-052 card rules and the
+  bank-account-with-routing-in-the-same-mention rule. This is the same rule the ground
+  truth uses; persons and exposures are computed independently.
+- A person without their own address (dependent, minor) uses the household address of
+  the linked person (`notify_note`: "Address from household P…").
+- `notify_note`: "Notify parent/guardian (P…)" for minors, plus the FERPA note.
+  `notify_status`: READY / NEEDS_REVIEW / NOT_REQUIRED.
+- New outputs `people.csv`, `notification_list.csv` and `pair_features.csv` (guarded).
+
+### ADR-066 Scale test
+**Decision:** `breachlens scale-test [--input data/raw/scale/large_claims.csv]` (the
+stale `--n` option is removed, per ADR-051).
+- It runs the real stages on the 50k-row file: sheet_track with ML mapping, normalize,
+  validate, address (cache only), privacy, resolve, notify.
+- It records seconds, rows/sec and process peak memory (Windows
+  `GetProcessMemoryInfo`, `resource` elsewhere) per stage.
+- `scale_report.json` is written through the guarded writer to `data/output/<run_id>/`.

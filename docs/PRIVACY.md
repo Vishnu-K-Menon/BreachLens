@@ -36,9 +36,12 @@
 5. **Masked snippets.** `source_snippet` and audit entries are masked before storage.
 6. **Secrets.** `BREACHLENS_SALT`, `ANTHROPIC_API_KEY` (optional) and others live in `.env`. Commit
    `.env.example` only.
-7. **What leaves the machine.** Only street/city/state/ZIP strings go to the Census
-   Geocoder. Never names or identifiers. `offline: true`
-   disables all network calls (the on-prem mode).
+7. **What leaves the machine.** Only street line 1 (without the unit), city, state and
+   ZIP go to the Census batch geocoder. Never names or identifiers. `offline: true` is
+   the pipeline default (the on-prem mode): offline runs read cached Census results only,
+   and an address with no cache entry is NOT_CHECKED. `breachlens run --online` is the
+   explicit opt-in that sends the cache misses once (ADR-063). It is the only network
+   path in the code base, and tests never use it.
 8. **Ground truth exception.** `gt_*.csv` contains synthetic raw values by
    design. It carries a header comment and is excluded from the leak-guard scan by
    explicit path only (`data/raw/corpus_v1/truth/`, ADR-047). The generated input

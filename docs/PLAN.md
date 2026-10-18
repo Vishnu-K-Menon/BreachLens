@@ -111,11 +111,11 @@ Spec: `SPREADSHEET_TRACK.md`, `ML_MODELS.md §C`.
 are caught. The leak-guard test passes on both tracks.
 
 ## M5 — Address + matching + notification + scale test (Day 4, morning)
-- [ ] `address/zipcheck.py` (offline `zipcodes`) and `address/census.py` (batch, cached).
-- [ ] `resolve/`: 3-pass matching, union-find clusters, survivorship. Persist
+- [x] `address/zipcheck.py` (offline `zipcodes`) and `address/census.py` (batch, cached).
+- [x] `resolve/`: 3-pass matching, union-find clusters, survivorship. Persist
       `pair_features` (the engineered features) for every scored pair.
-- [ ] `notify/triggers.py`: per-state triggers, minor/guardian note, FERPA flag.
-- [ ] `breachlens scale-test`: time each stage on `data/raw/scale/large_claims.csv`
+- [x] `notify/triggers.py`: per-state triggers, minor/guardian note, FERPA flag.
+- [x] `breachlens scale-test`: time each stage on `data/raw/scale/large_claims.csv`
       (50k rows) only, and write `scale_report.json` (rows/sec per stage, peak memory).
       BreachLens Lite (ADR-051): no separate generated-records run.
 
