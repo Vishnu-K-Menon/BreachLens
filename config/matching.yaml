@@ -1,0 +1,15 @@
+# Entity resolution (ARCHITECTURE.md §resolve, ADR-064). Runs after privacy on HMAC keys
+# and normalized names/addresses only, never on raw identifiers.
+weights:          # pass C score; null features are left out and the rest re-weighted
+  f_first_jw: 0.25
+  f_last_jw: 0.25
+  f_dob: 0.25
+  f_zip_eq: 0.10
+  f_addr_tsr: 0.15
+merge_min: 0.90   # score >= merge_min -> MERGE
+review_min: 0.70  # review_min <= score < merge_min -> REVIEW (gray zone, DUPLICATE_CANDIDATE)
+dob_conflict_cap: 0.69      # both DOBs present and f_dob <= dob_conflict_max -> capped
+dob_conflict_max: 0.30
+name_only_cap: 0.89         # no DOB, ZIP or address on either side: at most REVIEW
+evidence_features: [f_dob, f_zip_eq, f_addr_tsr]
+blocking: [ssn_key, dl_key, passport_key, last_soundex, dob]

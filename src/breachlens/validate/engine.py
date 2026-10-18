@@ -187,11 +187,16 @@ def name_variant_codes(df: pd.DataFrame) -> set[int]:
     if "_raw_ssn" not in df:
         return flagged
     d = df[df["_raw_ssn"].map(present)]
-    for _, g in d.groupby(["doc_id", d["_raw_ssn"].astype(str)]):
-        names = {(r.get("first_name"), r.get("last_name")) for r in g.to_dict("records")}
-        if len(names) > 1:
-            flagged |= set(g.index)
-    return flagged
+    if d.empty:
+        return flagged
+    key = d["doc_id"].astype(str) + "|" + d["_raw_ssn"].astype(str)
+    name = (
+        d.get("first_name", pd.Series("", index=d.index)).fillna("").astype(str)
+        + "|"
+        + d.get("last_name", pd.Series("", index=d.index)).fillna("").astype(str)
+    )
+    spellings = name.groupby(key).transform("nunique")
+    return set(d.index[spellings > 1])
 
 
 def doc_codes(ctx: Context, s: ValidationSettings) -> pd.DataFrame:

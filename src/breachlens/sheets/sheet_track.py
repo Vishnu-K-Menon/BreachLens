@@ -545,7 +545,8 @@ def stage_sheet_track(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
         "excluded_entities": len(ex_ents),
     }
     applied = ctx.tables.get("overrides_applied", [])
-    unmatched = [o for o in s.overrides if o not in applied]
+    in_input = set(files["path"])  # overrides for files not in this input are not "unmatched"
+    unmatched = [o for o in s.overrides if o not in applied and o.file in in_input]
     for o in unmatched:
         logger.warning(
             "review override not applied (no such column): %s / %s / %s", o.file, o.sheet, o.header

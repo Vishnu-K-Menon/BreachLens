@@ -111,6 +111,14 @@ def run(
     input_dir: Annotated[
         Path | None, typer.Option("--input", help="Input directory (overrides the config).")
     ] = None,
+    online: Annotated[
+        bool,
+        typer.Option(
+            "--online",
+            help="Allow the Census batch geocoder (addresses only) to fill the cache. "
+            "Default: offline, cached Census results only (ADR-063).",
+        ),
+    ] = False,
 ) -> None:
     """Run the pipeline end to end."""
     from breachlens.config import ConfigError
@@ -121,18 +129,24 @@ def run(
     except ConfigError as exc:
         typer.echo(f"error: {exc}", err=True)
         raise typer.Exit(code=2) from exc
+    if online:
+        ctx.offline = False  # the Census batch client is the only network client
     logger.info("run %s: offline=%s, input=%s", ctx.run_id, ctx.offline, ctx.paths.input_dir)
     stages = enabled_stages(ctx.config)
     mentions = run_pipeline(ctx)
     typer.echo(
         f"run {ctx.run_id} finished: {len(stages)} stage(s) executed, {len(mentions)} mentions."
     )
-    for name in ("pdf_summary", "sheet_summary"):
+    labels = {
+        "pdf_summary": "pdf_track",
+        "sheet_summary": "sheet_track",
+        "address_summary": "address",
+        "resolve_summary": "resolve",
+        "notify_summary": "notify",
+    }
+    for name, label in labels.items():
         if summary := ctx.tables.get(name):
-            typer.echo(
-                f"{name.removesuffix('_summary')}_track: "
-                + ", ".join(f"{k}={v}" for k, v in summary.items())
-            )
+            typer.echo(f"{label}: " + ", ".join(f"{k}={v}" for k, v in summary.items()))
     if "qc_status" in mentions:
         typer.echo(
             "qc_status: "
@@ -223,10 +237,29 @@ def ask(
 
 @app.command("scale-test")
 def scale_test(
-    n: Annotated[int, typer.Option("--n", help="Number of generated records.")] = 10_000,
+    config: Annotated[Path, typer.Option(help="Pipeline config file.")] = Path(
+        "config/pipeline.yaml"
+    ),
+    input_file: Annotated[
+        Path, typer.Option("--input", help="The 50k-row claims file (ADR-051).")
+    ] = Path("data/raw/scale/large_claims.csv"),
 ) -> None:
-    """Time each stage on generated records and write scale_report.json."""
-    _not_implemented("scale-test", "M5")
+    """Time each stage on the 50k-row claims file and write scale_report.json."""
+    if not input_file.is_file():
+        typer.echo(f"error: {input_file} not found; run `breachlens generate` first", err=True)
+        raise typer.Exit(code=2)
+    from breachlens.evaluate.scale import main as scale_main
+
+    report, path = scale_main(config, input_file)
+    for s in report["stages"]:
+        typer.echo(
+            f"  {s['stage']:12s} {s['seconds']:8.2f}s  {s['rows_per_sec'] or 0:>10,.0f} rows/s"
+            f"  peak {s['peak_mb']} MB"
+        )
+    typer.echo(
+        f"{report['rows']} rows in {report['total_seconds']}s "
+        f"({report['rows_per_sec_end_to_end']:,.0f} rows/s end to end) -> {path}"
+    )
 
 
 @app.command()

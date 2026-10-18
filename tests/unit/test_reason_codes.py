@@ -14,26 +14,17 @@ def test_case(case):
     assert (case.code in fired) is case.positive, (case.code, case.note, sorted(fired))
 
 
-def test_every_m4_code_has_positive_and_negative_cases():
+def test_every_code_has_positive_and_negative_cases():
+    """All 63 codes (M4 and M5) are emitted by now."""
     c = counts()
     missing = [
-        code
-        for code in V.m4_codes()
-        if c.get(code, {}).get("pos", 0) < 1 or c.get(code, {}).get("neg", 0) < 1
+        r.id
+        for r in V.rules.rules
+        if c.get(r.id, {}).get("pos", 0) < 1 or c.get(r.id, {}).get("neg", 0) < 1
     ]
     assert missing == []
+    assert len(V.rules.rules) == 63
 
 
 def test_cases_only_use_declared_codes():
     assert {c.code for c in CASES} <= set(V.severity)
-
-
-def test_m5_codes_are_declared_but_deferred():
-    m5 = {r.id for r in V.rules.rules if r.milestone == "M5"}
-    assert m5 == {
-        "ADDR_GEOCODE_NOMATCH",
-        "ADDR_GEOCODE_TIE",
-        "DOB_CONFLICT_IN_CLUSTER",
-        "DUPLICATE_CANDIDATE",
-        "NOTIFY_STATE_UNKNOWN",
-    }

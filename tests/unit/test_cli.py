@@ -70,7 +70,6 @@ def test_run_with_missing_config_fails_cleanly(tmp_path, salt_env):
         (["train", "match-model"], "after M8"),
         (["apply-review", "--decisions", "decisions.csv"], "M6"),
         (["ask", "How many people must be notified?"], "M8"),
-        (["scale-test", "--n", "100"], "M5"),
         (["report", "--run", "latest"], "M7"),
     ],
 )
@@ -79,6 +78,12 @@ def test_stub_commands_exit_nonzero_and_name_milestone(args, milestone):
     assert result.exit_code == 1
     assert "not implemented" in result.output
     assert milestone in result.output
+
+
+def test_scale_test_needs_the_input_file(tmp_path):
+    result = runner.invoke(app, ["scale-test", "--input", str(tmp_path / "none.csv")])
+    assert result.exit_code == 2
+    assert "not found" in result.output
 
 
 def test_train_column_classifier_needs_the_corpus(tmp_path):

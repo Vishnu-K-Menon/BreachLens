@@ -174,6 +174,48 @@ def N(code: str, fn: Callable[[], set[str]], note: str = "") -> Case:
     return Case(code, False, fn, note)
 
 
+def census(status: str, exact: bool | None = None) -> set[str]:
+    from breachlens.address.census import BatchResult
+    from breachlens.address.stage import status_for
+
+    res = BatchResult(
+        status, exact, "1 A ST, X, CA, 90001" if status == "Match" else None, None, "t", True
+    )
+    return set(status_for({}, res, ("1 A ST", "X", "CA", "90001"))[1])
+
+
+def pair(**b: object) -> set[str]:
+    from breachlens.resolve.features import Side
+    from breachlens.resolve.scoring import load_matching_config, score_pair
+    from breachlens.resolve.stage import review_code
+
+    base = dict(
+        first="JOHN",
+        last="SMITH",
+        mi=None,
+        dob=date(1980, 1, 2),
+        zip5="10001",
+        line1="1 MAIN ST",
+        ssn_key="k1",
+        dl_key=None,
+        passport_key=None,
+        source_file="a",
+        source_row=None,
+        related=None,
+        mention_id="M1",
+    )
+    a = Side(**base)
+    other = Side(**(base | {"mention_id": "M2"} | b))
+    code = review_code(score_pair(a, other, load_matching_config(ROOT / "config")))
+    return {code} if code else set()
+
+
+def state(st: str | None) -> set[str]:
+    from breachlens.notify.triggers import jurisdiction_for, load_jurisdictions
+
+    return set(jurisdiction_for(st, load_jurisdictions(ROOT / "config")[0])[1])
+
+
 CASES: list[Case] = [
     # names
     P("NAME_MISSING", lambda: name("SMITH")),
@@ -498,6 +540,22 @@ CASES: list[Case] = [
     ),
     P("DOC_TYPE_UNKNOWN", lambda: doc_type("UNKNOWN")),
     N("DOC_TYPE_UNKNOWN", lambda: doc_type("HEALTH_CLAIM")),
+    # M5: address (Census), resolution, notification
+    P("ADDR_GEOCODE_NOMATCH", lambda: census("No_Match")),
+    N("ADDR_GEOCODE_NOMATCH", lambda: census("Match", True)),
+    P("ADDR_GEOCODE_TIE", lambda: census("Tie")),
+    N("ADDR_GEOCODE_TIE", lambda: census("No_Match")),
+    P("DOB_CONFLICT_IN_CLUSTER", lambda: pair(dob=date(1975, 3, 3))),
+    N("DOB_CONFLICT_IN_CLUSTER", lambda: pair()),
+    P(
+        "DUPLICATE_CANDIDATE",
+        lambda: pair(ssn_key=None, dob=None, zip5=None, line1=None),
+        "name-only pair",
+    ),
+    N("DUPLICATE_CANDIDATE", lambda: pair(ssn_key=None), "exact name/DOB/address: MERGE"),
+    P("NOTIFY_STATE_UNKNOWN", lambda: state("NJ")),
+    P("NOTIFY_STATE_UNKNOWN", lambda: state(None)),
+    N("NOTIFY_STATE_UNKNOWN", lambda: state("CA")),
     P("FERPA_RECORD", lambda: set(C.ferpa_codes({"_raw_student_id": "S1234567"}))),
     N("FERPA_RECORD", lambda: set(C.ferpa_codes({"employer_name": "ACME"}))),
 ]

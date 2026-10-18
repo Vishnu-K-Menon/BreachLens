@@ -45,24 +45,48 @@ def stage_validate(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
     return _validate(df, ctx)
 
 
+def _address(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
+    from breachlens.address.stage import stage_address
+
+    return stage_address(df, ctx)
+
+
 def _privacy(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
     from breachlens.privacy.stage import stage_privacy
 
     return stage_privacy(df, ctx)
 
 
+def _resolve(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
+    from breachlens.resolve.stage import stage_resolve
+
+    return stage_resolve(df, ctx)
+
+
+def _notify(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
+    from breachlens.notify.triggers import stage_notify
+
+    return stage_notify(df, ctx)
+
+
 # (name, StagesConfig toggle, stage) in execution order; each milestone adds its stages.
-# M5 inserts `address` (Census) before `privacy`.
+# Resolution and notification run after privacy, on keys only (never raw values).
 STAGES: list[tuple[str, str, Stage]] = [
     ("pdf_track", "pdf_track", _pdf_track),
     ("sheet_track", "sheet_track", _sheet_track),
     ("normalize", "normalize", _normalize),
     ("validate", "validation", stage_validate),
+    ("address", "address", _address),
     ("privacy", "privacy", _privacy),
+    ("resolve", "resolve", _resolve),
+    ("notify", "notify", _notify),
 ]
 
 # Run tables written to data/output/<run_id>/ (ADR-058), all through the leak guard.
 OUTPUT_TABLES = [
+    "people",
+    "notification_list",
+    "pair_features",
     "inventory",
     "excluded_entities",
     "excluded_identifiers",
