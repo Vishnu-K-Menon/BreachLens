@@ -45,17 +45,22 @@ contains a full SSN, and node 11 proves it. While you work:
 ## Before you start (5 min)
 1. Start KNIME 5.12 → **Home** → **Create workflow** in your Local space → name it
    `breachlens_sheet_cleanup`.
-2. **Adding a node:** type its name in the search box of the **Nodes** panel (left side),
-   then drag it onto the canvas. Faster: drag from a node's output port (the triangle on
-   its right) into empty canvas and type the name in the quick-add box that appears.
-   That inserts the node and connects it.
-3. **Configuring a node:** select it. Modern nodes show their settings in the right-hand
-   panel. A few older nodes (String Manipulation, Rule Engine) open a dialog window:
-   double-click them.
+2. **Adding a node:** type its exact name (e.g. `String Manipulation`) in the search box
+   of the **Nodes** panel (left side), then drag the result onto the canvas. Faster: drag
+   from a node's output port (the triangle on its right) into empty canvas and type the
+   name in the quick-add box that appears. That inserts the node and connects it. This
+   guide gives no category paths, because the new UI's Nodes panel does not show the
+   classic category tree; always search by name.
+3. **Configuring a node:** select it; its settings appear in the right-hand panel. For
+   String Manipulation and Rule Engine that panel holds an expression editor: type the
+   expression into it, or click an input column to insert it.
 4. **Running a node:** **Execute** (the play button on the node, or F7). The traffic
    light turns green. The bottom panel shows the output table of the selected node.
 
 The settings below name only what you change; leave everything else at the default.
+The option labels were read from the KNIME 5.12 node definitions, not from the screen.
+If a label looks different in your KNIME, match the setting by meaning, and tell me so
+the guide can be corrected.
 
 ## The workflow
 
@@ -71,7 +76,7 @@ The settings below name only what you change; leave everything else at the defau
 ---
 
 ### 1. CSV Reader: read the file
-- **Where:** Nodes panel → search `CSV Reader` (IO › Read).
+- **Where:** search `CSV Reader`.
 - **Settings:**
   - **File:** browse → *Local file system* →
     `D:\git\BreachLens\data\raw\corpus_v1\docs\sheets\payroll_export.csv`.
@@ -97,17 +102,17 @@ The settings below name only what you change; leave everything else at the defau
   Zip.
 
 ### 2. String Manipulation: pad the SSN to 9 digits, then mask it
-- **Where:** `String Manipulation` (Manipulation › Column › Convert & Replace). Connect
-  it to node 1, then double-click it.
+- **Where:** search `String Manipulation`; connect it to node 1 and select it.
 - **Settings:**
-  - **Expression** (double-click `SS#` in the column list to insert it):
+  - **Expression** (click `SS#` in the input column list to insert it, or type it):
     ```
     join("***-**-", substr(padLeft($SS#$, 9, "0"), 5, 4))
     ```
     - `padLeft(..., 9, "0")` restores the lost leading zero first, like the notebook's
       `zfill(9)`.
     - `substr(..., 5, 4)` keeps the last 4 digits. The start index is 0-based.
-  - **Replace column:** `SS#`. Do not append: the raw column must disappear here.
+  - **Output column:** *Replace column* → `SS#`. Do not append: the raw column must
+    disappear here.
 - **You should see:** 80 rows × 11 columns. `SS#` now reads `***-**-2648`,
   `***-**-3751`, `***-**-2089` in the first three rows. From here on, no table holds a
   full SSN.
@@ -118,11 +123,11 @@ This lets you count the short SSNs without ever showing one.
   node 2's).
 - **Settings:**
   - **Expression:** `string(length($SS#$))`
-  - **Replace column:** `SS#`
+  - **Output column:** *Replace column* → `SS#`
 - **You should see:** 80 rows. `SS#` now holds `9` or `8`, never a number.
 
 ### 4. GroupBy: how many SSNs have 8 digits?
-- **Where:** `GroupBy` (Manipulation › Row › Transform), after node 3.
+- **Where:** search `GroupBy`; connect it after node 3.
 - **Settings:**
   - **Groups → Group columns:** `SS#`.
   - **Manual Aggregation → Add manual:** `Emp No`, method **Count**.
@@ -130,7 +135,7 @@ This lets you count the short SSNs without ever showing one.
   4 employees (each appears in both pay periods).
 
 ### 5. Column Renamer: snake_case names
-- **Where:** `Column Renamer` (Manipulation › Column › Convert & Replace), after **node 2**.
+- **Where:** search `Column Renamer`; connect it after **node 2**.
 - **Settings:** **Add column** once per column; **New name**:
 
   | column | new name |
@@ -150,23 +155,25 @@ This lets you count the short SSNs without ever showing one.
 - **You should see:** 80 rows, the 11 new names.
 
 ### 6. String Manipulation: `last_name`
+- **Where:** search `String Manipulation`; connect it after node 5.
 - **Settings:**
   - **Expression:**
     ```
     upperCase(strip(substr($employee_name$, 0, indexOf($employee_name$, ","))))
     ```
-  - **Append a new column:** `last_name`
+  - **Output column:** *Append column* → `last_name`
 - **You should see:** row 1 `Fowler, Edwin` → `FOWLER`. Accents survive: `Muñoz, José`
   → `MUÑOZ`. Suffixes stay in the last name (`YOUNG JR`, `TUCKER III`, `VAN DYKE II`).
   The notebook splits them out; that's optional here.
 
 ### 7. String Manipulation: `given_names`
+- **Where:** search `String Manipulation`; connect it after node 6.
 - **Settings:**
   - **Expression:**
     ```
     upperCase(strip(substr($employee_name$, indexOf($employee_name$, ",") + 1)))
     ```
-  - **Append a new column:** `given_names`
+  - **Output column:** *Append column* → `given_names`
 - **You should see:** `EDWIN`, `ANTHONY`, `LEE K` in the first three rows; `JOSÉ` for
   Muñoz.
 
@@ -174,7 +181,7 @@ This lets you count the short SSNs without ever showing one.
   name.
 
 ### 8. Rule Engine: `#N/A` and department names
-- **Where:** `Rule Engine` (Manipulation › Row › Other). Double-click it.
+- **Where:** search `Rule Engine`; connect it after node 7.
 - **Settings:**
   - **Expression** (one rule per line; the first match wins):
     ```
@@ -187,7 +194,7 @@ This lets you count the short SSNs without ever showing one.
     $dept$ = "WHS" => "Warehouse"
     TRUE => $dept$
     ```
-  - **Replace column:** `dept`
+  - **Output column:** *Replace column* → `dept`
 - **You should see:** 80 rows. `dept` counts:
 
   | dept | rows |
@@ -204,7 +211,7 @@ This lets you count the short SSNs without ever showing one.
   why the notebook found 0 `#N/A` strings.
 
 ### 9. String to Date&Time: `pay_date` as a date
-- **Where:** `String to Date&Time` (search the name).
+- **Where:** search `String to Date&Time`; connect it after node 8.
 - **Settings:**
   - **String columns:** only `pay_date`.
   - **Output type:** *Local date*.
@@ -213,7 +220,7 @@ This lets you count the short SSNs without ever showing one.
 - **You should see:** `pay_date` shows `2026-09-15` / `2026-09-30`, 40 rows each.
 
 ### 10. Duplicate Row Filter: one row per employee, newest pay date
-- **Where:** `Duplicate Row Filter` (Manipulation › Row › Filter).
+- **Where:** search `Duplicate Row Filter`; connect it after node 9.
 - **Settings:**
   - **Choose columns for duplicates detection:** only `emp_no`.
   - **Duplicate rows:** *Remove duplicate rows*.
@@ -223,7 +230,7 @@ This lets you count the short SSNs without ever showing one.
   `sort_values("Pay Date").drop_duplicates("Emp No", keep="last")`.
 
 ### 11. Row Filter: prove that no full SSN is left
-- **Where:** `Row Filter` (Manipulation › Row › Filter), after node 10.
+- **Where:** search `Row Filter`; connect it after node 10.
 - **Settings:**
   - **Filter column:** `ssn_masked`
   - **Operator:** *Matches regex*, **Pattern** `.*[0-9]{5,}.*` (5 or more digits in a row)
@@ -231,7 +238,7 @@ This lets you count the short SSNs without ever showing one.
 - **You should see:** **0 rows**. Every value is `***-**-dddd`.
 
 ### 12. Row Filter: the review list
-- **Where:** a second `Row Filter`, after node 10.
+- **Where:** a second `Row Filter`, also after node 10.
 - **Settings:**
   - **Filter column:** `dept`
   - **Operator:** `=` (equals), value `UNKNOWN`
@@ -239,7 +246,7 @@ This lets you count the short SSNs without ever showing one.
 - **You should see:** **2 rows**: emp_no `503447` (HUFF, VA) and `955744` (BRÜCKNER, PA).
 
 ### 13. GroupBy: employees and gross pay by state
-- **Where:** `GroupBy`, after node 10.
+- **Where:** search `GroupBy`; connect it after node 10.
 - **Settings:**
   - **Groups → Group columns:** `state`.
   - **Manual Aggregation:** `emp_no` → **Count**, and `gross_pay` → **Sum**.
@@ -261,7 +268,7 @@ This lets you count the short SSNs without ever showing one.
   zero is still there because `zip` is a String.
 
 ### 14. Excel Writer: 3 sheets
-- **Where:** `Excel Writer` (IO › Write).
+- **Where:** search `Excel Writer`.
 - **Add input ports:** click **+** on the node (**Sheet Input Ports**) twice, so it has
   3 table inputs. Connect them:
   - node 10 → port 1

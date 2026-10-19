@@ -467,3 +467,8 @@ Append-only build log. Format: see docs/WORKFLOW.md.
   `tests/integration/test_report.py`: the generated corpus recalculates to 155 to
   notify, 0 errors, guard 0. ruff clean.
 - Next: the human macro step (`vbaProject.bin`) and the KNIME workflow; then M8.
+- [fix] KNIME_GUIDE.md, reported by the project owner: the classic category paths
+  (e.g. Manipulation › Column › Convert & Replace) don't exist in the 5.12 Nodes panel.
+  Every node is now found by searching its name. String Manipulation and Rule Engine
+  have modern expression-editor dialogs in 5.12, so the output setting reads
+  *Output column → Replace/Append column*. The numbers are unchanged.
