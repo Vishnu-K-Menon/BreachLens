@@ -1,9 +1,11 @@
 # BreachLens
 Python + KNIME pipeline that extracts PII/PHI from synthetic breach documents, validates it, verifies addresses, matches people across documents, and produces a state-grouped breach notification list.
 
-## Status (interim, 2026-10-18)
-Milestones M0–M5 are done. M6 (DuckDB + reference SQL, Lite), M7 (Excel review workbook +
-KNIME guide for the spreadsheet track) and M8 (docs + v1.0 release) are planned. The full
+## Status (interim, 2026-10-19)
+Milestones M0–M6 are done. M6 adds the DuckDB system of record (`breachlens db build`) and
+a read-only harness for hand-written queries (`breachlens sql run`, `DATABASE_AND_ASK.md`).
+M7 (Excel review workbook + KNIME guide for the spreadsheet track) and M8 (docs + v1.0
+release) are planned. The full
 README arrives in M8; details per milestone are in `PROGRESS.md`. SYNTHETIC DATA ONLY.
 
 | metric (synthetic data) | value |

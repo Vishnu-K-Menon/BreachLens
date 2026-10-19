@@ -130,19 +130,23 @@ are caught. The leak-guard test passes on both tracks.
   as one `person_id`.
 - The scale report is generated.
 
-## M6 — Database + SQL (Day 4, afternoon) — Lite scope (ADR-051)
-Spec: `DATABASE_AND_ASK.md` (as reduced by ADR-051).
-- [ ] `db/load.py`: write all tables into `data/output/breachlens.duckdb`, with keys
-      composite with `run_id` (ADR-030). Append a row to `runs`.
-- [ ] `sql/views/*.sql`: 3 views: `v_notify_by_state`, `v_field_error_rates`,
-      `v_cross_source_people`.
-- [ ] `sql/queries/`: 5 reference queries. **The human writes the `.sql` content.**
-      The agent creates only the folder, the question header of each file, and the
-      snapshot/test harness (`sql/snapshots/`, a test that runs each query and compares it
-      with its committed snapshot). The agent never edits the SQL bodies.
+## M6 — Database + SQL (Day 4, afternoon) — Lite scope (ADR-051, as restated in ADR-067)
+Spec: `DATABASE_AND_ASK.md`.
+- [x] `breachlens db build` → `data/output/breachlens.duckdb`:
+  - tables `people`, `mentions`, `notification_list`, `pair_features`, `review_items`,
+    `audit_log` + `schema_version`
+  - masked/present/valid/key columns only, nothing raw
+  - leak guard on the database before it is saved
+- [x] 3 views: `v_notify_by_state`, `v_review_queue` (one row per column-level item with
+      `affected_rows`, ADR-062), `v_address_status`.
+- [x] `breachlens sql run`: every `sql/queries/*.sql` runs on a read-only connection,
+      results go to `data/output/sql/<name>.csv` (guarded), and a query selecting any
+      `*_key` column fails.
+- [x] `sql/queries/q1…q5`: question comments only. **The human writes the SQL.**
+- [x] `docs/DATABASE_AND_ASK.md`: table/column reference for writing the queries.
 
-**AC:** The 3 views and the 5 queries run against the loaded database. Snapshots are
-committed and the harness test passes.
+**AC:** The database builds. The views return the expected totals (155 notified). The
+read-only connection and the `*_key` guard are enforced, and the leak guard finds 0.
 
 ## M7 — Excel workbook + KNIME + evaluation (Day 5) — Lite scope (ADR-051)
 Spec: `EXCEL_WORKBOOK.md` (as reduced by ADR-051).

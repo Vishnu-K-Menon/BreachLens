@@ -161,7 +161,8 @@ HEALTH INSURANCE INFO · dob → DATE OF BIRTH · student_id → STUDENT RECORD
   `reviewed_label` comes from `config/review_overrides.yaml` (ADR-061). It is one of the
   34 labels, OTHER, or the reviewed-only INSURER (an organization column routed to
   `insurer_name`). Then `final_label` follows the human, while `decision`, `ml_label` and
-  `codes` keep the model's history.
+  `codes` keep the model's history. `affected_rows` (M6) = mentions that took a value from a
+  column with COL_* warnings (feeds `review_items`, ADR-062/067).
 - `doc_codes` (ADR-057, renamed from `sheet_codes` in ADR-059): doc_id, sheet, col_idx
   (null for doc/sheet level), code, detail, severity. These are the doc-, sheet- and
   column-level reason codes (DOC_TYPE_UNKNOWN, SHEET_*, CSV_ENCODING_DETECTED, COL_*).
@@ -174,6 +175,10 @@ HEALTH INSURANCE INFO · dob → DATE OF BIRTH · student_id → STUDENT RECORD
 plus `audit_<run_id>.jsonl` and `run_summary.json` (counts only). Every
 file is written through the leak guard. `mentions.csv` follows the column order of the
 `mentions` table above. `excluded_*.reason` starts with its reason code, e.g. `EIN_EXCLUDED (label:employer)`.
+
+## Database (M6)
+`data/output/breachlens.duckdb`: tables, types and views are in `DATABASE_AND_ASK.md`
+(ADR-067). Tables there drop the printed-text columns `raw_name`, `raw_address`, `source_snippet`.
 
 ## Matching and review tables
 - `pair_features`: mention_a, mention_b, f_first_jw, f_last_jw, f_dob, f_zip_eq,

@@ -1,72 +1,182 @@
 # DATABASE_AND_ASK.md
 
-> **Scope (ADR-051, BreachLens Lite):** M6 builds the DuckDB load, 3 views
-> (`v_notify_by_state`, `v_field_error_rates`, `v_cross_source_people`) and 5 reference
-> queries whose SQL the human writes; the agent builds only the headers and the
-> snapshot harness. `apply-review`/`review_decisions` import is dropped. Ask BreachLens
-> is Optional; its spec below applies only if it is built.
+> **Scope (ADR-067, M6 as built):** DuckDB as the system of record, 6 tables + a
+> `schema_version` table, 3 views, and a harness for 5 queries **that the project owner
+> writes by hand** (`sql/queries/q1…q5`). The agent wrote only the question comment in
+> each file. Ask BreachLens is Optional; its spec further down applies only if it is
+> built.
 
 ## DuckDB: system of record
-File: `data/output/breachlens.duckdb` (accumulates runs). The workbook is a review
-view; the database is the source of truth and the downstream **handoff contract**.
+- **File:** `data/output/breachlens.duckdb`.
+- **Source:** `breachlens db build` rebuilds it from one run folder
+  (`data/output/<run_id>/`, default: the newest run that has `people.csv`).
+- **Leak guard:** the build goes to a temp file. Every table and view is read back
+  through the leak guard; on any finding nothing is saved.
+- **Keys:** every table keeps `run_id`, and primary keys are composite with it
+  (ADR-030), so loading more runs later stays possible. Today the database holds one
+  run.
+- **Nothing raw:**
+  - Identifiers exist only as `*_present` (BOOLEAN), `*_masked` (last 4 visible),
+    `*_valid` (`PASS`, a reason code, or NULL) and `*_key` (HMAC, for joins inside the
+    database only).
+  - The printed-text columns `raw_name`, `raw_address` and `source_snippet` are left out.
+- **Types:**
+  - ZIPs and IDs are VARCHAR (leading zeros kept).
+  - `dob` / `doc_date` are DATE.
+  - `processed_at` / `ts` / `built_at` are UTC TIMESTAMP.
+  - Flags are BOOLEAN; scores are DOUBLE.
+
+### Writing q1–q5
+**Write q1–q5 against base tables (`people`, `notification_list`, `mentions`); use the
+views only to check your answers.**
+
+How to run:
+```powershell
+.\.venv\Scripts\python.exe -m breachlens db build
+.\.venv\Scripts\python.exe -m breachlens sql run
+```
+
+Rules the harness enforces:
+- **Connection:** read-only, with `enable_external_access=false`. No writes, `COPY`,
+  `ATTACH` or file reads.
+- **Statements:** one `SELECT` / `WITH` statement per file.
+- **No keys:** a query fails if any result column ends in `_key`. This includes
+  `SELECT *` from `mentions`.
+- **Empty files:** a file with only comments is reported EMPTY and skipped.
+- **Output:** results go to `data/output/sql/<file>.csv` through the leak guard.
+
+Hints (reference only):
+- **q1:** "gets a notice" means `notification_list.notify_required` is true. The state
+  of a notice is `notification_list.jurisdiction`.
+- **q2:** `notification_list.notify_status` is `READY`, `NEEDS_REVIEW` or
+  `NOT_REQUIRED`. There is one row per person.
+- **q3:** use `people.address_status`. It can be NULL for a person without an address.
+- **q4:** a minor is `people.is_minor`. The guardian instruction is in
+  `notification_list.notify_note` (text starting `Notify parent/guardian`). Join the two
+  tables on `(run_id, person_id)`.
+- **q5:** `mentions.qc_reasons` is a `;`-joined list per mention, e.g.
+  `NAME_TITLE_REMOVED;DUPLICATE_CANDIDATE`. DuckDB has `string_split()` and `unnest()`
+  for turning a list into rows. Severities are in `config/rules.yaml`.
 
 ### Tables
-| table | grain | notes |
+Primary keys are in **bold**. Every table has `run_id`.
+
+**`people`**: one golden record per resolved person (`breachlens.resolve.survivorship`).
+PK (**run_id, person_id**).
+
+| column | type | meaning |
 |---|---|---|
-| `runs` | run | run_id, started_at, config_hash, schema_version, counts, key metrics (JSON) |
-| `inventory` | file | both tracks |
-| `file_profile`, `column_profile`, `column_mapping` | file / column | spreadsheet track |
-| `mentions` | person × source | full schema, masked |
-| `pair_features` | candidate pair | engineered features + score + decision |
-| `people` | person | golden records |
-| `notification_list` | person | |
-| `excluded_entities`, `excluded_identifiers` | item | |
-| `review_decisions` | decision | from Excel/apply-review |
-| `audit_events` | event | flattened audit log |
+| person_id | VARCHAR | `P0001`… within a run |
+| first_name, middle_initial, last_name, name_suffix | VARCHAR | most complete version across the person's mentions |
+| address_line1, address_line2, city, state, zip5, country | VARCHAR | surviving address: newest `doc_date`, then the most frequent VERIFIED address (ADR-029). Dependents and minors may use the household address |
+| address_status | VARCHAR | VERIFIED / CORRECTED / UNVERIFIED / INVALID / NOT_CHECKED, or NULL |
+| dob | DATE | mode of the valid DOBs |
+| is_minor | BOOLEAN | under 18 at `as_of_date` (2026-10-01) |
+| `<element>_exposed` | BOOLEAN | ssn, dl, state_id, passport, bank_account, card, mrn, diagnosis, procedure, date_of_service, health_member_id, health_group_number, dob, student_id |
+| elements_exposed | VARCHAR | display list, e.g. `SSN; MEDICAL INFO` |
+| gov_id_exposed, financial_exposed, medical_exposed, health_insurance_exposed, education_exposed | BOOLEAN | category flags (ADR-028) |
+| mention_count | BIGINT | mentions in the cluster |
+| source_docs, source_types | VARCHAR | `;`-joined source files / `PDF;SPREADSHEET` |
+| cluster_confidence | DOUBLE | minimum merge-edge score (1.0 for a single mention) |
+| ferpa_flag | BOOLEAN | education record exposed (informational, not a trigger) |
+| needs_review | BOOLEAN | card PRECISION_LOST / LUHN_FAIL, gray-zone pair, or DOB conflict |
+| notify_required | BOOLEAN | same value as in `notification_list` |
 
-Every table has `run_id`. Primary keys are declared and composite with `run_id`
-(`(run_id, doc_id)`, `(run_id, mention_id)`, `(run_id, person_id)`, …), and
-`mentions (run_id, person_id)` → `people (run_id, person_id)` is a foreign key
-(ADR-030). `schema_version` is recorded in `runs`.
+**`notification_list`**: one row per person (`breachlens.notify.triggers`). PK
+(**run_id, person_id**).
 
-### Views (`sql/views/`)
-- `v_notify_by_state`: jurisdiction, people, to_notify, minors, ferpa_flagged
-- `v_field_error_rates`: field, n, fail_pct, review_pct, by source_type
-- `v_doc_type_quality`: doc_type / file, mentions, fail_pct, mean confidence
-- `v_people_multi_element`: people with ≥ 2 exposed element categories
-- `v_cross_source_people`: people found in both PDF and spreadsheet sources
-- `v_quality_trend`: per run, fail_pct, mapping low-confidence %, collapse ratio
-
-### Ask views (`sql/views/ask/`, ADR-040)
-Key-free projections of the base tables, the only base-table surface Ask can see:
-`ask_people`, `ask_notification_list`, `ask_mentions`, `ask_pair_features`,
-`ask_column_mapping`, `ask_column_profile`, `ask_file_profile`, `ask_inventory`,
-`ask_excluded_entities`, `ask_excluded_identifiers`, `ask_review_decisions`,
-`ask_runs`. None contains a `*_key` column. `audit_events` is never exposed.
-
-### Reference queries (`sql/queries/Q01..Q20.sql`) and few-shot examples (`sql/fewshot/F01..F04.sql`)
-Each file has a header comment with the natural-language question and an
-expected-result snapshot in `sql/snapshots/`. Q01–Q20 are the scored Ask gold set.
-F01–F04 are separate few-shot examples for the prompt and are never scored. That makes
-24 question/SQL sets in total (ADR-033). All are written against the `v_*` and `ask_*`
-views. The Q files must cover:
-
-| # | Question (example) | SQL feature |
+| column | type | meaning |
 |---|---|---|
-| Q01 | How many people must be notified, by state? | GROUP BY |
-| Q02 | People with both SSN and medical info exposed, by state | JOIN + filter + GROUP BY |
-| Q03 | Error rate per document type / source file | CTE + ratio |
-| Q04 | Top 10 people by number of source documents | window `RANK()` |
-| Q05 | Which spreadsheet columns needed review, and why? | JOIN column_mapping/column_profile |
-| Q06 | Share of addresses VERIFIED / CORRECTED / UNVERIFIED by state | CASE pivot |
-| Q07 | Minors who need notification and their states | filter |
-| Q08 | People found in both PDFs and spreadsheets | `v_cross_source_people`, `HAVING COUNT(DISTINCT source_type)=2` |
-| Q09 | Most common reason codes overall | GROUP BY + ORDER BY + LIMIT |
-| Q10 | Gray-zone pairs and their feature values | `pair_features` filter |
-| Q11 | FERPA-flagged students by school | GROUP BY |
-| Q12 | Running total of notifications by state, ordered | window `SUM() OVER` |
-| Q13 | Fail rate change versus the previous run | `LAG()` over runs |
-| Q14–Q20 | Mix: reviewer corrections, excluded organizations, OCR vs text accuracy proxy, etc. | |
+| person_id | VARCHAR | → `people` |
+| jurisdiction | VARCHAR | the golden record's state (`UNKNOWN` if none). NJ/MA use the `default` rules |
+| last_name, first_name, middle_initial, name_suffix, address_line1, address_line2, city, state, zip5, country | VARCHAR | mailing name and address |
+| elements_exposed | VARCHAR | display list |
+| notify_required | BOOLEAN | ≥ 1 covered element for the jurisdiction (`config/jurisdictions.yaml`, illustrative) |
+| notify_reason | VARCHAR | `;`-joined covered elements hit, e.g. `ssn;card` |
+| notify_note | VARCHAR | `Notify parent/guardian (P…)`, `Address from household P…` and/or the FERPA note, `; `-joined |
+| ferpa_flag | BOOLEAN | |
+| address_status | VARCHAR | |
+| notify_status | VARCHAR | READY / NEEDS_REVIEW / NOT_REQUIRED |
+
+**`mentions`**: one row per person per source document. PK (**run_id, mention_id**). FK
+(run_id, person_id) → `people`.
+
+| column | type | meaning |
+|---|---|---|
+| mention_id | VARCHAR | `M00001`… |
+| source_type | VARCHAR | PDF / SPREADSHEET |
+| doc_id, source_file, source_sheet | VARCHAR | provenance |
+| page, source_row | BIGINT | page (PDF); 1-based Excel row / CSV line (sheets) |
+| related_mention_id | VARCHAR | dependent → subscriber, guardian → student, patient → insured |
+| doc_type | VARCHAR | e.g. WAGE_STATEMENT, HEALTH_CLAIM, SPREADSHEET |
+| doc_date | DATE | |
+| person_role | VARCHAR | EMPLOYEE, PATIENT, INSURED, SUBSCRIBER, DEPENDENT, STUDENT, GUARDIAN, … |
+| entity_type | VARCHAR | PERSON |
+| name_title, first_name, middle_name, middle_initial, last_name, name_suffix, name_order_detected | VARCHAR | normalized name |
+| address_line1, address_line2, city, state, zip5, zip4, country | VARCHAR | normalized address |
+| address_status, address_suggestion, address_source | VARCHAR | status (ADR-063), suggestion, ZIPCHECK / CENSUS |
+| phone, email | VARCHAR | E.164 / lower case |
+| dob | DATE | |
+| age_at_run | BIGINT | age at `as_of_date` |
+| is_minor | BOOLEAN | |
+| ssn_present / ssn_masked / ssn_valid / ssn_key | BOOLEAN / VARCHAR ×3 | trio + HMAC key. The same pattern applies to `dl_*` (+ `dl_state`), `state_id_*`, `passport_*` (+ `passport_country`) |
+| bank_account_present / _masked / _valid; routing_number_present / _valid; card_present / _masked / _valid | | financial |
+| mrn_present / _masked; health_member_id_present / _masked; health_group_number_present; diagnosis_present; procedure_present; date_of_service_present | | health |
+| employee_id_present, student_id_present, student_id_masked | | employment / education |
+| insurer_name, employer_name, school_name | VARCHAR | organization context |
+| ferpa_flag | BOOLEAN | |
+| field_confidence | VARCHAR | JSON `{field: confidence}` |
+| extraction_method | VARCHAR | TEXT / OCR / SHEET |
+| qc_status | VARCHAR | PASS / REVIEW / FAIL |
+| qc_reasons | VARCHAR | `;`-joined reason codes (VALIDATION_RULES.md) |
+| person_id | VARCHAR | → `people` |
+| cluster_confidence | DOUBLE | |
+| review_status | VARCHAR | PENDING unless PASS |
+| processed_at | TIMESTAMP | |
+
+**`pair_features`**: every scored candidate pair (ADR-025, ADR-064). PK (**run_id,
+mention_a, mention_b**).
+
+| column | type | meaning |
+|---|---|---|
+| mention_a, mention_b | VARCHAR | → `mentions` |
+| f_first_jw, f_last_jw, f_dob, f_zip_eq, f_addr_tsr, f_ssn_key_eq, f_dl_key_eq, f_same_source_file, f_mi_eq | DOUBLE | features in [0, 1], NULL when a side lacks the field |
+| score | DOUBLE | |
+| pass | VARCHAR | A (SSN key) / B (DL / passport key) / C (weighted score) |
+| decision | VARCHAR | MERGE / REVIEW / NO_MERGE |
+| guard_fired | VARCHAR | SSN_KEY_DIFFERS, DOB_CONFLICT, NAME_ONLY, SAME_SOURCE_ROW, RELATED_MENTIONS, CLUSTER_CONFLICT |
+| same_person_id | BOOLEAN | the two mentions ended in one person |
+
+**`review_items`**: one row per review item (ADR-062). PK (**run_id, item_id**).
+
+| column | type | meaning |
+|---|---|---|
+| item_id | VARCHAR | `COL:<doc>:<sheet>:<col>`, `MEN:<mention>`, `PAIR:<a>~<b>` |
+| item_type | VARCHAR | COLUMN (column-level mapping warning, once per column), MENTION (the mention's own WARN/ERROR codes, without COL_*), PAIR (gray-zone pair) |
+| doc_id, sheet, header | VARCHAR | for COLUMN items |
+| mention_id, person_id | VARCHAR | for MENTION items (PAIR: first mention; `P…~P…`) |
+| codes | VARCHAR | `;`-joined |
+| severity | VARCHAR | ERROR / WARN |
+| affected_rows | BIGINT | COLUMN: mentions that took a value from the column; MENTION 1; PAIR 2 |
+| status | VARCHAR | OPEN; RESOLVED for a column with a human decision in `config/review_overrides.yaml` |
+
+**`audit_log`**: the run's audit trail (ADR-037), values masked. PK (**run_id,
+event_id**). Columns:
+- event_id, ts (TIMESTAMP), stage
+- event_type (RULE_FIRED, MERGE, ROUTED_EXCLUDED, REVIEW_OVERRIDE_APPLIED)
+- item_id, field, code
+- old_value_masked, new_value_masked, detail_json
+
+**`schema_version`**: one row. Columns: schema_version (`1.1`), run_id, built_at,
+source_dir, table_rows (JSON counts).
+
+### Views (`sql/views/`, created by `db build`)
+- `v_notify_by_state`: jurisdiction, people, to_notify, needs_review, minors,
+  ferpa_flagged.
+- `v_review_queue`: OPEN `review_items`, ordered by severity, then by affected_rows
+  descending. Columns: item_type, item_id, doc_id, sheet, header, mention_id, person_id,
+  codes, severity, affected_rows. Column-level warnings are one row per column.
+- `v_address_status`: address_status (`NONE` = no address), people, mentions.
 
 ## Ask BreachLens: local-LLM text-to-SQL
 

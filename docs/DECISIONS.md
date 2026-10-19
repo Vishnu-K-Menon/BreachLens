@@ -739,3 +739,38 @@ stale `--n` option is removed, per ADR-051).
 - It records seconds, rows/sec and process peak memory (Windows
   `GetProcessMemoryInfo`, `resource` elsewhere) per stage.
 - `scale_report.json` is written through the guarded writer to `data/output/<run_id>/`.
+
+---
+## Revision 7: M6 (2026-10-19)
+
+### ADR-067 M6 as built: DuckDB system of record + SQL harness for hand-written queries
+**Context:** The project owner restated M6. It replaces the M6 bullet of ADR-051 and the
+older PLAN/DATABASE text: its views, the snapshot harness and the Q01–Q20 naming.
+**Decision:**
+- **`breachlens db build [--run latest|<run_id>] [--db …]`** builds
+  `data/output/breachlens.duckdb`:
+  - It is rebuilt from one run folder, by default the newest one that has
+    `people.csv`.
+  - Tables: `people`, `mentions`, `notification_list`, `pair_features`,
+    `review_items`, `audit_log`, plus `schema_version`.
+  - Every table keeps `run_id` and composite PKs (ADR-030). FK `mentions` → `people`.
+- **Nothing raw:** identifiers only as `*_present/_masked/_valid/_key`. The printed text
+  (`raw_name`, `raw_address`, `source_snippet`) stays out.
+- **Types:** follow the column names (`db/schema.py`). ZIPs and IDs are VARCHAR.
+- **Leak guard:** the build goes to a temp file. Every table and view is scanned; any
+  finding deletes the temp file, otherwise it is moved into place.
+- **`review_items`** (ADR-062): COLUMN items once per warned column, with
+  `affected_rows` (counted by the validate stage, now a column of `column_mapping`);
+  MENTION items with the mention's own WARN/ERROR codes; PAIR items for gray-zone pairs.
+  Reviewed columns are RESOLVED.
+- **Views** (`sql/views/`): `v_notify_by_state`, `v_review_queue`, `v_address_status`.
+- **`breachlens sql run`**:
+  - It runs `sql/queries/*.sql` on a read-only connection with
+    `enable_external_access=false`, one SELECT/WITH per file.
+  - It fails a query whose result has a `*_key` column.
+  - Question-only files are EMPTY.
+  - Results go to `data/output/sql/<name>.csv` through the guarded writer.
+- **`sql/queries/q1…q5`:** each holds only the question comment. The SQL is written by
+  the project owner (AGENTS.md hand-made rule); the agent does not edit these files.
+**Consequences:** The database is the handoff contract for M7. Accumulating several
+runs is a later change (append instead of rebuild).

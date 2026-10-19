@@ -360,3 +360,35 @@ Append-only build log. Format: see docs/WORKFLOW.md.
   street type dropped, and the ADR-063 acceptance rule rejects it (street similarity
   84 < 95). The M5 report, ADR-063, PROGRESS and the README are corrected; the code is
   unchanged.
+
+## 2026-10-19 (Day 5) — M6 DuckDB + SQL harness (ADR-067)
+- [db] `breachlens db build` on corpus_v1 run R20261019-161315-5cac →
+  `data/output/breachlens.duckdb`:
+  - rows: people 215, mentions 438, notification_list 215, pair_features 1,173,
+    review_items 431, audit_log 1,288, + `schema_version` (1.1)
+  - views `v_notify_by_state`, `v_review_queue`, `v_address_status`
+  - leak guard: 10 tables/views scanned, 0 findings
+  - nothing raw: no `raw_*` / `_` columns; identifiers only as present/masked/valid/key
+  - ZIPs stay text (`02139`); DOB is DATE, flags BOOLEAN, scores DOUBLE
+- [views] `v_notify_by_state`: to_notify sums to **155**.
+  - By state: CA 30, FL 18, MA 7, NJ 8, NY 23, PA 22, TX 23, VA 24.
+  - Minors per state: CA 4, FL 3, MA 2, NJ 1, NY 7, PA 7, TX 5, VA 4.
+  - `v_review_queue`: 3 open COLUMN items, each one row with affected_rows
+    (`Employee Middle` 34, `ID` 40, `Guardian Name` 30), 285 MENTION items and 142 PAIR
+    items. The Insurer column is RESOLVED (ADR-061) and not in the queue.
+  - `v_address_status`: people VERIFIED 115 / UNVERIFIED 100. Mentions VERIFIED 273 /
+    UNVERIFIED 123 / CORRECTED 1 / INVALID 1 / none 40.
+- [harness] `breachlens sql run`: 5 × EMPTY (question-only files) and exit 0. The tests
+  show the following:
+  - A `*_key` column fails the query, including `SELECT *` from mentions.
+  - DELETE, two statements in one file, and bad SQL all fail.
+  - The read-only connection blocks CREATE / INSERT / DELETE / COPY / `read_csv`
+    (`enable_external_access=false`).
+  - A leak-guard finding aborts the build and leaves no file.
+- [pipeline] Small M6 change: `column_mapping.affected_rows` (validate stage) feeds
+  `review_items`.
+- [checks] `pytest -q`: 498 passed (incl. `tests/unit/test_db.py`,
+  `tests/integration/test_db_build.py`). ruff clean.
+- [docs] `DATABASE_AND_ASK.md`: table/column reference plus "write q1–q5 against base
+  tables; use the views only to check". ADR-067, PLAN M6, DATA_SCHEMA, README status.
+- Next: the project owner writes q1–q5; then M7.
