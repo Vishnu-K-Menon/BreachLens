@@ -49,3 +49,12 @@ class GuardedWriter:
         p.write_text(text, encoding="utf-8", newline="\n")
         self.written.append(p)
         return p
+
+    def write_text(self, text: str, name: str) -> Path:
+        """A text report (e.g. METRICS.md), scanned as plain text."""
+        if findings := self.guard.scan_text(text, name):
+            raise LeakError(findings)
+        p = self._path(name)
+        p.write_text(text, encoding="utf-8", newline="\n")
+        self.written.append(p)
+        return p

@@ -164,15 +164,55 @@ def run(
 @app.command()
 def evaluate(
     target: Annotated[EvalTarget, typer.Argument(help="What to evaluate.")] = EvalTarget.pipeline,
-    run: Annotated[str, typer.Option("--run", help="Run id, or 'latest'.")] = "latest",
+    config: Annotated[Path, typer.Option(help="Pipeline config file.")] = Path(
+        "config/pipeline.yaml"
+    ),
+    input_dir: Annotated[
+        Path | None, typer.Option("--input", help="Input docs (with --truth; overrides config).")
+    ] = None,
     truth: Annotated[
-        Path | None, typer.Option(help="Ground-truth directory (pipeline target).")
+        Path | None,
+        typer.Option(help="Ground-truth directory. Default: corpus_v1, plus the holdout."),
     ] = None,
 ) -> None:
-    """Evaluate a pipeline run against ground truth, or the Ask assistant."""
+    """Score the pipeline against ground truth -> metrics.json + METRICS.md (or Ask)."""
     if target is EvalTarget.ask:
-        _not_implemented("evaluate ask", "M8")
-    _not_implemented("evaluate", "M7")
+        _not_implemented("evaluate ask", "the optional items after M8")
+    from breachlens.config import load_config, project_root_for
+    from breachlens.evaluate.metrics import main as metrics_main
+    from breachlens.privacy.leak_guard import LeakGuard
+
+    cfg = load_config(config)
+    root = project_root_for(config)
+    out = (
+        cfg.paths.output_dir if cfg.paths.output_dir.is_absolute() else root / cfg.paths.output_dir
+    )
+    if truth is not None:
+        corpora = {truth.parent.name: (input_dir.resolve() if input_dir else None, truth)}
+    else:
+        corpora = {"corpus_v1 (dev)": (None, root / "data/raw/corpus_v1/truth")}
+        holdout = root / "data/raw/corpus_holdout"
+        if (holdout / "truth" / "manifest.json").is_file():
+            corpora["holdout seed 43 (untuned)"] = (holdout / "docs", holdout / "truth")
+    for name, (_, t) in corpora.items():
+        if not (t / "gt_mentions.csv").is_file():
+            typer.echo(f"error: no ground truth for {name} at {t}", err=True)
+            raise typer.Exit(code=2)
+    models = (
+        cfg.paths.models_dir if cfg.paths.models_dir.is_absolute() else root / cfg.paths.models_dir
+    )
+    m, paths = metrics_main(
+        config, corpora, out / "metrics", models, out, LeakGuard(cfg.privacy.leak_guard)
+    )
+    for name, s in m["corpora"].items():
+        n, mt = s["notification"], s["matching"]
+        typer.echo(
+            f"{name}: notified {n['listed']}/{n['truth']}, pairwise P {mt['precision']} "
+            f"R {mt['recall']}, address {s['address']['agree']}/{s['address']['total']}, "
+            f"planted {s['planted_validation']['caught']}/{s['planted_validation']['tagged']}"
+        )
+    for p in paths:
+        typer.echo(f"  wrote {p}")
 
 
 @app.command()
@@ -264,10 +304,88 @@ def scale_test(
 
 @app.command()
 def report(
-    run: Annotated[str, typer.Option("--run", help="Run id, or 'latest'.")] = "latest",
+    config: Annotated[Path, typer.Option(help="Pipeline config file.")] = Path(
+        "config/pipeline.yaml"
+    ),
+    run: Annotated[
+        str, typer.Option("--run", help="Run id the database must hold, or 'latest'.")
+    ] = "latest",
+    db: Annotated[Path, typer.Option("--db", help="Database file.")] = Path(
+        "data/output/breachlens.duckdb"
+    ),
+    check: Annotated[
+        bool, typer.Option("--check/--no-check", help="Recalculate in LibreOffice and verify.")
+    ] = True,
 ) -> None:
-    """Write the Excel review workbook and metrics report for a run."""
-    _not_implemented("report", "M7")
+    """Write the Excel review workbook from the database; check it in LibreOffice."""
+    import tempfile
+
+    from dotenv import load_dotenv
+
+    from breachlens.config import load_config, project_root_for
+    from breachlens.privacy.leak_guard import LeakError, LeakGuard
+    from breachlens.report.excel_writer import load_report_data, write_workbook
+    from breachlens.validate.settings import load_validation_settings
+
+    cfg = load_config(config)
+    root = project_root_for(config)
+    load_dotenv(root / ".env", override=False)  # SOFFICE_PATH
+    try:
+        data = load_report_data(db if db.is_absolute() else root / db, root, cfg.as_of_date)
+    except FileNotFoundError as exc:
+        typer.echo(f"error: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
+    if run != "latest" and run != data.run_id:
+        typer.echo(
+            f"error: the database holds run {data.run_id}; "
+            f"run `breachlens db build --run {run}` first",
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    vba = root / "excel" / "vbaProject.bin"
+    run_dir = (
+        Path(data.source_dir) if Path(data.source_dir).is_absolute() else root / data.source_dir
+    )
+    try:
+        path = write_workbook(
+            data,
+            run_dir,
+            LeakGuard(cfg.privacy.leak_guard),
+            load_validation_settings(root / "config").severity,
+            vba,
+        )
+    except LeakError as exc:
+        typer.echo(f"error: {exc}; nothing was saved", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"wrote {path} (leak guard: 0 findings)")
+    if not vba.is_file():
+        typer.echo(
+            "note: excel/vbaProject.bin not found, so this is an .xlsx without macro buttons "
+            "(see EXCEL_WORKBOOK.md, one-time macro build)"
+        )
+    if not check:
+        return
+    from breachlens.report.recalc import check as check_workbook
+    from breachlens.report.recalc import recalculate, soffice_path
+
+    if soffice_path() is None:
+        typer.echo("recalc check skipped: LibreOffice not found (set SOFFICE_PATH)")
+        return
+    with tempfile.TemporaryDirectory() as tmp:
+        res = check_workbook(recalculate(path, Path(tmp)), data)
+    for section, item, excel, want in res.summary:
+        mark = "ok" if (section, item, excel, want) not in res.mismatches else "MISMATCH"
+        typer.echo(
+            f"  {section[:26]:26s} {item[:44]:44s} excel={excel!s:>6} python={want!s:>6} {mark}"
+        )
+    typer.echo(
+        f"recalc: {len(res.errors)} error values, {len(res.mismatches)} Summary mismatches, "
+        f"status formula agrees on {res.status_rows - res.status_disagree}/{res.status_rows} rows"
+    )
+    if not res.ok:
+        for e in res.errors[:10]:
+            typer.echo(f"  error value {e}", err=True)
+        raise typer.Exit(code=1)
 
 
 db_app = typer.Typer(help="DuckDB system of record (M6, ADR-067).", no_args_is_help=True)

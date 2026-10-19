@@ -65,12 +65,10 @@ def test_run_with_missing_config_fails_cleanly(tmp_path, salt_env):
 @pytest.mark.parametrize(
     ("args", "milestone"),
     [
-        (["evaluate"], "M7"),
         (["evaluate", "ask"], "M8"),
         (["train", "match-model"], "after M8"),
         (["apply-review", "--decisions", "decisions.csv"], "M6"),
         (["ask", "How many people must be notified?"], "M8"),
-        (["report", "--run", "latest"], "M7"),
     ],
 )
 def test_stub_commands_exit_nonzero_and_name_milestone(args, milestone):
@@ -78,6 +76,18 @@ def test_stub_commands_exit_nonzero_and_name_milestone(args, milestone):
     assert result.exit_code == 1
     assert "not implemented" in result.output
     assert milestone in result.output
+
+
+def test_report_needs_the_database(tmp_path):
+    result = runner.invoke(app, ["report", "--db", str(tmp_path / "none.duckdb")])
+    assert result.exit_code == 2
+    assert "db build" in result.output
+
+
+def test_evaluate_needs_ground_truth(tmp_path):
+    result = runner.invoke(app, ["evaluate", "pipeline", "--truth", str(tmp_path / "truth")])
+    assert result.exit_code == 2
+    assert "no ground truth" in result.output
 
 
 def test_scale_test_needs_the_input_file(tmp_path):

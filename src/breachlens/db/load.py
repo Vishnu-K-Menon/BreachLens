@@ -265,7 +265,11 @@ def build_database(run_dir: Path, db_path: Path, root: Path, guard: LeakGuard) -
             "CREATE TABLE schema_version (schema_version VARCHAR, run_id VARCHAR, "
             "built_at TIMESTAMP, source_dir VARCHAR, table_rows VARCHAR)"
         )
-        src = run_dir.relative_to(root).as_posix() if run_dir.is_relative_to(root) else run_dir.name
+        src = (
+            run_dir.relative_to(root).as_posix()
+            if run_dir.is_relative_to(root)
+            else run_dir.resolve().as_posix()
+        )
         con.execute(
             "INSERT INTO schema_version VALUES (?, ?, ?, ?, ?)",
             [

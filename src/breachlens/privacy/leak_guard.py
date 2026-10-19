@@ -97,8 +97,15 @@ class LeakGuard:
         return self.scan_frame(pd.DataFrame(records), where) if records else []
 
     def scan_file(self, path: Path) -> list[Finding]:
-        """Column-aware scan of a written CSV / JSONL; plain scan of other text files."""
+        """Column-aware scan of a written CSV / JSONL / workbook; plain scan of other text
+        files. Binary files (the DuckDB database, scanned at build time) are skipped."""
         name = path.name
+        if path.suffix in {".xlsx", ".xlsm"}:
+            from breachlens.report.excel_writer import scan_workbook
+
+            return scan_workbook(path, self)
+        if path.suffix in {".duckdb", ".bin", ".png"}:
+            return []
         if path.suffix == ".csv":
             df = pd.read_csv(path, dtype=str, keep_default_na=False)
             return self.scan_frame(df, name)
