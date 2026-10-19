@@ -392,3 +392,78 @@ Append-only build log. Format: see docs/WORKFLOW.md.
 - [docs] `DATABASE_AND_ASK.md`: table/column reference plus "write q1–q5 against base
   tables; use the views only to check". ADR-067, PLAN M6, DATA_SCHEMA, README status.
 - Next: the project owner writes q1–q5; then M7.
+
+## 2026-10-19 (Day 5) — M7 review workbook, macros, recalc, metrics, KNIME guide (ADR-068)
+- [workbook] `breachlens report` on corpus_v1 (run R20261019-161315-5cac) →
+  `data/output/R20261019-161315-5cac/breachlens_R20261019-161315-5cac.xlsx`. It is
+  `.xlsm` once `excel/vbaProject.bin` exists.
+  - 7 sheets: Summary, Mentions, Review_Queue, People, Notification_List, Excluded,
+    About.
+  - 5 Excel Tables, the `RunDate`/`RunId` named ranges, and conditional formatting
+    (red ERROR / yellow WARN codes per field group, green VERIFIED address, grey
+    resolved/rejected rows).
+  - Review_Queue: one row per item, 431 rows.
+    - 3 open COLUMN items, each with affected_rows (`ID` 40, `Employee Middle` 34,
+      `Guardian Name` 30).
+    - 1 RESOLVED (`Insurer`, review_overrides.yaml).
+    - 285 MENTION items and 142 PAIR items.
+    - a `review_status` dropdown and a `go` link
+  - Masked only: no `*_key`, `_` or `run_id` columns. The leak guard scanned the
+    workbook before and after writing (0 findings). `scan_dir` on the run folder:
+    14 files, 0 findings.
+- [recalc] LibreOffice 26.8 headless (dedicated profile, recalc on load):
+  - 0 error values, 47/47 Summary formulas equal Python
+    - people 215, mentions 438, collapse 2.04
+    - to notify **155**: READY 112 / NEEDS_REVIEW 43 / NOT_REQUIRED 60
+    - by state: CA 30, FL 18, MA 7, NJ 8, NY 23, PA 22, TX 23, VA 24
+    - minors 33 (flag) = 33 (DATEDIF from RunDate)
+    - FERPA 30, SSN+medical 72
+    - top 10 reason codes
+  - The Excel notify-status formula agrees on 215/215 people.
+  - Opened in Excel desktop as well (read-only, via COM): 5 tables intact, 47/47 Summary
+    values equal, status 215/215.
+  - Found and fixed: LibreOffice gave `#N/A` for XlsxWriter's unqualified `[@col]`
+    table references, so they are written as `tblX[@[col]]`. An empty table counts one
+    row in `ROWS()`, so Excluded uses `COUNTA`.
+- [macros] `excel/ReviewHelpers.bas` (`ShowPendingOnly` toggle, `ExportDecisions` →
+  `review_decisions_<RunId>.csv`), CRLF.
+  - Programmatic VBA import is not allowed on this machine (no `AccessVBOM`), so the
+    macros were reviewed, not run, by the agent.
+  - The human step is in EXCEL_WORKBOOK.md.
+- [metrics] `breachlens evaluate pipeline` (66 s, both corpora) →
+  `data/output/metrics/{metrics.json, METRICS.md, runs.csv}`:
+
+  | metric | corpus_v1 (dev) | holdout (untuned) |
+  |---|---|---|
+  | notified vs truth | 155/155 | 159/159 |
+  | pairwise P / R / F1 | 1.000 / 0.933 / 0.965 | 1.000 / 0.918 / 0.957 |
+  | shared-address merges | 0/78 | 0/59 |
+  | address vs expected | 396/398 | 386/394 |
+  | planted validation caught | 306/306 | 299/302 |
+  | planted spreadsheet cases | 18/18 | 18/18 |
+  | fields PDF-TEXT P / R | 1.000 / 1.000 | 1.000 / 1.000 |
+  | fields PDF-OCR P / R | 1.000 / 0.988 | 0.962 / 0.905 |
+  | fields SPREADSHEET P / R | 0.999 / 1.000 | 0.999 / 1.000 |
+
+  - The spreadsheet FPs are 3 routing numbers. They are the documented ground-truth
+    quirk: the truth leaves routing out when the account cell is `#N/A`.
+  - Holdout P41 (payroll + W-2) is NO: one scanned W-2 lost its SSN to OCR, as reported
+    in M5.
+- [knime] `docs/KNIME_GUIDE.md`: 14 built-in nodes on `sheets/payroll_export.csv` for
+  KNIME 5.12. Option labels were taken from the installed 5.12 node classes.
+  - SSN handling: `padLeft` to 9 digits, then mask in node 2. A side branch counts the
+    short SSNs (72 × 9 digits, 8 × 8) without showing one, and a regex Row Filter proves
+    0 digit runs remain.
+  - Flow: 80 rows → 40 employees; 2 to review (dept `#N/A`); 8 states.
+  - Ends with a pandas vs KNIME vs pipeline table.
+  - Numbers re-checked by `tests/unit/test_knime_guide.py`.
+  - The project owner builds, exports and commits `knime/breachlens_sheet_cleanup.knwf`
+    and `knime/workflow.png`.
+- [other] `LeakGuard.scan_file` reads workbooks. `GuardedWriter.write_text`.
+  `schema_version.source_dir` is absolute for runs outside the project root.
+- [docs] ADR-068, PLAN M7 (and the M8 `sample_output/` workbook + screenshot note),
+  EXCEL_WORKBOOK (human macro steps), WORKFLOW, SPREADSHEET_TRACK_NODES, README status.
+- [checks] `pytest -q`: 511 passed, including the LibreOffice integration test
+  `tests/integration/test_report.py`: the generated corpus recalculates to 155 to
+  notify, 0 errors, guard 0. ruff clean.
+- Next: the human macro step (`vbaProject.bin`) and the KNIME workflow; then M8.

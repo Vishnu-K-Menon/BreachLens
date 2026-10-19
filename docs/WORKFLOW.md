@@ -82,10 +82,9 @@ Python 3.11, type hints, ruff + isort, `logging` (no prints in library code), no
 business constants in code, docstrings stating input/output columns.
 
 ## Docs the agent writes during the build
-- `docs/KNIME_GUIDE.md` (M7): node-by-node assembly for both tracks, flow variables,
-  Python environment (`conda create -n breachlens-knime -c knime -c conda-forge
-  knime-python-base python=3.11` then `pip install -e .`). Verify the package name and
-  version against current KNIME docs.
+- `docs/KNIME_GUIDE.md` (M7, ADR-068): node-by-node assembly of one spreadsheet-cleanup
+  workflow in KNIME 5.12. It uses built-in nodes only, and the human builds and exports
+  it. The KNIME Python environment is not needed.
 - `docs/METHODS.md`, `docs/ASSUMPTIONS_LIMITATIONS.md`, `models/model_card.md` (M8).
 
 ## README requirements (M8)

@@ -2,11 +2,16 @@
 Python + KNIME pipeline that extracts PII/PHI from synthetic breach documents, validates it, verifies addresses, matches people across documents, and produces a state-grouped breach notification list.
 
 ## Status (interim, 2026-10-19)
-Milestones M0–M6 are done. M6 adds the DuckDB system of record (`breachlens db build`) and
-a read-only harness for hand-written queries (`breachlens sql run`, `DATABASE_AND_ASK.md`).
-M7 (Excel review workbook + KNIME guide for the spreadsheet track) and M8 (docs + v1.0
-release) are planned. The full
-README arrives in M8; details per milestone are in `PROGRESS.md`. SYNTHETIC DATA ONLY.
+Milestones M0–M7 are done; M8 (docs + v1.0 release) is planned. Details per milestone
+are in `PROGRESS.md`, and the full README arrives in M8. SYNTHETIC DATA ONLY.
+- **M6:** the DuckDB system of record (`breachlens db build`) and a read-only harness for
+  hand-written queries (`breachlens sql run`, `DATABASE_AND_ASK.md`).
+- **M7:**
+  - the Excel review workbook (`breachlens report`): 7 sheets of live formulas, checked
+    in LibreOffice against the Python counts
+  - two VBA macros (`excel/ReviewHelpers.bas`)
+  - `breachlens evaluate pipeline` (`METRICS.md`)
+  - a KNIME guide for a hand-built spreadsheet-cleanup workflow (`docs/KNIME_GUIDE.md`)
 
 | metric (synthetic data) | value |
 |---|---|
@@ -19,6 +24,7 @@ README arrives in M8; details per milestone are in `PROGRESS.md`. SYNTHETIC DATA
 | Planted validation cases caught | 306/306 (holdout 299/302) |
 | Address status vs expected (Census) | 396/398 mentions |
 | Leak guard | 0 findings on every written output; no raw identifier in any output byte |
+| Review workbook (corpus_v1), recalculated in LibreOffice | 47/47 Summary formulas equal the Python counts, 0 error values, notify-status formula agrees on 215/215 people |
 
 **Hand-built parts.** These are the project owner's own work, never created or edited by
 the coding agent (AGENTS.md):
@@ -26,6 +32,8 @@ the coding agent (AGENTS.md):
 - `excel/manual/`: a manual Excel cleanup of the HR roster with formulas, a pivot and a
   macro
 - also protected: `knime/manual/`, `docs/memos/` and the content of `sql/queries/*.sql`
+- the KNIME workflow (`knime/breachlens_sheet_cleanup.knwf`, `knime/workflow.png`),
+  built by hand from `docs/KNIME_GUIDE.md`
 
 **Census cache.** `data/cache/census/` is committed (Census Geocoder responses for the
 synthetic corpora's addresses only; no names or identifiers). A fresh clone therefore
@@ -37,6 +45,10 @@ no cache entry are NOT_CHECKED (ADR-063).
 ## Docs backlog (written into the full docs in M8)
 README:
 - All identifiers are randomly generated; any match to a real number is coincidental.
+- `sample_output/` (M8): copy the final review workbook (synthetic, masked) and a
+  screenshot of it, plus `METRICS.md`, because `data/output/` is git-ignored (ADR-068).
+- Macros: files downloaded from the internet open with macros blocked (Mark of the Web).
+  Right-click → Properties → Unblock.
 
 ASSUMPTIONS_LIMITATIONS.md:
 - **Known limitations (M5):**

@@ -774,3 +774,95 @@ older PLAN/DATABASE text: its views, the snapshot harness and the Q01–Q20 nami
   the project owner (AGENTS.md hand-made rule); the agent does not edit these files.
 **Consequences:** The database is the handoff contract for M7. Accumulating several
 runs is a later change (append instead of rebuild).
+
+---
+## Revision 8: M7 (2026-10-19)
+
+### ADR-068 M7 as built: review workbook, recalc check, metrics, hand-built KNIME guide
+**Context:** The project owner restated M7. They build the KNIME workflow by hand in
+KNIME 5.12 (new UI), which replaces the KNIME bullet of PLAN M7 and ADR-051:
+`knime/nodes/*.py`, Python Script nodes and an agent-made `.knwf` are dropped.
+**Decision:**
+- **Workbook (`breachlens report`).** The workbook (`report/excel_writer.py`) is built
+  from the DuckDB database (ADR-067, read-only), plus the run folder's guarded
+  `excluded_*` CSVs. Its 7 sheets are those of ADR-051:
+  - every data block is an Excel Table
+  - `RunDate` (= `as_of_date`) and `RunId` are named ranges
+  - output: `data/output/<run_id>/breachlens_<run_id>.xlsm`
+- **`.xlsx` until the bin exists.** Without `excel/vbaProject.bin` the writer produces
+  an `.xlsx` with no buttons and says so; the macros arrive after the one-time human step.
+- **Summary layout.** Every count is a row: `section | item | excel (live formula) |
+  python (value) | match`. One list (`summary_rows`) drives both the formulas and the
+  Python check, so they cannot drift apart.
+- **Formula notes:**
+  - Calculated table columns are written as `tblX[@[col]]`. LibreOffice cannot resolve
+    XlsxWriter's unqualified `[@col]` form (it gave `#N/A` in every cell); Excel accepts
+    both.
+  - Reason-code counts match whole tokens:
+    `SEARCH(";"&code&";", ";"&qc_reasons&";")`.
+  - `Excluded` is counted with `COUNTA`, because an empty Excel Table still has one row.
+  - The notify-status formula re-implements `notify/triggers.py` with
+    `IF(AND(...), XLOOKUP(...))`, and Summary counts its agreement.
+- **Review_Queue** (ADR-062):
+  - rows: one per `review_items` row, COLUMN items once per column with `affected_rows`
+  - order: OPEN first, ERROR first, then by affected rows
+  - `review_status` dropdown: PENDING / ACCEPTED / REJECTED / RESOLVED
+  - columns decided in `config/review_overrides.yaml` start as RESOLVED (grey)
+  - reviewer columns: `reviewer_note`, `reviewed_by`, `reviewed_at`
+  - a `go` link to the mention row
+- **What the workbook shows:** masked values only. `*_key` and `run_id` columns stay in
+  the database.
+- **Workbook leak guard.** Each sheet's frame is scanned before writing. The file is
+  built as a temp file, read back with openpyxl and scanned again: table cells under
+  their headers, other cells as text. Any finding deletes it. `LeakGuard.scan_file` now
+  reads `.xlsx`/`.xlsm` (and skips `.duckdb`, `.bin`, `.png`), so `scan_dir` on a run
+  folder covers the workbook.
+- **Macros.** `excel/ReviewHelpers.bas`:
+  - `ShowPendingOnly` toggles a filter on `review_status`.
+  - `ExportDecisions` writes the non-PENDING rows to `review_decisions_<RunId>.csv`
+    next to the workbook.
+  - `Option Explicit`, error handlers, no references or network.
+  - The file is CRLF (`.gitattributes`), as VBA import expects.
+  - `apply-review` stays dropped, so the CSV is a record for editing
+    `review_overrides.yaml`.
+- **Recalc check (`report/recalc.py`).** LibreOffice runs headless with a throwaway
+  profile whose `registrymodifications.xcu` sets OOXML/ODF recalculation on load to
+  *always* (ADR-041). `breachlens report` runs it by default (`--no-check` skips it) and
+  fails on:
+  - any error value
+  - any Summary value that differs from Python
+  - any notify-status disagreement
+- **Metrics (`breachlens evaluate pipeline`).** `evaluate/metrics.py` runs the pipeline
+  in memory, stage by stage and timed. It scores corpus_v1 (dev) and, when present, the
+  seed-43 holdout (untuned) side by side.
+  - **Field P/R/F1:** reuse the M2/M3 field checks. TP = correct. FN = missed or wrong.
+    FP = a wrong value, a value without truth, or a field on an unmatched extracted
+    mention.
+  - **Outputs:** `metrics.json` and `METRICS.md` in `data/output/metrics/`, through the
+    guarded writer (new `GuardedWriter.write_text`).
+  - **History:** "one row appended to `runs`" becomes a row in
+    `data/output/metrics/runs.csv`, because the database is rebuilt per run.
+- **KNIME guide (`docs/KNIME_GUIDE.md`).** One beginner workflow, built by hand:
+  - **Nodes:** built-in only, written for KNIME 5.12. Option labels were taken from the
+    5.12 node classes on the project owner's machine.
+  - **Input:** `sheets/payroll_export.csv`, the file the notebook cleans. It has no
+    header detection, but a comment line, `;`, Latin-1, decimal commas, 8 short SSNs,
+    `#N/A` and duplicate rows.
+  - **SSN handling:** `padLeft` to 9 digits, then mask, in the node right after the
+    reader. A side branch counts the short SSNs without showing them, and a Row Filter
+    proves no 5-digit run is left.
+  - **Numbers:** every number in the guide is mirrored in pandas
+    (`tests/unit/test_knime_guide.py`).
+  - **Ends with:** a pandas vs KNIME vs pipeline table.
+  - The project owner exports `knime/breachlens_sheet_cleanup.knwf` (reset first, so no
+    data) and `knime/workflow.png`, and commits them.
+- **Caveat (stated in the guide):** built-in nodes cannot mask while reading. The CSV
+  Reader is the only node that holds full SSNs (dialog preview, output port). The guide
+  never asks to open it.
+**Consequences:**
+- M8 copies the final workbook (synthetic, masked) with a screenshot into
+  `sample_output/`, because `data/output/` is git-ignored.
+- The PLAN AC "the `.xlsm` opens with working buttons" is checked after the human macro
+  step.
+- Programmatic VBA import is not available on the dev machine, so the macros were
+  reviewed, not executed, by the agent.

@@ -148,37 +148,47 @@ Spec: `DATABASE_AND_ASK.md`.
 **AC:** The database builds. The views return the expected totals (155 notified). The
 read-only connection and the `*_key` guard are enforced, and the leak guard finds 0.
 
-## M7 — Excel workbook + KNIME + evaluation (Day 5) — Lite scope (ADR-051)
+## M7 — Excel workbook + KNIME + evaluation (Day 5) — Lite scope (ADR-051, as restated in ADR-068)
 Spec: `EXCEL_WORKBOOK.md` (as reduced by ADR-051).
-- [ ] `report/excel_writer.py` (XlsxWriter): sheets `Summary`, `Mentions`, `Review_Queue`,
-      `People`, `Notification_List`, `Excluded`, `About`; Excel Tables, named ranges
-      (`RunDate` = `as_of_date`), live formulas (`COUNTIFS`, `SUMPRODUCT`, `XLOOKUP`,
-      `IF(AND(...))`), formula-based conditional formatting, data validation.
-      `Review_Queue` groups column-level warnings (COL_*) as **one item per column** with
-      an `affected_rows` count, not one row per person (ADR-062). Row-level codes stay one
-      item per mention. Columns with a `reviewed_label` (config/review_overrides.yaml)
-      are shown as resolved.
-- [ ] `excel/ReviewHelpers.bas` with 2 macros (`ShowPendingOnly`, `ExportDecisions`).
+- [x] `report/excel_writer.py` (XlsxWriter), run by `breachlens report`, built from the
+      DuckDB database:
+  - sheets `Summary`, `Mentions`, `Review_Queue`, `People`, `Notification_List`,
+    `Excluded`, `About`
+  - Excel Tables, named ranges (`RunDate` = `as_of_date`, `RunId`)
+  - live formulas (`COUNTIFS`, `SUMPRODUCT`, `XLOOKUP`, `IF(AND(...))`, `TEXTJOIN`,
+    `DATEDIF`)
+  - formula-based conditional formatting, data validation
+  - `Review_Queue`: one item per column for COL_* warnings, with `affected_rows`
+    (ADR-062); reviewed columns show as RESOLVED
+  - masked values only; leak guard on the workbook
+- [x] `excel/ReviewHelpers.bas` with 2 macros (`ShowPendingOnly`, `ExportDecisions`).
       **Human step:** import it into a blank workbook, save as `.xlsm`, and run
-      `vba_extract.py` → `excel/vbaProject.bin`. The writer embeds it and adds buttons.
-- [ ] `report/recalc.py`: LibreOffice headless recalculation (dedicated profile,
-      ADR-041). Assert there are no `#REF!`/`#NAME?`/`#VALUE!`/`#DIV/0!` errors and that the
+      `vba_extract.py` → `excel/vbaProject.bin` (`EXCEL_WORKBOOK.md`). The writer then
+      embeds it and adds the buttons.
+- [x] `report/recalc.py`: LibreOffice headless recalculation (dedicated profile,
+      ADR-041). Asserts no `#REF!`/`#NAME?`/`#VALUE!`/`#DIV/0!` errors and that the
       Summary counts equal the Python counts.
-- [ ] `evaluate/metrics.py`: per-field P/R/F1 by track, column-classifier metrics,
-      matching metrics, address status accuracy vs expected (ADR-050), collapse ratio,
-      throughput → `metrics.json`, `METRICS.md`; one row appended to `runs`.
-- [ ] `knime/nodes/*.py` + `docs/KNIME_GUIDE.md`: **spreadsheet track only**, mostly in
-      native nodes, with Python Script nodes for mapping, validation, matching and export.
+- [x] `evaluate/metrics.py` (`breachlens evaluate pipeline`):
+  - per-field P/R/F1 by track
+  - column-classifier metrics, matching metrics
+  - address status accuracy vs expected (ADR-050)
+  - collapse ratio, throughput
+  - output: `metrics.json` and `METRICS.md`, plus one row in `runs.csv`
+- [x] `docs/KNIME_GUIDE.md`: a spreadsheet-cleanup workflow **the human builds by hand**
+      in KNIME 5.12, with built-in nodes only (no Python Script nodes, no agent-made
+      `.knwf`, ADR-068).
 
-**AC:** The `.xlsm` opens with working buttons. Recalculated Summary counts equal Python.
-The KNIME guide can be assembled by a human in 45 minutes or less.
+**AC:** The `.xlsm` opens with working buttons (after the human macro step).
+Recalculated Summary counts equal Python. The KNIME guide can be assembled by a human in
+45 minutes or less.
 
 ## M8 — Docs + release (Day 6) — Lite scope (ADR-051)
 - [ ] `README.md` per `WORKFLOW.md §README requirements` (without the Ask items). The
       quick start includes `breachlens train column-classifier`, because the model file is
       git-ignored (ADR-057);
       `docs/METHODS.md`; `docs/ASSUMPTIONS_LIMITATIONS.md`.
-- [ ] `sample_output/`: workbook, metrics, scale report.
+- [ ] `sample_output/`: the final workbook (synthetic, masked) with a screenshot,
+      `METRICS.md`, the scale report. `data/output/` is git-ignored (ADR-068).
 - [ ] Fresh-clone test. Tag `v1.0`.
 
 **AC:** A fresh clone reproduces `sample_output/`.

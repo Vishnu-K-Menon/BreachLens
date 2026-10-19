@@ -5,6 +5,16 @@
 > `ShowPendingOnly` and `ExportDecisions`. `State_View`, `Formula_Checks`,
 > `Column_Mappings`, `File_Profiles`, `MarkSelectedAccepted` and `RefreshHighlights` are
 > dropped; their specs below are kept for reference only. `RunDate` = `as_of_date`.
+>
+> **As built (M7, ADR-068):**
+> - `breachlens report` writes the workbook from the DuckDB database to
+>   `data/output/<run_id>/`. It is an `.xlsx` until `excel/vbaProject.bin` exists.
+> - Summary rows are `section | item | excel | python | match`.
+> - `Review_Queue` adds the reviewer columns `review_status` (dropdown PENDING /
+>   ACCEPTED / REJECTED / RESOLVED), `reviewer_note`, `reviewed_by`, `reviewed_at` and a
+>   `go` link.
+> - The Summary formulas below are examples; the real ones are in
+>   `report/excel_writer.py` (`summary_rows`).
 
 Output: `breachlens_<run_id>.xlsm`, written with **XlsxWriter**
 (`Workbook(path, {"use_future_functions": True})` so `XLOOKUP`, `FILTER`, `UNIQUE`,
@@ -95,15 +105,32 @@ agree       =AND(zip_ok=py_zip_ok, ...)   → Summary shows "Excel vs Python agr
 Requirements: `Option Explicit`, error handling with a message box, no network access,
 no external references.
 
-### One-time build of `vbaProject.bin` (human + agent)
-1. The agent writes `excel/ReviewHelpers.bas`.
-2. The human opens Excel → blank workbook → Alt+F11 → File › Import → save as
-   `excel/macro_shell.xlsm`.
-3. The agent runs `vba_extract.py excel/macro_shell.xlsm` (ships with XlsxWriter) →
-   `excel/vbaProject.bin` (committed).
-4. `excel_writer.py`: `workbook.add_vba_project("excel/vbaProject.bin")`, then
-   `worksheet.insert_button("B2", {"macro": "ShowPendingOnly", "caption": "Show pending", "width": 120, "height": 28})`
-   for each macro.
+### One-time build of `vbaProject.bin` (human step, Windows + Excel desktop)
+The agent wrote `excel/ReviewHelpers.bas`. Then:
+1. Start Excel → **Blank workbook**.
+2. Press **Alt+F11** (VBA editor) → **File › Import File…** →
+   `D:\git\BreachLens\excel\ReviewHelpers.bas`. The module `ReviewHelpers` appears
+   under *Modules*.
+3. Close the VBA editor (**Alt+Q**).
+4. **File › Save As › Browse** → folder `D:\git\BreachLens\excel`, **Save as type**
+   *Excel Macro-Enabled Workbook (\*.xlsm)*, file name `macro_shell.xlsm` → **Save**.
+   Close Excel.
+5. Extract the binary (PowerShell, from the repo root; `vba_extract.py` ships with
+   XlsxWriter and writes into the current folder):
+   ```powershell
+   cd D:\git\BreachLens\excel
+   ..\.venv\Scripts\python.exe ..\.venv\Scriptsba_extract.py macro_shell.xlsm
+   cd ..
+   ```
+   This writes `excelbaProject.bin`. Commit it. `macro_shell.xlsm` is only a
+   carrier and does not need committing.
+6. `.\.venv\Scripts\python.exe -m breachlens report` now writes
+   `breachlens_<run_id>.xlsm`. It embeds the binary with `add_vba_project` and puts
+   "Show pending" / "Export decisions" buttons on `Review_Queue` (`insert_button`).
+   Open the file, click **Enable Content**, and try both buttons.
+
+"Trust access to the VBA project object model" is only needed for programmatic
+imports, not for this manual one.
 
 Note for the README: files downloaded from the internet open with macros blocked
 (Mark of the Web). Right-click → Properties → Unblock.
