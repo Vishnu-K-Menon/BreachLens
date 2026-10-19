@@ -268,3 +268,90 @@ def report(
 ) -> None:
     """Write the Excel review workbook and metrics report for a run."""
     _not_implemented("report", "M7")
+
+
+db_app = typer.Typer(help="DuckDB system of record (M6, ADR-067).", no_args_is_help=True)
+sql_app = typer.Typer(
+    help="Run the hand-written queries in sql/queries/ (M6).", no_args_is_help=True
+)
+app.add_typer(db_app, name="db")
+app.add_typer(sql_app, name="sql")
+DEFAULT_DB = Path("data/output/breachlens.duckdb")
+
+
+@db_app.command("build")
+def db_build(
+    config: Annotated[Path, typer.Option(help="Pipeline config file.")] = Path(
+        "config/pipeline.yaml"
+    ),
+    run: Annotated[
+        str, typer.Option("--run", help="Run id under data/output/, or 'latest'.")
+    ] = "latest",
+    db: Annotated[Path, typer.Option("--db", help="Database file.")] = DEFAULT_DB,
+) -> None:
+    """Load one run's outputs into DuckDB; the leak guard scans it before it is saved."""
+    from breachlens.config import load_config, project_root_for
+    from breachlens.db.load import build_database, find_run
+    from breachlens.privacy.leak_guard import LeakError, LeakGuard
+
+    cfg = load_config(config)
+    root = project_root_for(config)
+    out = (
+        cfg.paths.output_dir if cfg.paths.output_dir.is_absolute() else root / cfg.paths.output_dir
+    )
+    try:
+        run_dir = find_run(out, run)
+        res = build_database(
+            run_dir, db if db.is_absolute() else root / db, root, LeakGuard(cfg.privacy.leak_guard)
+        )
+    except FileNotFoundError as exc:
+        typer.echo(f"error: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
+    except LeakError as exc:
+        typer.echo(f"error: {exc}; nothing was saved", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"built {res['db']} from {res['source_dir']} (run {res['run_id']})")
+    for name, n in res["tables"].items():
+        typer.echo(f"  {name:18s} {n:>7,d} rows")
+    typer.echo(f"  views: {', '.join(res['views'])}")
+    typer.echo(f"leak guard: {len(res['scanned'])} tables/views scanned, 0 findings")
+
+
+@sql_app.command("run")
+def sql_run(
+    config: Annotated[Path, typer.Option(help="Pipeline config file.")] = Path(
+        "config/pipeline.yaml"
+    ),
+    db: Annotated[Path, typer.Option("--db", help="Database file.")] = DEFAULT_DB,
+    queries: Annotated[Path, typer.Option(help="Folder with *.sql queries.")] = Path("sql/queries"),
+) -> None:
+    """Run every sql/queries/*.sql read-only; save results to data/output/sql/."""
+    from breachlens.config import load_config, project_root_for
+    from breachlens.db.sql_harness import FAILED, run_all
+    from breachlens.privacy.leak_guard import LeakGuard
+    from breachlens.privacy.writer import GuardedWriter
+
+    cfg = load_config(config)
+    root = project_root_for(config)
+    out = (
+        cfg.paths.output_dir if cfg.paths.output_dir.is_absolute() else root / cfg.paths.output_dir
+    )
+    writer = GuardedWriter(LeakGuard(cfg.privacy.leak_guard), out / "sql")
+    try:
+        results = run_all(
+            db if db.is_absolute() else root / db,
+            queries if queries.is_absolute() else root / queries,
+            writer,
+        )
+    except FileNotFoundError as exc:
+        typer.echo(f"error: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
+    for r in results:
+        rows = "" if r.rows is None else f"{r.rows} rows -> {r.output}"
+        typer.echo(f"  {r.name:24s} {r.status:7s} {rows}{r.detail}")
+    failed = [r for r in results if r.status == FAILED]
+    typer.echo(
+        f"{len(results)} queries: {len(results) - len(failed)} ok/empty, {len(failed)} failed"
+    )
+    if failed:
+        raise typer.Exit(code=1)

@@ -1,0 +1,1 @@
+-- Q1: How many people get a notice in each state?

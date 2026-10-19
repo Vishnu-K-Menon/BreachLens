@@ -1,0 +1,1 @@
+-- Q5: Top 10 validation reason codes by count.

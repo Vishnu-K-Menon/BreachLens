@@ -139,18 +139,25 @@ def check_row(
 
 
 def column_codes(
-    df: pd.DataFrame, mapping: pd.DataFrame | None, wide_pattern: str
+    df: pd.DataFrame,
+    mapping: pd.DataFrame | None,
+    wide_pattern: str,
+    affected: dict[Any, int] | None = None,
 ) -> dict[int, list[str]]:
-    """Mention index -> COL_* WARN codes of the columns its values came from."""
+    """Mention index -> COL_* WARN codes of the columns its values came from.
+
+    `affected` (optional) receives, per `mapping` row index, how many mentions took a value
+    from that warned column (reviewed columns included); M6 `review_items` (ADR-062)."""
     out: dict[int, list[str]] = {}
     if mapping is None or mapping.empty:
         return out
     rx = re.compile(wide_pattern, re.I)
     sheets = df[df["source_type"] == "SPREADSHEET"]
-    for _, col in mapping.iterrows():
+    for map_idx, col in mapping.iterrows():
         warn = [c for c in _split(col.get("codes")) if c in COLUMN_WARN]
-        if not warn or present(col.get("reviewed_label")):  # a human resolved it (ADR-061)
+        if not warn:
             continue
+        reviewed = present(col.get("reviewed_label"))  # a human resolved it (ADR-061)
         same = sheets[
             (sheets["doc_id"] == col["doc_id"])
             & (sheets["source_sheet"].fillna("") == (col["sheet"] or ""))
@@ -163,9 +170,14 @@ def column_codes(
         elif col["final_label"] != "OTHER":
             same = same[same["person_role"] != "GUARDIAN"]
         fields = LABEL_FIELDS.get(col["final_label"], ())
+        n = 0
         for idx, r in same.iterrows():
             if col["final_label"] == "OTHER" or any(f in r and present(r[f]) for f in fields):
-                out.setdefault(idx, []).extend(warn)
+                n += 1
+                if not reviewed:
+                    out.setdefault(idx, []).extend(warn)
+        if affected is not None:
+            affected[map_idx] = n
     return out
 
 
@@ -254,7 +266,13 @@ def stage_validate(df: pd.DataFrame, ctx: Context) -> pd.DataFrame:
     from breachlens.sheets.settings import load_sheet_settings
 
     wide = load_sheet_settings(ctx.paths.config_dir).sheets.reshape.wide_group_pattern
-    col = column_codes(df, ctx.tables.get("column_mapping"), wide)
+    mapping = ctx.tables.get("column_mapping")
+    affected: dict[Any, int] = {}
+    col = column_codes(df, mapping, wide, affected)
+    if mapping is not None and not mapping.empty:
+        mapping = mapping.copy()
+        mapping["affected_rows"] = [affected.get(i, 0) for i in mapping.index]
+        ctx.tables["column_mapping"] = mapping
     variants = name_variant_codes(df)
     rows = df.to_dict("records")
     updates, reasons, statuses, itins = [], [], [], []
