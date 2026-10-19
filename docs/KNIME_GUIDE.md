@@ -56,6 +56,9 @@ contains a full SSN, and node 11 proves it. While you work:
    expression into it, or click an input column to insert it.
 4. **Running a node:** **Execute** (the play button on the node, or F7). The traffic
    light turns green. The bottom panel shows the output table of the selected node.
+5. **Output folder:** step 14 writes to `data\output\knime\`, which doesn't exist yet
+   (git-ignored, like all of `data\output\`). Either tick **Create missing folders** in
+   step 14, or create it once now: `mkdir D:\git\BreachLens\data\output\knime`.
 
 The settings below name only what you change; leave everything else at the default.
 The option labels were read from the KNIME 5.12 node definitions, not from the screen.
@@ -276,8 +279,13 @@ This lets you count the short SSNs without ever showing one.
   - node 13 → port 3
 - **Settings:**
   - **File:** *Local file system* →
-    `D:\git\BreachLens\data\output\knime\payroll_clean.xlsx`. Tick **Create missing
-    folders** if shown. **If exists:** overwrite.
+    `D:\git\BreachLens\data\output\knime\payroll_clean.xlsx`. Type the path into the field;
+    don't use Browse, which can't open a folder that doesn't exist yet.
+  - **Create missing folders:** ticked (the checkbox right under the path). This is
+    required: `data\output\knime\` does not exist in a fresh checkout, and without it the
+    node fails with "The directory '…' does not exist and must not be created due to user
+    settings." (Or create the folder first, see "Before you start".)
+  - **If exists:** overwrite.
   - **Sheet name:** `employees`, `needs_review`, `by_state`.
   - **Write column headers:** ticked. **Write row key:** unticked.
 - **You should see:** the file opens in Excel with 40 / 2 / 8 data rows, and `ssn_masked`

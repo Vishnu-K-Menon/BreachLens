@@ -472,3 +472,7 @@ Append-only build log. Format: see docs/WORKFLOW.md.
   Every node is now found by searching its name. String Manipulation and Rule Engine
   have modern expression-editor dialogs in 5.12, so the output setting reads
   *Output column → Replace/Append column*. The numbers are unchanged.
+- [fix] KNIME_GUIDE.md step 14, reported by the project owner: the Excel Writer refused
+  `data\output\knime\payroll_clean.xlsx` because the folder doesn't exist. **Create missing
+  folders** (off by default in 5.12) is now a required setting, not "if shown", and
+  "Before you start" gives the `mkdir` alternative.
