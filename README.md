@@ -135,7 +135,7 @@ Needs Python 3.11, [Tesseract OCR](https://github.com/UB-Mannheim/tesseract/wiki
 `.xls` test file, and `report` uses it to recalculate the workbook formulas as a check.
 
 ```powershell
-py -3.11 -m venv .venv; .venv\Scripts\Activate.ps1; pip install -e .
+py -3.11 -m venv .venv; .venv\Scripts\Activate.ps1; pip install -e ".[ocr,ml]"
 copy .env.example .env   # set BREACHLENS_SALT (e.g. python -c "import secrets; print(secrets.token_hex(32))"), TESSERACT_CMD, SOFFICE_PATH
 breachlens generate; breachlens generate --seed 43 --out data/raw/corpus_holdout --corpus-only
 breachlens train column-classifier   # the model file is not in git

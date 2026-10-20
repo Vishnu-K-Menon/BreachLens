@@ -2,9 +2,10 @@
 
 This is the M3 reference for rebuilding the first three spreadsheet-track steps
 (`sheets/reader.py`, `layout.py`, `repair.py`) with built-in KNIME nodes (KNIME Analytics
-Platform 5.x), without Python. The M7 guide (`docs/KNIME_GUIDE.md`, ADR-068) is a
-beginner workflow on the payroll CSV, built by hand; this page stays the reference for
-the harder Excel files. Column mapping (rules + ML) stays in Python, because the
+Platform 5.x), without Python. The M7 workflow
+([breachlens_sheet_cleanup.knwf](breachlens_sheet_cleanup.knwf), screenshot
+[workflow.png](workflow.png), ADR-068) is a beginner workflow on the payroll CSV, built by
+hand; this page stays the reference for the harder Excel files. Column mapping (rules + ML) stays in Python, because the
 classifier runs there.
 
 Input: the synthetic files in `data/raw/corpus_v1/docs/sheets/`. SYNTHETIC DATA. The

@@ -1,7 +1,9 @@
-"""The numbers in docs/KNIME_GUIDE.md, recomputed with pandas on the same file.
+"""The numbers in the KNIME guide, recomputed with pandas on the same file.
 
-Each step mirrors one KNIME node. If the corpus is regenerated and a number changes,
-this test fails and the guide must be updated. Skipped when the corpus is absent.
+Each step mirrors one KNIME node, and the expected numbers live in this test. If the
+corpus is regenerated and a number changes, this test fails and the guide must be
+updated. Skipped when the corpus is absent. The guide itself (docs/KNIME_GUIDE.md) is
+kept locally by the project owner and not published, so the text check skips without it.
 """
 
 from pathlib import Path
@@ -102,6 +104,7 @@ def test_guide_numbers(nodes):
     assert nodes["nj_zips"] == ["07102", "08608"]
 
 
+@pytest.mark.skipif(not GUIDE.is_file(), reason="KNIME guide is kept locally, not published")
 def test_guide_text_states_the_same_numbers():
     text = GUIDE.read_text(encoding="utf-8")
     for s in (

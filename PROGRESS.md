@@ -449,7 +449,8 @@ Append-only build log. Format: see docs/WORKFLOW.md.
     quirk: the truth leaves routing out when the account cell is `#N/A`.
   - Holdout P41 (payroll + W-2) is NO: one scanned W-2 lost its SSN to OCR, as reported
     in M5.
-- [knime] `docs/KNIME_GUIDE.md`: 14 built-in nodes on `sheets/payroll_export.csv` for
+- [knime] A step-by-step KNIME guide (kept locally by the project owner, not published
+  since M8): 14 built-in nodes on `sheets/payroll_export.csv` for
   KNIME 5.12. Option labels were taken from the installed 5.12 node classes.
   - SSN handling: `padLeft` to 9 digits, then mask in node 2. A side branch counts the
     short SSNs (72 × 9 digits, 8 × 8) without showing one, and a regex Row Filter proves
@@ -467,12 +468,12 @@ Append-only build log. Format: see docs/WORKFLOW.md.
   `tests/integration/test_report.py`: the generated corpus recalculates to 155 to
   notify, 0 errors, guard 0. ruff clean.
 - Next: the human macro step (`vbaProject.bin`) and the KNIME workflow; then M8.
-- [fix] KNIME_GUIDE.md, reported by the project owner: the classic category paths
+- [fix] The local KNIME guide, reported by the project owner: the classic category paths
   (e.g. Manipulation › Column › Convert & Replace) don't exist in the 5.12 Nodes panel.
   Every node is now found by searching its name. String Manipulation and Rule Engine
   have modern expression-editor dialogs in 5.12, so the output setting reads
   *Output column → Replace/Append column*. The numbers are unchanged.
-- [fix] KNIME_GUIDE.md step 14, reported by the project owner: the Excel Writer refused
+- [fix] The local KNIME guide, step 14, reported by the project owner: the Excel Writer refused
   `data\output\knime\payroll_clean.xlsx` because the folder doesn't exist. **Create missing
   folders** (off by default in 5.12) is now a required setting, not "if shown", and
   "Before you start" gives the `mkdir` alternative.
@@ -522,8 +523,13 @@ Append-only build log. Format: see docs/WORKFLOW.md.
       SPREADSHEET_TRACK
     - one OCR artifact in `excel/manual/excel_roster.png`: a ZIP and a phone number
       read as one 16-digit run
-    - the project owner's two hand-made files: the notebook (34, saved cell outputs,
-      to be fixed by the owner) and `hr_roster_clean.xlsm` (56, hidden SSN column; kept
-      as a documented exception)
-- Next: the owner fixes the notebook display cells. Then the final scan, the
-  fresh-clone test and the v1.0 tag.
+    - the project owner's two hand-made files, kept as documented exceptions
+      (ASSUMPTIONS_LIMITATIONS.md): the notebook (34, saved outputs of 5 raw-file
+      display cells) and `hr_roster_clean.xlsm` (56, hidden SSN column)
+- [knime] The project owner unpublished the KNIME guide: `docs/KNIME_GUIDE.md` is
+  untracked and git-ignored (local copy kept), and every mention is reworded. Old
+  commits still contain it (no history rewrite). The owner's README edits on GitHub
+  (d2f8008, bf009db) were pulled and kept. The guide-text test skips without the file.
+- [fix] README quick start: `pip install -e .` became `pip install -e ".[ocr,ml]"`.
+  scikit-learn (`train column-classifier`) and pytesseract (OCR) are optional extras, so
+  a fresh clone following the README would have failed at the training step.

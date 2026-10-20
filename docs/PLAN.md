@@ -174,9 +174,10 @@ Spec: `EXCEL_WORKBOOK.md` (as reduced by ADR-051).
   - address status accuracy vs expected (ADR-050)
   - collapse ratio, throughput
   - output: `metrics.json` and `METRICS.md`, plus one row in `runs.csv`
-- [x] `docs/KNIME_GUIDE.md`: a spreadsheet-cleanup workflow **the human builds by hand**
-      in KNIME 5.12, with built-in nodes only (no Python Script nodes, no agent-made
-      `.knwf`, ADR-068).
+- [x] KNIME guide: a spreadsheet-cleanup workflow **the human builds by hand** in KNIME
+      5.12, with built-in nodes only (no Python Script nodes, no agent-made `.knwf`,
+      ADR-068). The guide is kept locally, not published; the workflow is in `knime/`
+      (ADR-069).
 
 **AC:** The `.xlsm` opens with working buttons (after the human macro step).
 Recalculated Summary counts equal Python. The KNIME guide can be assembled by a human in

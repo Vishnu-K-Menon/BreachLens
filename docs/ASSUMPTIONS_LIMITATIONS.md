@@ -72,15 +72,21 @@ legal advice.
 - **Holdout P41:** the payroll CSV + W-2 → one person case is not merged on the holdout
   (an OCR miss on the scanned W-2). Reported as is.
 
-## Privacy exception: one hand-made exercise file
-`excel/manual/hr_roster_clean.xlsm` is the project owner's hand-made Excel exercise, not
-pipeline output.
-- **What it holds:** the full SSN column (56 synthetic values) on the Roster sheet,
-  hidden by its macro.
-- **Why it stays:** `SSN_Masked` and `SSN_Check` are live formulas that read it to
-  demonstrate the masking.
-- **Values:** synthetic and randomly generated.
-- **Scans:** the M8 privacy scan reports this file as a known exception. Every pipeline
+## Privacy exceptions: two hand-made exercise files
+Both are the project owner's hand-made exercises, not pipeline output. Their values are
+synthetic and randomly generated.
+- **`excel/manual/hr_roster_clean.xlsm`** (Excel exercise):
+  - **What it holds:** the full SSN column (56 synthetic values) on the Roster sheet,
+    hidden by its macro.
+  - **Why it stays:** `SSN_Masked` and `SSN_Check` are live formulas that read it to
+    demonstrate the masking.
+- **`notebooks/01_explore_messy_files.ipynb`** (exploration notebook):
+  - **What it holds:** the saved outputs of 5 display cells that preview the raw HR
+    roster and payroll export. They show synthetic SSNs, and for payroll, routing and
+    account numbers.
+  - **Why it stays:** the notebook shows the messy files as they arrive. Its masking
+    cells then demonstrate the masking.
+- **Scans:** the M8 privacy scan reports both files as known exceptions. Every pipeline
   output passes the leak guard with 0 findings.
 
 ## Out of scope (v1.0)

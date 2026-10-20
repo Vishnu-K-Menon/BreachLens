@@ -36,6 +36,9 @@ Thumbs.db
 .ipynb_checkpoints/
 .virtual_documents/
 
+# The project owner's step-by-step KNIME guide: kept locally, not published
+docs/KNIME_GUIDE.md
+
 # The one-time macro shell used to produce excel/vbaProject.bin (EXCEL_WORKBOOK.md)
 excel/macro_shell.xlsm
 
