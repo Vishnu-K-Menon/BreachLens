@@ -190,7 +190,7 @@ Recalculated Summary counts equal Python. The KNIME guide can be assembled by a 
       (ADR-057); `docs/METHODS.md`; `docs/ASSUMPTIONS_LIMITATIONS.md`.
 - [x] `sample_output/`: the final workbook (synthetic, masked) with 3 screenshots,
       `METRICS.md`, the scale report. `data/output/` is git-ignored (ADR-068).
-- [ ] Fresh-clone test. Tag `v1.0`.
+- [x] Fresh-clone test (reproduces `sample_output/`, ADR-069). Tag `v1.0`.
 
 **AC:** A fresh clone reproduces `sample_output/`.
 

@@ -533,3 +533,28 @@ Append-only build log. Format: see docs/WORKFLOW.md.
 - [fix] README quick start: `pip install -e .` became `pip install -e ".[ocr,ml]"`.
   scikit-learn (`train column-classifier`) and pytesseract (OCR) are optional extras, so
   a fresh clone following the README would have failed at the training step.
+- [privacy] Final scan (after the guide was untracked): 505 tracked files (8 PNGs read
+  by OCR), 249 findings in 72 files, all in the known categories above, plus
+  `config/rules.yaml` `known_invalid_ssns` (publicized invalid numbers).
+  - `.env` was never committed; the salt is in none of the 48 commits.
+- [fresh clone] `git clone` of febe424 into a temp folder, new venv and
+  `pip install -e ".[ocr,ml]"`, a new random salt. Then the README quick start as
+  written:
+  - `generate` (+ seed-43 holdout)
+  - `train column-classifier`: HV_lr chosen, macro-F1 on the holdout R 0.9911 / HV
+    0.8718
+  - `run`, `db build`, `report`: 215 people, 438 mentions; recalc 0 errors, 215/215
+  - `scale-test` (50k rows in 39.33 s), `evaluate pipeline`
+
+  Compared with `sample_output/`:
+  - workbook: 0 differing cells in all 7 sheets (run id and timestamps normalized)
+  - `metrics.json`: 0 of 1,050 numbers differ (timings excluded)
+  - `scale_report.json`: 0 of 30 numbers differ (timings excluded)
+  - pytest in the clone: 510 passed, 1 skipped (the guide-text test, guide absent)
+- [fix] `evaluate pipeline` includes the latest scale report. Run first, it reports no
+  scale section. Both READMEs now give `scale-test` before `evaluate pipeline`.
+  `sample_output/METRICS.md`/`metrics.json` were regenerated so they cite the committed
+  `scale_report.json` (38.85 s). Before, they cited an older 40.31 s run; every other
+  number is unchanged.
+- [checks] main repo: `pytest -q` 511 passed, ruff clean.
+- v1.0 tagged.

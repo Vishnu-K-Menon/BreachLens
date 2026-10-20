@@ -143,8 +143,9 @@ breachlens run; breachlens db build
 breachlens report                    # data/output/<run_id>/breachlens_<run_id>.xlsm
 ```
 
-Optional: `breachlens evaluate pipeline` (METRICS.md), `breachlens scale-test` (50k
-rows), `breachlens sql run` (the queries above).
+Optional: `breachlens scale-test` (50k rows), then `breachlens evaluate pipeline`
+(METRICS.md, including the latest scale report), `breachlens sql run` (the queries
+above).
 
 **Census, offline by default:** `data/cache/census/` is committed. It holds the Census
 answers for the synthetic addresses only, with no names or identifiers. So a fresh clone

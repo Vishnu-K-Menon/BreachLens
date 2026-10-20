@@ -14,8 +14,8 @@ on every file here.
 | `scale_report.json` | Per-stage timing on the 50,000-row claims file | `breachlens scale-test` |
 
 **Regenerate** (after the quick start in the main README): `breachlens run`,
-`breachlens db build`, `breachlens report`, `breachlens evaluate pipeline` and
-`breachlens scale-test`.
+`breachlens db build`, `breachlens report`, `breachlens scale-test`, then
+`breachlens evaluate pipeline` (it adds the latest scale report to the metrics).
 - **Same:** the counts. A fresh clone with a different salt gives the same workbook
   values and metrics.
 - **Different:** the run id and the timings.

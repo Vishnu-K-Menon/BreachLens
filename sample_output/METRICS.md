@@ -1,6 +1,6 @@
 # METRICS.md: BreachLens pipeline metrics (SYNTHETIC DATA)
 
-Generated 2026-10-20T01:18:00+00:00 by `breachlens evaluate pipeline` (ADR-068). corpus_v1 is the dev corpus (tuned on); the seed-43 holdout is untuned.
+Generated 2026-10-20T03:09:52+00:00 by `breachlens evaluate pipeline` (ADR-068). corpus_v1 is the dev corpus (tuned on); the seed-43 holdout is untuned.
 
 ## Headline
 
@@ -15,7 +15,7 @@ Generated 2026-10-20T01:18:00+00:00 by `breachlens evaluate pipeline` (ADR-068).
 | planted validation cases caught | 306/306 | 299/302 |
 | planted spreadsheet cases handled | 18/18 | 18/18 |
 | column mapping final accuracy / macro-F1 | 1.0 / 1.0 | 1.0 / 1.0 |
-| pipeline seconds (in memory) | 15.59 | 13.89 |
+| pipeline seconds (in memory) | 14.83 | 13.27 |
 | fields PDF-OCR micro P / R / F1 | 1.0 / 0.9878 / 0.9939 | 0.962 / 0.9048 / 0.9325 |
 | fields PDF-TEXT micro P / R / F1 | 1.0 / 1.0 / 1.0 | 1.0 / 1.0 / 1.0 |
 | fields SPREADSHEET micro P / R / F1 | 0.9991 / 1.0 / 0.9996 | 0.9991 / 1.0 / 0.9996 |
@@ -177,13 +177,13 @@ Chosen model `HV_lr`. Macro-F1 on the hard tests:
 
 | stage | corpus_v1 (dev) | holdout seed 43 (untuned) |
 |---|---|---|
-| pdf_track | 11.76 s (33 rows) | 10.57 s (33 rows) |
-| sheet_track | 2.96 s (438 rows) | 2.44 s (434 rows) |
-| normalize | 0.4 s (438 rows) | 0.53 s (434 rows) |
-| validate | 0.16 s (438 rows) | 0.1 s (434 rows) |
-| address | 0.11 s (438 rows) | 0.07 s (434 rows) |
-| privacy | 0.03 s (438 rows) | 0.03 s (434 rows) |
-| resolve | 0.1 s (438 rows) | 0.09 s (434 rows) |
+| pdf_track | 11.06 s (33 rows) | 10.18 s (33 rows) |
+| sheet_track | 2.84 s (438 rows) | 2.28 s (434 rows) |
+| normalize | 0.43 s (438 rows) | 0.49 s (434 rows) |
+| validate | 0.18 s (438 rows) | 0.1 s (434 rows) |
+| address | 0.13 s (438 rows) | 0.06 s (434 rows) |
+| privacy | 0.02 s (438 rows) | 0.02 s (434 rows) |
+| resolve | 0.1 s (438 rows) | 0.08 s (434 rows) |
 | notify | 0.07 s (438 rows) | 0.06 s (434 rows) |
 
-Scale test (latest `scale_report.json`, R20261018-052037-b0df): 50,000 rows in 40.31 s = 1,240 rows/s end to end.
+Scale test (latest `scale_report.json`, R20261020-011900-7710): 50,000 rows in 38.85 s = 1,287 rows/s end to end.

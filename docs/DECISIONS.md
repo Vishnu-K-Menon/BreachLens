@@ -911,7 +911,13 @@ minutes and cares most about the owner's hands-on work. `data/output/` is git-ig
     through a browser fetch.
   - **Privacy:** the leak guard and OCR were run over every tracked file. History has no
     `.env` and no copy of the salt.
-  - **Fresh clone:** reproduces `sample_output/` (see PROGRESS).
+  - **Fresh clone:** reproduces `sample_output/` (see PROGRESS). It was run with a new
+    salt, following the README quick start as written. The workbook matches cell by
+    cell, and `metrics.json` and the scale report match on every number except
+    timings. Two README fixes came out of it:
+    - The install line needs the `ocr,ml` extras.
+    - `scale-test` runs before `evaluate pipeline`, because the metrics include the
+      latest scale report.
 - **KNIME guide not published** (the owner's decision): `docs/KNIME_GUIDE.md` is
   untracked and git-ignored, and the owner keeps it locally. The workflow
   (`knime/breachlens_sheet_cleanup.knwf`) and its screenshot stay published. The
