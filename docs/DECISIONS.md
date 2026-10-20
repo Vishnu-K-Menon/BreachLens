@@ -866,3 +866,53 @@ KNIME 5.12 (new UI), which replaces the KNIME bullet of PLAN M7 and ADR-051:
   step.
 - Programmatic VBA import is not available on the dev machine, so the macros were
   reviewed, not executed, by the agent.
+
+---
+
+## Revision 9: M8 (2026-10-19)
+
+### ADR-069 M8 as built: README for a 2-minute read, sample_output, release checks
+**Context:** The project owner restated M8. A hiring manager reads the README for 2
+minutes and cares most about the owner's hands-on work. `data/output/` is git-ignored
+(ADR-068), so a reader without the pipeline needs committed sample outputs.
+**Decision:**
+- **README order** (the owner's): summary → "Start here" link → **My hands-on work** →
+  results → screenshots → how it works → quick start → limitations → privacy/links.
+  - The hands-on section opens with the owner's sentence on what they built by hand and
+    what an AI coding agent wrote under their design and review.
+  - It has a Skill | What I did | Link table (pandas, Excel, SQL, KNIME), with numbers
+    checked against the owner's files: notebook 96 rows → 56 people; Excel roster 56
+    people, `SSN_Check` 1 REVIEW; KNIME output 40 / 2 / 8 rows; SQL q1, q2 and q5 equal
+    the workbook and Python counts.
+  - The owner's screenshots are embedded unchanged, with captions.
+  - WORKFLOW.md §README items that a 2-minute read doesn't need (skills map, handoff
+    contract, design rationale) are links, not sections. The Ask items are left out
+    (ADR-051).
+- **`sample_output/`** holds:
+  - the corpus_v1 review workbook (`.xlsm`)
+  - 3 screenshots
+  - `METRICS.md` and `metrics.json`
+  - `scale_report.json`
+  - a README
+
+  The leak guard reports 0 findings on it, and an OCR pass over the PNGs finds none.
+- **Screenshots:** made with Excel through COM: `AutomationSecurity` force-disabled (no
+  macro can run), opened read-only, `Range.CopyPicture` → chart → PNG, never saved.
+  Each image was looked at before committing.
+- **SQL harness fix:** a `;` inside a string literal (q5's `string_split(qc_reasons,
+  ';')`) was counted as a second statement. Literals are now ignored by the
+  one-statement check (test added). `sql/queries/` is unchanged.
+- **CLI stubs:** `ask`, `evaluate ask` and `train match-model`/`doctype` say "optional,
+  after v1.0 (ADR-051)". `apply-review` says "dropped in BreachLens Lite".
+- **Release checks:**
+  - **Links:** every URL in tracked files was requested. Placeholders and XML namespaces
+    were skipped. ssa.gov and hhs.gov block scripted clients (403) and were confirmed
+    through a browser fetch.
+  - **Privacy:** the leak guard and OCR were run over every tracked file. History has no
+    `.env` and no copy of the salt.
+  - **Fresh clone:** reproduces `sample_output/` (see PROGRESS).
+- **Known privacy exception:** `excel/manual/hr_roster_clean.xlsm`, the owner's
+  hand-made exercise. It keeps its hidden, synthetic SSN column because the
+  `SSN_Masked`/`SSN_Check` formulas read it (ASSUMPTIONS_LIMITATIONS.md).
+**Consequences:** v1.0 is tagged after the fresh-clone test passes. Optional items
+(PLAN.md) may start only after that.

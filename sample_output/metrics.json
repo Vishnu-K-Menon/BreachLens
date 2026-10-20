@@ -1,0 +1,1466 @@
+{
+  "column_classifier": {
+    "chosen_model": "HV_lr",
+    "hard_test_macro_f1": {},
+    "hard_test_macro_f1_rules_only": {
+      "accuracy_dev_corpus_v1": 0.9796,
+      "accuracy_test_holdout": 0.9796,
+      "combined_dev_corpus_v1": 0.1467,
+      "combined_test_holdout": 0.1467,
+      "sheets_dev_corpus_v1": 0.9911,
+      "sheets_test_holdout": 0.9911,
+      "uninformative_headers_oof": 0.0054
+    }
+  },
+  "corpora": {
+    "corpus_v1 (dev)": {
+      "address": {
+        "accuracy": 0.995,
+        "agree": 396,
+        "confusion": {
+          "CORRECTED->CORRECTED": 1,
+          "INVALID->INVALID": 1,
+          "UNVERIFIED->UNVERIFIED": 121,
+          "VERIFIED->UNVERIFIED": 2,
+          "VERIFIED->VERIFIED": 273
+        },
+        "expected_distribution": {
+          "CORRECTED": 1,
+          "INVALID": 1,
+          "UNVERIFIED": 122,
+          "VERIFIED": 275
+        },
+        "total": 398
+      },
+      "as_of_date": "2026-10-01",
+      "collapse_ratio": 2.04,
+      "column_mapping": {
+        "final": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0
+        },
+        "ml": {
+          "accuracy": 0.9082,
+          "macro_f1": 0.8718
+        },
+        "rules": {
+          "accuracy": 0.9796,
+          "macro_f1": 0.9911
+        }
+      },
+      "corpus": "corpus_v1",
+      "fields": [
+        {
+          "f1": 1.0,
+          "field": "city",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 10,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "date_of_service",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 4,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "diagnosis",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 3,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "dl",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 1,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "dl_state",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 1,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "dob",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 4,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "line1",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 10,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 0.8571,
+          "field": "member_id",
+          "fn": 1,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 0.75,
+          "tp": 3,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "name",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 10,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "phone",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 1,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "procedure",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 4,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "ssn_present",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 5,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "ssn_value",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 5,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "state",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 10,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "zip5",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 10,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "city",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 23,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "date_of_service",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 12,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "diagnosis",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 5,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "dl",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 4,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "dl_state",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 3,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "dob",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 10,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "email",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 3,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "line1",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 23,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "member_id",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 11,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "name",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 23,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "passport",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 1,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "phone",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 5,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "procedure",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 12,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "ssn_present",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 9,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "ssn_value",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 9,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "state",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 23,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "zip5",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 23,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "bank_account",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 27,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "card",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 54,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "city",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 365,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "dob",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 241,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "email",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 56,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "employee_id",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 170,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "group_number",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 40,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "line1",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 365,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "member_id",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 105,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "mrn",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 65,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "name",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 405,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "phone",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 234,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 0.9474,
+          "field": "routing",
+          "fn": 0,
+          "fp": 3,
+          "precision": 0.9,
+          "recall": 1.0,
+          "tp": 27,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "ssn_present",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 281,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "ssn_value",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 281,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "state",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 365,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "student_id",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 30,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "zip5",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 365,
+          "track": "SPREADSHEET"
+        }
+      ],
+      "fields_by_track": {
+        "PDF-OCR": {
+          "f1": 0.9939,
+          "fn": 1,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 0.9878,
+          "tp": 81
+        },
+        "PDF-TEXT": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 199
+        },
+        "SPREADSHEET": {
+          "f1": 0.9996,
+          "fn": 0,
+          "fp": 3,
+          "precision": 0.9991,
+          "recall": 1.0,
+          "tp": 3476
+        }
+      },
+      "matching": {
+        "cases": [
+          {
+            "case": "P18 twins not merged",
+            "ok": true
+          },
+          {
+            "case": "P17 mover merged, newer address kept",
+            "ok": true
+          },
+          {
+            "case": "P05 nickname (Bob/Robert) row merged",
+            "ok": true
+          },
+          {
+            "case": "P08 one-letter surname variant row merged",
+            "ok": true
+          },
+          {
+            "case": "P24 4+ sources -> one record",
+            "ok": true
+          },
+          {
+            "case": "P41 payroll CSV + W-2 -> one person_id",
+            "ok": true
+          }
+        ],
+        "correct": 664,
+        "f1": 0.9651,
+        "gray_zone_pairs": 142,
+        "people_predicted": 215,
+        "people_truth": 207,
+        "precision": 1.0,
+        "predicted_pairs": 664,
+        "recall": 0.9326,
+        "shared_address_merged": 0,
+        "shared_address_pairs": 78,
+        "true_pairs": 712
+      },
+      "mentions": 438,
+      "notification": {
+        "by_state_listed": {
+          "CA": 30,
+          "FL": 18,
+          "MA": 7,
+          "NJ": 8,
+          "NY": 23,
+          "PA": 22,
+          "TX": 23,
+          "VA": 24
+        },
+        "by_state_truth": {
+          "CA": 30,
+          "FL": 18,
+          "MA": 7,
+          "NJ": 8,
+          "NY": 23,
+          "PA": 22,
+          "TX": 23,
+          "VA": 24
+        },
+        "extra": 0,
+        "listed": 155,
+        "missed": 0,
+        "needs_review": 43,
+        "true_positive": 155,
+        "truth": 155
+      },
+      "pdf": {
+        "doc_type": {
+          "OCR": "9/9",
+          "TEXT": "21/21",
+          "wrong": []
+        },
+        "mentions": {
+          "extra": 0,
+          "extracted": 33,
+          "ground_truth": 33,
+          "matched": 33,
+          "missing": 0
+        }
+      },
+      "people": 215,
+      "planted_spreadsheet": {
+        "handled": 18,
+        "total": 18
+      },
+      "planted_validation": {
+        "caught": 306,
+        "tagged": 306
+      },
+      "qc_status": {
+        "FAIL": 14,
+        "PASS": 123,
+        "REVIEW": 301
+      },
+      "run_id": "R20261020-011800-9a4f",
+      "seed": 42,
+      "throughput": {
+        "stages": [
+          {
+            "rows": 33,
+            "rows_per_sec": 2.8,
+            "seconds": 11.76,
+            "stage": "pdf_track"
+          },
+          {
+            "rows": 438,
+            "rows_per_sec": 147.9,
+            "seconds": 2.96,
+            "stage": "sheet_track"
+          },
+          {
+            "rows": 438,
+            "rows_per_sec": 1082.8,
+            "seconds": 0.4,
+            "stage": "normalize"
+          },
+          {
+            "rows": 438,
+            "rows_per_sec": 2665.4,
+            "seconds": 0.16,
+            "stage": "validate"
+          },
+          {
+            "rows": 438,
+            "rows_per_sec": 3818.6,
+            "seconds": 0.11,
+            "stage": "address"
+          },
+          {
+            "rows": 438,
+            "rows_per_sec": 16907.7,
+            "seconds": 0.03,
+            "stage": "privacy"
+          },
+          {
+            "rows": 438,
+            "rows_per_sec": 4397.5,
+            "seconds": 0.1,
+            "stage": "resolve"
+          },
+          {
+            "rows": 438,
+            "rows_per_sec": 5986.8,
+            "seconds": 0.07,
+            "stage": "notify"
+          }
+        ],
+        "total_seconds": 15.59
+      }
+    },
+    "holdout seed 43 (untuned)": {
+      "address": {
+        "accuracy": 0.9797,
+        "agree": 386,
+        "confusion": {
+          "CORRECTED->CORRECTED": 1,
+          "INVALID->INVALID": 1,
+          "UNVERIFIED->UNVERIFIED": 130,
+          "VERIFIED->UNVERIFIED": 8,
+          "VERIFIED->VERIFIED": 254
+        },
+        "expected_distribution": {
+          "CORRECTED": 1,
+          "INVALID": 1,
+          "UNVERIFIED": 130,
+          "VERIFIED": 263
+        },
+        "total": 394
+      },
+      "as_of_date": "2026-10-01",
+      "collapse_ratio": 2.0,
+      "column_mapping": {
+        "final": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0
+        },
+        "ml": {
+          "accuracy": 0.9082,
+          "macro_f1": 0.8718
+        },
+        "rules": {
+          "accuracy": 0.9796,
+          "macro_f1": 0.9911
+        }
+      },
+      "corpus": "corpus_v1",
+      "fields": [
+        {
+          "f1": 1.0,
+          "field": "city",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 9,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "date_of_service",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 2,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 0.0,
+          "field": "diagnosis",
+          "fn": 1,
+          "fp": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 0.8,
+          "field": "dl",
+          "fn": 1,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 0.6667,
+          "tp": 2,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 0.8,
+          "field": "dl_state",
+          "fn": 1,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 0.6667,
+          "tp": 2,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "dob",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 5,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 0.6667,
+          "field": "email",
+          "fn": 1,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 0.5,
+          "tp": 1,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "line1",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 9,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "member_id",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 2,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 0.7778,
+          "field": "name",
+          "fn": 2,
+          "fp": 2,
+          "precision": 0.7778,
+          "recall": 0.7778,
+          "tp": 7,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "passport",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 1,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "phone",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 4,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "procedure",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 2,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 0.9231,
+          "field": "ssn_present",
+          "fn": 1,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 0.8571,
+          "tp": 6,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 0.9231,
+          "field": "ssn_value",
+          "fn": 1,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 0.8571,
+          "tp": 6,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "state",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 9,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "zip5",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 9,
+          "track": "PDF-OCR"
+        },
+        {
+          "f1": 1.0,
+          "field": "city",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 24,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "date_of_service",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 14,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "diagnosis",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 7,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "dl",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 2,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "dl_state",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 1,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "dob",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 9,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "email",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 1,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "line1",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 24,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "member_id",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 13,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "name",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 24,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "phone",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 2,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "procedure",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 14,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "ssn_present",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 7,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "ssn_value",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 7,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "state",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 24,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "zip5",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 24,
+          "track": "PDF-TEXT"
+        },
+        {
+          "f1": 1.0,
+          "field": "bank_account",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 25,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "card",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 50,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "city",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 361,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "dob",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 241,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "email",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 56,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "employee_id",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 170,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "group_number",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 40,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "line1",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 361,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "member_id",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 105,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "mrn",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 65,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "name",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 401,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "phone",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 230,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 0.9434,
+          "field": "routing",
+          "fn": 0,
+          "fp": 3,
+          "precision": 0.8929,
+          "recall": 1.0,
+          "tp": 25,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "ssn_present",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 281,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "ssn_value",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 281,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "state",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 361,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "student_id",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 30,
+          "track": "SPREADSHEET"
+        },
+        {
+          "f1": 1.0,
+          "field": "zip5",
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 361,
+          "track": "SPREADSHEET"
+        }
+      ],
+      "fields_by_track": {
+        "PDF-OCR": {
+          "f1": 0.9325,
+          "fn": 8,
+          "fp": 3,
+          "precision": 0.962,
+          "recall": 0.9048,
+          "tp": 76
+        },
+        "PDF-TEXT": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tp": 197
+        },
+        "SPREADSHEET": {
+          "f1": 0.9996,
+          "fn": 0,
+          "fp": 3,
+          "precision": 0.9991,
+          "recall": 1.0,
+          "tp": 3444
+        }
+      },
+      "matching": {
+        "cases": [
+          {
+            "case": "P18 twins not merged",
+            "ok": true
+          },
+          {
+            "case": "P17 mover merged, newer address kept",
+            "ok": true
+          },
+          {
+            "case": "P05 nickname (Bob/Robert) row merged",
+            "ok": true
+          },
+          {
+            "case": "P08 one-letter surname variant row merged",
+            "ok": true
+          },
+          {
+            "case": "P24 4+ sources -> one record",
+            "ok": true
+          },
+          {
+            "case": "P41 payroll CSV + W-2 -> one person_id",
+            "ok": false
+          }
+        ],
+        "correct": 649,
+        "f1": 0.9572,
+        "gray_zone_pairs": 172,
+        "people_predicted": 217,
+        "people_truth": 207,
+        "precision": 1.0,
+        "predicted_pairs": 649,
+        "recall": 0.918,
+        "shared_address_merged": 0,
+        "shared_address_pairs": 59,
+        "true_pairs": 707
+      },
+      "mentions": 434,
+      "notification": {
+        "by_state_listed": {
+          "CA": 24,
+          "FL": 26,
+          "MA": 5,
+          "NJ": 7,
+          "NY": 29,
+          "PA": 22,
+          "TX": 22,
+          "VA": 24
+        },
+        "by_state_truth": {
+          "CA": 24,
+          "FL": 26,
+          "MA": 5,
+          "NJ": 7,
+          "NY": 29,
+          "PA": 22,
+          "TX": 22,
+          "VA": 24
+        },
+        "extra": 0,
+        "listed": 159,
+        "missed": 0,
+        "needs_review": 42,
+        "true_positive": 159,
+        "truth": 159
+      },
+      "pdf": {
+        "doc_type": {
+          "OCR": "9/9",
+          "TEXT": "21/21",
+          "wrong": []
+        },
+        "mentions": {
+          "extra": 0,
+          "extracted": 33,
+          "ground_truth": 33,
+          "matched": 33,
+          "missing": 0
+        }
+      },
+      "people": 217,
+      "planted_spreadsheet": {
+        "handled": 18,
+        "total": 18
+      },
+      "planted_validation": {
+        "caught": 299,
+        "tagged": 302
+      },
+      "qc_status": {
+        "FAIL": 11,
+        "PASS": 98,
+        "REVIEW": 325
+      },
+      "run_id": "R20261020-011817-0e2b",
+      "seed": 43,
+      "throughput": {
+        "stages": [
+          {
+            "rows": 33,
+            "rows_per_sec": 3.1,
+            "seconds": 10.57,
+            "stage": "pdf_track"
+          },
+          {
+            "rows": 434,
+            "rows_per_sec": 177.5,
+            "seconds": 2.44,
+            "stage": "sheet_track"
+          },
+          {
+            "rows": 434,
+            "rows_per_sec": 819.3,
+            "seconds": 0.53,
+            "stage": "normalize"
+          },
+          {
+            "rows": 434,
+            "rows_per_sec": 4398.8,
+            "seconds": 0.1,
+            "stage": "validate"
+          },
+          {
+            "rows": 434,
+            "rows_per_sec": 6469.7,
+            "seconds": 0.07,
+            "stage": "address"
+          },
+          {
+            "rows": 434,
+            "rows_per_sec": 16876.7,
+            "seconds": 0.03,
+            "stage": "privacy"
+          },
+          {
+            "rows": 434,
+            "rows_per_sec": 4928.7,
+            "seconds": 0.09,
+            "stage": "resolve"
+          },
+          {
+            "rows": 434,
+            "rows_per_sec": 7431.7,
+            "seconds": 0.06,
+            "stage": "notify"
+          }
+        ],
+        "total_seconds": 13.89
+      }
+    }
+  },
+  "generated_at": "2026-10-20T01:18:00+00:00",
+  "scale": {
+    "rows": 50000,
+    "rows_per_sec_end_to_end": 1240.5,
+    "source": "R20261018-052037-b0df",
+    "total_seconds": 40.31
+  }
+}

@@ -183,11 +183,11 @@ Recalculated Summary counts equal Python. The KNIME guide can be assembled by a 
 45 minutes or less.
 
 ## M8 — Docs + release (Day 6) — Lite scope (ADR-051)
-- [ ] `README.md` per `WORKFLOW.md §README requirements` (without the Ask items). The
-      quick start includes `breachlens train column-classifier`, because the model file is
-      git-ignored (ADR-057);
-      `docs/METHODS.md`; `docs/ASSUMPTIONS_LIMITATIONS.md`.
-- [ ] `sample_output/`: the final workbook (synthetic, masked) with a screenshot,
+- [x] `README.md` per `WORKFLOW.md §README requirements` (without the Ask items), in
+      the project owner's order: hands-on work first (ADR-069). The quick start includes
+      `breachlens train column-classifier`, because the model file is git-ignored
+      (ADR-057); `docs/METHODS.md`; `docs/ASSUMPTIONS_LIMITATIONS.md`.
+- [x] `sample_output/`: the final workbook (synthetic, masked) with 3 screenshots,
       `METRICS.md`, the scale report. `data/output/` is git-ignored (ADR-068).
 - [ ] Fresh-clone test. Tag `v1.0`.
 

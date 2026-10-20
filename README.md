@@ -1,112 +1,192 @@
 # BreachLens
-Python + KNIME pipeline that extracts PII/PHI from synthetic breach documents, validates it, verifies addresses, matches people across documents, and produces a state-grouped breach notification list.
 
-## Status (interim, 2026-10-19)
-Milestones M0–M7 are done; M8 (docs + v1.0 release) is planned. Details per milestone
-are in `PROGRESS.md`, and the full README arrives in M8. SYNTHETIC DATA ONLY.
-- **M6:** the DuckDB system of record (`breachlens db build`) and a read-only harness for
-  hand-written queries (`breachlens sql run`, `DATABASE_AND_ASK.md`).
-- **M7:**
-  - the Excel review workbook (`breachlens report`): 7 sheets of live formulas, checked
-    in LibreOffice against the Python counts
-  - two VBA macros (`excel/ReviewHelpers.bas`)
-  - `breachlens evaluate pipeline` (`METRICS.md`)
-  - a KNIME guide for a hand-built spreadsheet-cleanup workflow (`docs/KNIME_GUIDE.md`)
+After a data breach, a company has to find out who was in the stolen files, what of
+theirs was exposed, and which state's notification law applies to each person.
+BreachLens does this on **synthetic** breach data: PDFs, scanned forms and messy
+Excel/CSV exports. It extracts names, addresses and identifiers from both, validates
+them, checks addresses against the US Census geocoder, and matches the same person
+across files. The result is **one de-duplicated, privacy-safe notification list per
+state**, plus an Excel review workbook with live formulas and macros. Raw identifiers
+never reach an output file; only masked values and salted keys do. All data is
+synthetic, and nothing here is legal advice.
 
-| metric (synthetic data) | value |
-|---|---|
-| Notification list vs ground truth, corpus_v1 | **155/155** people, by state identical, 0 missed / 0 extra |
-| Notification list, held-out seed-43 corpus (untuned) | **159/159** |
-| Entity resolution, pairwise precision / recall (corpus_v1) | **1.000 / 0.933** (holdout 1.000 / 0.918); twins kept apart, 0/78 unrelated shared-address pairs merged |
-| Scale test, 50k-row claims file | **50,000 rows in 40 s** end to end (~1,240 rows/s, peak ~1 GB) |
-| PDF extraction recall (text layer / OCR) | text 1.000 on every field (corpus_v1 and holdout); OCR on corpus_v1 1.000 except member ID 3/4. Holdout OCR, untuned, on small counts: name 7/9, SSN-present 6/7, DL 2/3, diagnosis 0/1, email 1/2 |
-| Spreadsheet extraction recall | 1.000 per field; every planted spreadsheet case P27–P44 handled |
-| Planted validation cases caught | 306/306 (holdout 299/302) |
-| Address status vs expected (Census) | 396/398 mentions |
-| Leak guard | 0 findings on every written output; no raw identifier in any output byte |
-| Review workbook (corpus_v1), recalculated in LibreOffice | 47/47 Summary formulas equal the Python counts, 0 error values, notify-status formula agrees on 215/215 people |
+**Start here → [My hands-on work](#my-hands-on-work)**
 
-**Hand-built parts.** These are the project owner's own work, never created or edited by
-the coding agent (AGENTS.md):
-- `notebooks/`: exploration notebooks
-- `excel/manual/`: a manual Excel cleanup of the HR roster with formulas, a pivot and a
-  macro
-- also protected: `knime/manual/`, `docs/memos/` and the content of `sql/queries/*.sql`
-- the KNIME workflow (`knime/breachlens_sheet_cleanup.knwf`, `knime/workflow.png`),
-  built by hand from `docs/KNIME_GUIDE.md`
+## My hands-on work
 
-**Census cache.** `data/cache/census/` is committed (Census Geocoder responses for the
-synthetic corpora's addresses only; no names or identifiers). A fresh clone therefore
-gets real address statuses offline, with no network call. The pipeline is offline by
-default. `breachlens run --online` is only needed for addresses that are not cached yet
-(e.g. a new seed); it sends street/city/state/ZIP only. In offline runs, addresses with
-no cache entry are NOT_CHECKED (ADR-063).
+I built these parts myself, by hand, to show core data skills. The larger pipeline was
+written with an AI coding agent under my design and review.
 
-## Docs backlog (written into the full docs in M8)
-README:
-- All identifiers are randomly generated; any match to a real number is coincidental.
-- `sample_output/` (M8): copy the final review workbook (synthetic, masked) and a
-  screenshot of it, plus `METRICS.md`, because `data/output/` is git-ignored (ADR-068).
-- Macros: files downloaded from the internet open with macros blocked (Mark of the Web).
-  Right-click → Properties → Unblock.
+| Skill | What I did | Link |
+|---|---|---|
+| pandas | Cleaned an HR roster and a payroll export: header row, lost leading zeros (6 ZIPs, 8 SSNs), decimal commas, suffixes in names, duplicates. Combined them: **96 rows → 56 unique people** (payroll 80 rows → 40 employees) | [notebook](notebooks/01_explore_messy_files.ipynb) |
+| Excel | Cleaned the HR roster by hand: **1 duplicate removed, 56 people, 1 impossible SSN flagged**. TRIM/UPPER, TEXT for ZIPs, IF/OR checks, DATEDIF, XLOOKUP, PivotTable, COUNTIFS, and a recorded-then-edited macro | [excel/manual/](excel/manual/) |
+| SQL | 5 queries on the DuckDB results: WHERE, GROUP BY, JOIN, CTE + `unnest`. Cross-checked: q1 (people to notify by state, 155), q2 (notify status 112/43/60) and q5 (top 10 reason codes) equal the workbook's Excel formulas and the Python counts | [sql/queries/](sql/queries/) |
+| KNIME | A 14-node workflow, built-in nodes only, that cleans the payroll export: **80 rows → 40 employees**, SSNs padded and masked so no full SSN shows in any node view, and a regex check that finds **0 rows** with a long digit run left | [knime/](knime/) |
 
-ASSUMPTIONS_LIMITATIONS.md:
-- **Known limitations (M5):**
-  - Review volume: 43 people need review on corpus_v1 vs 10 card-review cases in the
-    ground truth. Most come from household members who share surname and address, with
-    no DOB on one side: their pair scores land in the gray zone (0.70–0.87) and are sent
-    to review, not merged. Possible fix: cap the pair score when first names conflict.
-  - 125 14TH ST, Oakland (a pool address) comes back from the Census batch geocoder as
-    `Match` + `Non_Exact` → "125 14TH, OAKLAND, CA, 94612": the street type is dropped.
-    The single-line lookup in M1 matched it. The pipeline's Non_Exact acceptance rule
-    (same house number and street, token-sort ≥ 95; ADR-063) scores the street at 84 and
-    rejects it, so its mentions are UNVERIFIED + ADDR_GEOCODE_NOMATCH instead of VERIFIED
-    (2/398 on corpus_v1, 8/394 on the holdout). (Corrected 2026-10-18: earlier notes
-    called this a batch No_Match.) Possible fixes: compare the street without its
-    type/suffix in the acceptance rule, or retry rejected and No_Match batch rows with the
-    single-line lookup.
-  - Guardian rows with only a name stay separate, in review, by design: a name alone
-    never merges (ADR-064), even when the guardian is a person with other records.
-- The address pool uses Census-assigned ZIPs, which can differ from USPS ZIPs
-  (630 W 5th St, Los Angeles: USPS 90071 vs Census 90012; Corpus Christi City Hall:
-  78401 vs 78408). Census confirms an address-range match, not USPS deliverability.
-- Card exposure (ADR-052, illustrative, not legal advice): pre-masked card values (at most
-  the last 4 digits) count as present but do not trigger notice, treated as redacted the
-  way many state laws define it. Precision-lost (scientific-notation) and Luhn-failing
-  numbers do trigger notice and send the person to review.
-- PDF extraction numbers on corpus_v1 are **tuned**: the templates and OCR settings were
-  adjusted on that corpus. The seed-43 held-out corpus gives the **untuned** numbers
-  (text layer still 1.000; OCR name 0.78, SSN-present 0.86, a few single-field misses,
-  accents lost by the `eng` OCR model). Report both; neither represents real-world scans.
-- All dates that depend on "today" (age, minors, DOB plausibility, workbook RunDate) use
-  the configured `as_of_date` so results are reproducible (ADR-053).
-- Column classifier (ADR-055): corpus_v1's spreadsheets are a **dev** set (used to find
-  the training-data shift); the seed-43 holdout spreadsheets are the **test** set. Both
-  reuse the same 8 header templates, so the holdout tests new values under known
-  layouts. The header-blind test is the out-of-fold uninformative-header set. With
-  normal headers the alias rules beat the ML (0.99 vs 0.87 macro-F1); the ML earns its
-  place on headers like `ID` / `Column7` (0.90 vs 0.01), and the decision table
-  combines both. One known wrong ML override (`Insurer` → SCHOOL, p 0.83) is reported,
-  not patched.
-- Validation (M4): street lines are kept as printed; the offline ZIP check uses USPS-based
-  `zipcodes` data, while the address pool has Census ZIPs. In M4 an address is INVALID or
-  NOT_CHECKED; VERIFIED/CORRECTED need Census (M5). Mention-level REVIEW counts include
-  column-level mapping doubts copied to every affected person (ADR-059).
-- Ground-truth quirks found in M4 (reported, not changed): routing is left out of the
-  truth when the account cell is `#N/A`; guardian rows carry the person's suffix even
-  when it isn't printed; the seed-43 generator gave one person the suffix `MR`.
-- OCR on accented names (`eng` model) loses accents, and `Jr.` can read as `Ir.`. Neither
-  is fixed (holdout numbers are untuned).
-- Census (M5, ADR-063): the pipeline is offline by default. Address status comes from
-  cached Census batch results; `breachlens run --online` fills the cache once (addresses
-  only), and addresses with no cache entry are NOT_CHECKED. The batch geocoder can differ
-  from the oneline one (Oakland 125 14TH ST: batch drops the street type, see Known
-  limitations). It also snaps fake streets to real ones nearby; such Non_Exact matches
-  are rejected.
-- Matching (M5): a name alone never merges. Household members who share a surname and
-  address, with no DOB on one side, land in the gray zone (REVIEW) rather than merging,
-  which raises `needs_review`. Guardian rows (name only) stay separate people in review.
-- Notification rules are the demo subset in `jurisdictions.yaml` (NOT LEGAL ADVICE); NJ
-  and MA use `default` and are flagged NOTIFY_STATE_UNKNOWN.
-- Spreadsheet fixes are tuned on the planted cases P27–P44 (synthetic Excel damage).
-  Real exports will show damage the generator does not produce.
+**Same file, three tools:** `payroll_export.csv` was cleaned in pandas, KNIME and the
+pipeline. All give 80 rows → 40 employees and 8 short SSNs fixed.
+
+### Excel
+
+![Excel roster cleanup](excel/manual/excel_roster.png)
+*Excel cleanup: helper-column formulas (First_Clean, Last_Clean, ZIP5, SSN_Masked),
+REVIEW highlight, and the macro's message; the raw SSN column is hidden by the macro.*
+
+![Excel summary](excel/manual/excel_summary.png)
+*Excel summary: pivot of people by state and department, SSN-review and NJ counts, and
+the FORMAT REPORT macro button.*
+
+### KNIME
+
+![KNIME workflow](knime/workflow.png)
+*KNIME 5.12: the 14-node payroll cleanup, built by hand from
+[docs/KNIME_GUIDE.md](docs/KNIME_GUIDE.md) and exported as
+[breachlens_sheet_cleanup.knwf](knime/breachlens_sheet_cleanup.knwf). SSNs are padded
+and masked in the first String Manipulation; the warning on the top Row Filter is the
+expected 0-row check.*
+
+### SQL
+
+Five queries in [sql/queries/](sql/queries/), run read-only with `breachlens sql run`.
+[q4_minors.sql](sql/queries/q4_minors.sql) joins people to the notification list
+(11 minors need a guardian notice on corpus_v1):
+
+```sql
+-- Q4: List minors who need a guardian notice (person id, state, note).
+SELECT p.person_id, n.jurisdiction, n.notify_status, n.notify_note
+FROM people p
+JOIN notification_list n
+  ON p.run_id = n.run_id
+ AND p.person_id = n.person_id
+WHERE p.is_minor
+  AND n.notify_required
+ORDER BY p.person_id;
+```
+
+### pandas
+
+[notebooks/01_explore_messy_files.ipynb](notebooks/01_explore_messy_files.ipynb)
+cleans both files step by step. One example: the payroll SSNs that lost their leading
+zero are padded back to 9 digits, then shown only masked:
+
+```python
+pay["SS#"] = pay["SS#"].str.zfill(9)
+pay["SSN"] = pay["SS#"].str[:3] + "-" + pay["SS#"].str[3:5] + "-" + pay["SS#"].str[5:]
+print(pay["SS#"].str.len().value_counts())
+pay["SSN"].map(mask).head()
+```
+
+## Results
+
+Measured on synthetic data with `breachlens evaluate pipeline` (full numbers:
+[sample_output/METRICS.md](sample_output/METRICS.md)). corpus_v1 is the development
+corpus the rules were tuned on. The seed-43 holdout was generated separately and scored
+without any tuning.
+
+| metric | corpus_v1 (dev) | holdout seed 43 (untuned) |
+|---|---|---|
+| Notification list vs ground truth (people) | **155/155** | **159/159** |
+| Matching, pairwise precision / recall | 1.000 / 0.933 | 1.000 / 0.918 |
+| Planted validation cases caught | 306/306 | 299/302 |
+| Address status vs expected (Census) | 396/398 | 386/394 |
+
+**Scale:** a 50,000-row claims file runs end to end in **~39 s** (about 1,290 rows/s,
+peak memory ~1 GB; [scale_report.json](sample_output/scale_report.json)).
+
+## Screenshots
+
+The review workbook ([sample_output/breachlens_review_corpus_v1.xlsm](sample_output/)).
+
+![Workbook summary](sample_output/workbook_summary.png)
+*Summary: every count is a live Excel formula (`excel`) next to the pipeline's value
+(`python`); all 47 match after a LibreOffice recalculation.*
+
+![Review queue](sample_output/workbook_review_queue.png)
+*Review_Queue: one row per item to check, a status dropdown, and the two macro buttons
+(Show pending, Export decisions).*
+
+![Mentions](sample_output/workbook_mentions.png)
+*Mentions: every extracted record with its validation result; identifiers appear only
+masked.*
+
+## How it works
+
+1. **Two input tracks:**
+   - PDFs and scans: text layer or OCR, then label-anchored field extraction.
+   - Spreadsheets: layout repair, then column mapping by header rules plus an ML column
+     classifier.
+
+   Both write one `mentions` table.
+2. **Normalize and validate** with ~60 reason codes (SSN, card, routing, DOB, address).
+3. **Verify addresses** with the Census batch geocoder (cached), then **mask** every
+   identifier and replace it with a salted HMAC key.
+4. **Match people** with engineered pair features (name, DOB, address, keys), blocking,
+   guards and union-find clusters.
+5. **Apply state notification rules** (illustrative subset). Write the DuckDB database
+   and the review workbook.
+
+Details: [docs/METHODS.md](docs/METHODS.md) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Quick start (Windows, PowerShell)
+
+Needs Python 3.11, [Tesseract OCR](https://github.com/UB-Mannheim/tesseract/wiki) and
+[LibreOffice](https://www.libreoffice.org/). The generator uses LibreOffice to write the
+`.xls` test file, and `report` uses it to recalculate the workbook formulas as a check.
+
+```powershell
+py -3.11 -m venv .venv; .venv\Scripts\Activate.ps1; pip install -e .
+copy .env.example .env   # set BREACHLENS_SALT (e.g. python -c "import secrets; print(secrets.token_hex(32))"), TESSERACT_CMD, SOFFICE_PATH
+breachlens generate; breachlens generate --seed 43 --out data/raw/corpus_holdout --corpus-only
+breachlens train column-classifier   # the model file is not in git
+breachlens run; breachlens db build
+breachlens report                    # data/output/<run_id>/breachlens_<run_id>.xlsm
+```
+
+Optional: `breachlens evaluate pipeline` (METRICS.md), `breachlens scale-test` (50k
+rows), `breachlens sql run` (the queries above).
+
+**Census, offline by default:** `data/cache/census/` is committed. It holds the Census
+answers for the synthetic addresses only, with no names or identifiers. So a fresh clone
+gets real address statuses with no network call. `breachlens run --online` is only needed
+for addresses that are not cached yet (e.g. a new seed). It sends street, city, state and
+ZIP only. Without it, uncached addresses are `NOT_CHECKED`.
+
+**Macros:** a workbook downloaded from the internet opens with macros blocked (Mark of
+the Web). Right-click the file → Properties → tick **Unblock**.
+
+## Known limitations
+
+- **Review volume:** 43 people need review on corpus_v1, against 10 review cases in the
+  ground truth. Most are household members who share a surname and address but have no
+  DOB on one side. A name alone never merges, by design.
+- **Synthetic data only:** rules and OCR settings were tuned on corpus_v1. The untuned
+  holdout shows lower OCR accuracy (name 7/9 on scans). Real exports will show damage
+  the generator does not produce.
+- **Addresses:** Census confirms an address range, not USPS deliverability. Its batch
+  geocoder rejects 2 corpus_v1 addresses that a single lookup matches.
+
+More: [docs/ASSUMPTIONS_LIMITATIONS.md](docs/ASSUMPTIONS_LIMITATIONS.md).
+
+**Optional / future:** "Ask BreachLens", a local-LLM text-to-SQL assistant over the
+database, is designed ([DATABASE_AND_ASK.md](docs/DATABASE_AND_ASK.md)) but not
+built in v1.0.
+
+## Privacy and links
+
+- **Privacy by design:**
+  - Synthetic data only. Raw identifiers are dropped before anything is written, leaving
+    masked values (`***-**-1234`) and salted keys.
+  - A leak guard scans every output file.
+  - Offline by default.
+  - The salt lives in `.env`, which is git-ignored and has never been committed
+    ([docs/PRIVACY.md](docs/PRIVACY.md)).
+- **Not legal advice:** the notification rules in `config/jurisdictions.yaml` are an
+  illustrative subset.
+- **Docs:**
+  - [Methods](docs/METHODS.md), [Assumptions & limitations](docs/ASSUMPTIONS_LIMITATIONS.md),
+    [Design rationale](docs/DESIGN_RATIONALE.md), [Decisions (ADRs)](docs/DECISIONS.md)
+  - [Data schema (handoff contract)](docs/DATA_SCHEMA.md),
+    [Validation rules](docs/VALIDATION_RULES.md), [Spreadsheet track](docs/SPREADSHEET_TRACK.md)
+  - [Review workbook](docs/EXCEL_WORKBOOK.md),
+    [Column classifier model card](models/model_card.md), [Progress log](PROGRESS.md)

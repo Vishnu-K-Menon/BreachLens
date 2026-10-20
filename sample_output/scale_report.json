@@ -1,0 +1,73 @@
+{
+  "candidate_pairs": 3,
+  "census": "offline (cache only); addresses not in the cache are NOT_CHECKED",
+  "cpu_count": 16,
+  "excluded": "OCR (ADR-026); the PDF track has no input here",
+  "input": "data\\raw\\scale",
+  "peak_mb": 975.8,
+  "people": 50000,
+  "python": "3.11.9",
+  "rows": 50000,
+  "rows_per_sec_end_to_end": 1286.9,
+  "run_id": "R20261020-011900-7710",
+  "ssn_guarded_pairs_unscored": 8293309,
+  "stages": [
+    {
+      "peak_mb": 431.7,
+      "rows_in": 0,
+      "rows_out": 50000,
+      "rows_per_sec": 4845.0,
+      "seconds": 10.32,
+      "stage": "sheet_track"
+    },
+    {
+      "peak_mb": 434.3,
+      "rows_in": 50000,
+      "rows_out": 50000,
+      "rows_per_sec": 5904.2,
+      "seconds": 8.47,
+      "stage": "normalize"
+    },
+    {
+      "peak_mb": 591.0,
+      "rows_in": 50000,
+      "rows_out": 50000,
+      "rows_per_sec": 19090.6,
+      "seconds": 2.62,
+      "stage": "validate"
+    },
+    {
+      "peak_mb": 591.0,
+      "rows_in": 50000,
+      "rows_out": 50000,
+      "rows_per_sec": 14735.3,
+      "seconds": 3.39,
+      "stage": "address"
+    },
+    {
+      "peak_mb": 671.8,
+      "rows_in": 50000,
+      "rows_out": 50000,
+      "rows_per_sec": 20881.2,
+      "seconds": 2.39,
+      "stage": "privacy"
+    },
+    {
+      "peak_mb": 970.1,
+      "rows_in": 50000,
+      "rows_out": 50000,
+      "rows_per_sec": 6732.3,
+      "seconds": 7.43,
+      "stage": "resolve"
+    },
+    {
+      "peak_mb": 975.8,
+      "rows_in": 50000,
+      "rows_out": 50000,
+      "rows_per_sec": 11824.0,
+      "seconds": 4.23,
+      "stage": "notify"
+    }
+  ],
+  "total_seconds": 38.85
+}

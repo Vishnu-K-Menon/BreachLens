@@ -46,7 +46,8 @@ def strip_comments(sql: str) -> str:
 def check_sql(sql: str) -> str | None:
     """Reason a query is not allowed, or None."""
     body = sql.strip().rstrip(";").strip()
-    if ";" in body:
+    # A ';' inside a string literal (e.g. string_split(x, ';')) is not a statement break.
+    if ";" in re.sub(r"'(?:[^']|'')*'", "''", body):
         return "only one statement per file"
     if not re.match(r"^(select|with)\b", body, re.I):
         return "only SELECT / WITH queries are allowed"

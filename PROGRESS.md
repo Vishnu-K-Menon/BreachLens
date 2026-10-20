@@ -476,3 +476,54 @@ Append-only build log. Format: see docs/WORKFLOW.md.
   `data\output\knime\payroll_clean.xlsx` because the folder doesn't exist. **Create missing
   folders** (off by default in 5.12) is now a required setting, not "if shown", and
   "Before you start" gives the `mkdir` alternative.
+
+## 2026-10-19 (Day 6) — M8 docs + release (ADR-069)
+- [outputs] Fresh offline run R20261020-011706-51da on corpus_v1: 438 mentions → 215
+  people, 155 to notify, leak guard 0.
+  - `db build`: 10 tables/views, guard 0.
+  - `report` now writes an `.xlsm`, because `excel/vbaProject.bin` exists. LibreOffice
+    recalc: 0 error values, 0 Summary mismatches, status formula agrees on 215/215.
+- [metrics] `evaluate pipeline`, unchanged from M7:
+  - corpus_v1: 155/155 notified, P 1.0 / R 0.9326, address 396/398, planted 306/306
+  - holdout (untuned): 159/159, 1.0 / 0.918, 386/394, 299/302
+  - `scale-test`: 50,000 rows in 38.85 s (1,287 rows/s, peak 976 MB).
+- [sql] `breachlens sql run` failed q5 ("only one statement per file"). The cause was in
+  the harness: the `';'` literal in `string_split`. Fixed (literals are ignored by the
+  check; test added). The SQL files are unchanged. All 5 queries run. Cross-check:
+  - q1 (by state, 155) = the workbook
+  - q2 (112/43/60) = the workbook
+  - q5 (top 10 codes) = the workbook
+  - q4: 11 minors need a guardian notice
+- [sample_output] Contents:
+  - the workbook `.xlsm`
+  - `workbook_summary.png`, `workbook_review_queue.png`, `workbook_mentions.png`
+    (Excel COM, read-only, macros force-disabled)
+  - `METRICS.md`, `metrics.json`, `scale_report.json`, `README.md`
+
+  Leak guard: 8 files, 0 findings; OCR of the PNGs: 0.
+- [docs] Changed or new:
+  - README rewritten: hands-on work first, the project owner's skill table and
+    screenshots, results, quick start, limitations.
+  - New `docs/METHODS.md` and `docs/ASSUMPTIONS_LIMITATIONS.md` (the README backlog
+    moved there).
+  - PLAN M8 ticked, ADR-069.
+  - `.gitignore`: `excel/macro_shell.xlsm`.
+  - CLI stub messages no longer name M6/M8.
+- [links] 67 distinct URLs in tracked files:
+  - 60 real URLs resolve. ssa.gov and hhs.gov return 403 to scripts and were confirmed
+    by a browser fetch.
+  - 7 skipped: 2 test placeholders, localhost, XML namespaces.
+- [privacy] Leak guard + OCR over all 496 tracked files and the new ones:
+  - `.env` was never committed; the salt is in none of the 45 commits.
+  - Findings outside the pipeline outputs:
+    - leak-guard test fixtures in `tests/` (planted on purpose)
+    - Census cache `tigerLineId` values (9-digit public road-segment IDs)
+    - format examples and publicized sample numbers in DECISIONS / VALIDATION_RULES /
+      SPREADSHEET_TRACK
+    - one OCR artifact in `excel/manual/excel_roster.png`: a ZIP and a phone number
+      read as one 16-digit run
+    - the project owner's two hand-made files: the notebook (34, saved cell outputs,
+      to be fixed by the owner) and `hr_roster_clean.xlsm` (56, hidden SSN column; kept
+      as a documented exception)
+- Next: the owner fixes the notebook display cells. Then the final scan, the
+  fresh-clone test and the v1.0 tag.

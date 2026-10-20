@@ -124,6 +124,12 @@ def test_sql_harness(db, tmp_path):
     (q / "q5_write.sql").write_text("DELETE FROM people", encoding="utf-8")
     (q / "q6_two.sql").write_text("SELECT 1; SELECT 2", encoding="utf-8")
     (q / "q7_bad.sql").write_text("SELECT nope FROM people", encoding="utf-8")
+    # ';' inside a string literal is not a second statement (sql/queries/q5 uses it)
+    (q / "q8_literal.sql").write_text(
+        "WITH c AS (SELECT unnest(string_split('A;B', ';')) AS code) SELECT code FROM c;",
+        encoding="utf-8",
+    )
+    (q / "q9_two.sql").write_text("SELECT ';' AS s; SELECT 2", encoding="utf-8")
     w = GuardedWriter(GUARD, tmp_path / "sql")
     res = {r.name: r for r in run_all(db[0], q, w)}
     assert (
@@ -139,7 +145,9 @@ def test_sql_harness(db, tmp_path):
         and res["q6_two"].status == FAILED
         and res["q7_bad"].status == FAILED
     )
-    assert sorted(p.name for p in (tmp_path / "sql").iterdir()) == ["q1_ok.csv"]
+    assert res["q8_literal"].status == OK and res["q8_literal"].rows == 2
+    assert res["q9_two"].status == FAILED and "one statement" in res["q9_two"].detail
+    assert sorted(p.name for p in (tmp_path / "sql").iterdir()) == ["q1_ok.csv", "q8_literal.csv"]
 
 
 def test_repo_query_files_hold_only_the_question():

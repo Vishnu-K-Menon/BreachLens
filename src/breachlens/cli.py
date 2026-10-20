@@ -55,8 +55,11 @@ def _configure_logging(level: LogLevel) -> None:
     logger.setLevel(level.value)
 
 
-def _not_implemented(command: str, milestone: str) -> NoReturn:
-    typer.echo(f"'{command}' is not implemented yet (planned for {milestone}).", err=True)
+OPTIONAL = "optional, after v1.0 (ADR-051)"
+
+
+def _not_implemented(command: str, status: str) -> NoReturn:
+    typer.echo(f"'{command}' is not implemented ({status}).", err=True)
     raise typer.Exit(code=1)
 
 
@@ -177,7 +180,7 @@ def evaluate(
 ) -> None:
     """Score the pipeline against ground truth -> metrics.json + METRICS.md (or Ask)."""
     if target is EvalTarget.ask:
-        _not_implemented("evaluate ask", "the optional items after M8")
+        _not_implemented("evaluate ask", OPTIONAL)
     from breachlens.config import load_config, project_root_for
     from breachlens.evaluate.metrics import main as metrics_main
     from breachlens.privacy.leak_guard import LeakGuard
@@ -234,7 +237,7 @@ def train(
 ) -> None:
     """Train a model (column-classifier; match-model and doctype are optional)."""
     if model is not ModelName.column_classifier:
-        _not_implemented(f"train {model.value}", "the optional items after M8")
+        _not_implemented(f"train {model.value}", OPTIONAL)
     from breachlens.config import load_config, project_root_for
     from breachlens.ml.column_classifier import train as train_columns
     from breachlens.sheets.settings import load_sheet_settings
@@ -261,7 +264,7 @@ def apply_review(
     decisions: Annotated[Path, typer.Option(help="Review decisions CSV or edited workbook.")],
 ) -> None:
     """Import review decisions and re-run the downstream stages."""
-    _not_implemented("apply-review", "M6")
+    _not_implemented("apply-review", "dropped in BreachLens Lite, ADR-051")
 
 
 @app.command()
@@ -272,7 +275,7 @@ def ask(
     ] = False,
 ) -> None:
     """Ask BreachLens: local-LLM text-to-SQL over the results database."""
-    _not_implemented("ask", "M8")
+    _not_implemented("ask", OPTIONAL)
 
 
 @app.command("scale-test")

@@ -65,10 +65,10 @@ def test_run_with_missing_config_fails_cleanly(tmp_path, salt_env):
 @pytest.mark.parametrize(
     ("args", "milestone"),
     [
-        (["evaluate", "ask"], "M8"),
-        (["train", "match-model"], "after M8"),
-        (["apply-review", "--decisions", "decisions.csv"], "M6"),
-        (["ask", "How many people must be notified?"], "M8"),
+        (["evaluate", "ask"], "after v1.0"),
+        (["train", "match-model"], "after v1.0"),
+        (["apply-review", "--decisions", "decisions.csv"], "dropped in BreachLens Lite"),
+        (["ask", "How many people must be notified?"], "after v1.0"),
     ],
 )
 def test_stub_commands_exit_nonzero_and_name_milestone(args, milestone):
