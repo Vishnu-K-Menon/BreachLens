@@ -34,6 +34,7 @@ pipeline. All give 80 rows → 40 employees and 8 short SSNs fixed.
 REVIEW highlight, and the macro's message; the raw SSN column is hidden by the macro.*
 
 ![Excel summary](excel/manual/excel_summary.png)
+
 *Excel summary: pivot of people by state and department, SSN-review and NJ counts, and
 the FORMAT REPORT macro button.*
 
