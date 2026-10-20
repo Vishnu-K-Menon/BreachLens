@@ -40,8 +40,7 @@ the FORMAT REPORT macro button.*
 ### KNIME
 
 ![KNIME workflow](knime/workflow.png)
-*KNIME 5.12: the 14-node payroll cleanup, built by hand from
-[docs/KNIME_GUIDE.md](docs/KNIME_GUIDE.md) and exported as
+*KNIME 5.12: the 14-node payroll cleanup, built by hand and exported as
 [breachlens_sheet_cleanup.knwf](knime/breachlens_sheet_cleanup.knwf). SSNs are padded
 and masked in the first String Manipulation; the warning on the top Row Filter is the
 expected 0-row check.*
